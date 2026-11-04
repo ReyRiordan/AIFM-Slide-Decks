@@ -1,0 +1,118 @@
+/* ==========================================================================
+   AI for Automated Selling — theme tokens
+   Palette sampled from color-inspo.png. Every slide is a fixed 1920×1080 canvas.
+   ========================================================================== */
+
+@font-face { font-family: "Archivo"; src: url("../assets/fonts/Archivo.ttf") format("truetype");
+  font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: block; }
+@font-face { font-family: "Archivo"; src: url("../assets/fonts/Archivo-Italic.ttf") format("truetype");
+  font-weight: 100 900; font-stretch: 62% 125%; font-style: italic; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/JetBrainsMono.ttf") format("truetype");
+  font-weight: 100 800; font-style: normal; font-display: block; }
+
+:root {
+  /* --- palette (sampled) --- */
+  --red:      #EE3538;
+  --orange:   #EF5A35;
+  --magenta:  #B656A0;
+  --purple:   #9A4198;
+  --green:    #53B754;
+  --blue:     #4D6BB1;
+  --sky:      #518CC8;
+  --cobalt:   #286EA8;
+  --navy:     #4053A1;
+  --teal:     #2C8C7E;
+  --charcoal: #353032;
+
+  /* --- text-safe tints for colored TEXT/strokes on dark (≥4.5:1 on --bg) --- */
+  --red-t:     #FF7A7C;
+  --orange-t:  #FF8A66;
+  --magenta-t: #E08FCB;
+  --purple-t:  #CC8AD0;
+  --green-t:   #84D484;
+  --blue-t:    #94AEE6;
+  --sky-t:     #8EC0F0;
+  --teal-t:    #62CDBB;
+
+  /* --- dark stage --- */
+  --bg:      #1E1B1C;
+  --bg-2:    #2A2627;
+  --surface: #353032;   /* cards / chips */
+  --line:    #4A4345;   /* hairlines, axes */
+  --text:    #F4EFEA;
+  --text-2:  #C9C0BA;   /* secondary */
+  --text-3:  #9A908A;   /* tertiary / footers (≥4.5:1 on --bg) */
+
+  /* --- light stage (opt-in per slide: theme: 'light') --- */
+  --paper:      #F5F0EA;
+  --paper-2:    #EAE3DB;
+  --paper-line: #CFC6BD;
+  --ink:        #1E1B1C;
+  --ink-2:      #4A4345;
+  --ink-3:      #6E6560;
+
+  /* --- type --- */
+  --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  /* type scale (px at 1920×1080). Use ONLY these. */
+  --fs-hero:  168px;  /* title slide only */
+  --fs-h1:    76px;   /* slide titles */
+  --fs-h2:    52px;   /* big statements / sub-heads */
+  --fs-body:  36px;   /* body, card text */
+  --fs-label: 28px;   /* labels, captions, chips */
+  --fs-foot:  22px;   /* source footer ONLY */
+  --fs-num:   132px;  /* big numbers (mono) */
+
+  /* --- motion --- */
+  --dur-1: .45s; --dur-2: .7s; --dur-3: .9s;
+  --skew: -12deg;     /* the logo's forward lean */
+  --radius: 28px;
+
+  /* --- layout --- */
+  --pad-x: 120px;
+  --pad-top: 92px;
+  --foot-y: 1012px;   /* baseline zone for the source footer */
+}
+
+/* --- section colors: set on .slide[data-sec] --- */
+.slide[data-sec="intro"]  { --sec: var(--orange);  --sec-t: var(--orange-t); }
+.slide[data-sec="airbnb"] { --sec: var(--red);     --sec-t: var(--red-t); }
+.slide[data-sec="rufus"]  { --sec: var(--blue);    --sec-t: var(--blue-t); }
+.slide[data-sec="griffin"]{ --sec: var(--purple);  --sec-t: var(--purple-t); }
+.slide[data-sec="tavus"]  { --sec: var(--magenta); --sec-t: var(--magenta-t); }
+.slide[data-sec="future"] { --sec: var(--green);   --sec-t: var(--green-t); }
+.slide[data-sec="refs"]   { --sec: var(--teal);    --sec-t: var(--teal-t); }
+
+/* --- base --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; background: #0E0C0D; overflow: hidden; }
+body { font-family: var(--font); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+.slide {
+  position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: var(--fs-body); line-height: 1.25;
+  font-stretch: 100%; font-weight: 400;
+}
+.slide.light { background: var(--paper); color: var(--ink);
+  --text: var(--ink); --text-2: var(--ink-2); --text-3: var(--ink-3); --line: var(--paper-line); --surface: var(--paper-2);
+  --sec-t: var(--sec); }
+
+/* --- typographic roles --- */
+.t-hero  { font-size: var(--fs-hero); font-weight: 900; font-style: italic; font-stretch: 125%; line-height: .92; letter-spacing: -.01em; }
+.t-h1    { font-size: var(--fs-h1);  font-weight: 850; font-style: italic; font-stretch: 118%; line-height: 1.02; letter-spacing: -.005em; }
+.t-h2    { font-size: var(--fs-h2);  font-weight: 750; font-stretch: 108%; line-height: 1.1; }
+.t-body  { font-size: var(--fs-body); font-weight: 400; line-height: 1.3; }
+.t-label { font-size: var(--fs-label); font-weight: 600; letter-spacing: .02em; line-height: 1.2; }
+.t-caps  { font-size: var(--fs-label); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-stretch: 112%; }
+.t-num   { font-family: var(--mono); font-size: var(--fs-num); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.t-mono  { font-family: var(--mono); font-weight: 500; }
+.dim  { color: var(--text-2); }
+.faint{ color: var(--text-3); }
+.sec  { color: var(--sec-t); }
+.c-red{color:var(--red-t)} .c-orange{color:var(--orange-t)} .c-magenta{color:var(--magenta-t)}
+.c-purple{color:var(--purple-t)} .c-green{color:var(--green-t)} .c-blue{color:var(--blue-t)}
+.c-sky{color:var(--sky-t)} .c-teal{color:var(--teal-t)}
+.light .c-red{color:#C81E24} .light .c-orange{color:#C4421F} .light .c-magenta{color:#93357E}
+.light .c-purple{color:#7B2C79} .light .c-green{color:#2F7E33} .light .c-blue{color:#2F4E96}
+.light .c-sky{color:#2C6AA8} .light .c-teal{color:#1C6E62}

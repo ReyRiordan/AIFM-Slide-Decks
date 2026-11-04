@@ -1,0 +1,880 @@
+/* ==========================================================================
+   01 · Price — Airbnb Smart Pricing   (budget 400 s total)
+   Flow: problem 60 → tree 30 → boost 35 → gbt-use 35 → loss 120 → results 75 → takeaways 45
+   ========================================================================== */
+(function () {
+  'use strict';
+  var C = Kit.color;
+
+  /* ======================================================================
+     LOSS — the core teaching slide (120 s)
+     Steps: 0 one booked night · 1 the zone · 2 the valley · 3 suggestion (draggable)
+            4 flip to not-booked · 5 why both sides · 6 THE equation
+     ====================================================================== */
+  var P0 = 70, P1 = 130;                 // price axis range ($)
+  var SW = 1040, SH = 560;               // svg size (px == user units)
+  var X0 = 70, X1 = 1000, BASE = 400, TOP = 70, LMAX = 30;
+  function X(p) { return X0 + (p - P0) * (X1 - X0) / (P1 - P0); }
+  function Y(l) { return BASE - l * (BASE - TOP) / LMAX; }
+  function lossAt(f, L, U) { return Math.max(0, L - f) + Math.max(0, f - U); }
+
+  var LOSS = {
+    id: 'loss',
+    title: 'The loss function',
+    heading: 'The loss function',
+    budgetSec: 120,
+    html: function () {
+      var ticks = '';
+      for (var p = P0; p <= P1; p += 10) {
+        ticks += '<g class="tick"><line x1="' + X(p) + '" y1="' + BASE + '" x2="' + X(p) + '" y2="' + (BASE + 12) + '" stroke="#6E6560" stroke-width="3"/>' +
+          '<text x="' + X(p) + '" y="' + (BASE + 50) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="500" fill="' + (p === 100 ? C.text : C.text3) + '">$' + p + '</text></g>';
+      }
+      return '' +
+      '<svg class="lv" width="' + SW + '" height="' + SH + '" viewBox="0 0 ' + SW + ' ' + SH + '" style="position:absolute;left:96px;top:282px;overflow:visible">' +
+        '<defs>' +
+          '<filter id="lvGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+          '<marker id="lvArrR" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="' + C.skyT + '"/></marker>' +
+          '<marker id="lvArrL" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="' + C.redT + '"/></marker>' +
+        '</defs>' +
+        // y-axis label
+        '<text class="ylab" x="' + (X0 - 30) + '" y="' + (TOP - 34) + '" font-family="Archivo" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.text3 + '">PENALTY ↑</text>' +
+        '<line class="yax" x1="' + (X0 - 30) + '" y1="' + (TOP - 14) + '" x2="' + (X0 - 30) + '" y2="' + BASE + '" stroke="#4A4345" stroke-width="3"/>' +
+        // zone band + ghost
+        '<rect class="band" y="' + (TOP - 14) + '" height="' + (BASE - TOP + 14) + '" rx="10" fill="' + C.teal + '" fill-opacity=".22"/>' +
+        '<text class="bandlab" y="' + (TOP + 30) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.tealT + '">no penalty</text>' +
+        // valley
+        '<g class="valley" filter="url(#lvGlow)">' +
+          '<path class="wl" fill="none" stroke="' + C.skyT + '" stroke-width="9" stroke-linecap="round"/>' +
+          '<path class="fl" fill="none" stroke="' + C.tealT + '" stroke-width="9" stroke-linecap="round"/>' +
+          '<path class="wr" fill="none" stroke="' + C.redT + '" stroke-width="9" stroke-linecap="round"/>' +
+        '</g>' +
+        '<text class="lab-lo" x="' + X(71.5) + '" y="' + (BASE - 22) + '" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.skyT + '">too low</text>' +
+        '<text class="lab-hi" x="' + X(128.5) + '" y="' + (BASE - 22) + '" text-anchor="end" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.redT + '">too high</text>' +
+        // x axis
+        '<line class="xax" x1="' + (X0 - 30) + '" y1="' + BASE + '" x2="' + (X1 + 24) + '" y2="' + BASE + '" stroke="#6E6560" stroke-width="3"/>' +
+        ticks +
+        // what happened (event chip on the axis at $100)
+        '<g class="evt">' +
+          '<rect x="' + (X(100) - 190) + '" y="' + (BASE + 70) + '" width="380" height="64" rx="32" fill="#353032"/>' +
+          '<text class="evt-a" x="' + X(100) + '" y="' + (BASE + 112) + '" text-anchor="middle" font-family="Archivo" font-size="30" font-weight="700" fill="' + C.text + '">✓ Booked at $100</text>' +
+          '<text class="evt-b" x="' + X(100) + '" y="' + (BASE + 112) + '" text-anchor="middle" font-family="Archivo" font-size="30" font-weight="700" fill="' + C.text + '">✕ Not booked at $100</text>' +
+        '</g>' +
+        // both-sides overlay (step 5)
+        '<g class="both">' +
+          '<line class="arr-up" x1="' + X(73) + '" y1="' + (TOP + 120) + '" x2="' + X(96.5) + '" y2="' + (TOP + 120) + '" stroke="' + C.skyT + '" stroke-width="10" stroke-linecap="round" marker-end="url(#lvArrR)"/>' +
+          '<text class="arr-up-t" x="' + X(73) + '" y="' + (TOP + 172) + '" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.skyT + '">booked nights</text>' +
+          '<text class="arr-up-t" x="' + X(73) + '" y="' + (TOP + 206) + '" font-family="Archivo" font-size="28" font-weight="500" fill="' + C.text2 + '">push prices up</text>' +
+          '<line class="arr-dn" x1="' + X(127) + '" y1="' + (TOP + 120) + '" x2="' + X(103.5) + '" y2="' + (TOP + 120) + '" stroke="' + C.redT + '" stroke-width="10" stroke-linecap="round" marker-end="url(#lvArrL)"/>' +
+          '<text class="arr-dn-t" x="' + X(127) + '" y="' + (TOP + 172) + '" text-anchor="end" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.redT + '">unbooked nights</text>' +
+          '<text class="arr-dn-t" x="' + X(127) + '" y="' + (TOP + 206) + '" text-anchor="end" font-family="Archivo" font-size="28" font-weight="500" fill="' + C.text2 + '">push prices down</text>' +
+        '</g>' +
+        // suggestion (draggable)
+        '<g class="sugg" style="cursor:ew-resize">' +
+          '<rect class="hit" y="' + (TOP - 20) + '" width="80" height="' + (BASE - TOP + 60) + '" fill="transparent"/>' +
+          '<line class="s-line" y1="' + (TOP - 14) + '" y2="' + BASE + '" stroke="' + C.text3 + '" stroke-width="2" stroke-dasharray="6 8"/>' +
+          '<line class="s-bar" stroke-width="14" stroke-linecap="round"/>' +
+          '<circle class="s-dot" r="13" fill="' + C.orange + '" stroke="#1E1B1C" stroke-width="4"/>' +
+          '<circle class="s-knob" cy="' + BASE + '" r="22" fill="' + C.orange + '" stroke="' + C.text + '" stroke-width="4"/>' +
+          '<text class="s-val" y="' + (TOP - 26) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="30" font-weight="700" fill="' + C.orangeT + '"></text>' +
+        '</g>' +
+        '<text class="draghint" y="' + (BASE - 40) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">◂ drag ▸</text>' +
+      '</svg>' +
+
+      // right column
+      '<div class="rc" style="position:absolute;left:1214px;top:268px;width:586px;display:flex;flex-direction:column;gap:22px">' +
+        '<div class="card c1" style="position:relative">' +
+          '<div class="t-caps faint">What happened</div>' +
+          '<div style="position:relative;height:64px;margin-top:10px">' +
+            '<div class="t-h2 c1a" style="position:absolute;left:0;top:0;white-space:nowrap">This night <span class="c-teal">booked</span></div>' +
+            '<div class="t-h2 c1b" style="position:absolute;left:0;top:0;white-space:nowrap">This night <span class="c-red">didn’t</span></div>' +
+          '</div>' +
+          '<div class="t-label dim" style="margin-top:6px">at a price of <span class="t-mono" style="color:var(--text)">$100</span></div>' +
+        '</div>' +
+        '<div class="card c2" style="position:relative">' +
+          '<div class="t-caps faint">Prices the night supports</div>' +
+          '<div style="position:relative;height:64px;margin-top:10px">' +
+            '<div class="t-h2 t-mono c2a c-teal" style="position:absolute;left:0;top:0;white-space:nowrap">$100 – $110</div>' +
+            '<div class="t-h2 t-mono c2b c-teal" style="position:absolute;left:0;top:0;white-space:nowrap">$90 – $100</div>' +
+          '</div>' +
+          '<div style="position:relative;height:34px;margin-top:6px">' +
+            '<div class="t-label dim c2a" style="position:absolute;left:0;top:0;white-space:nowrap">at least $100, maybe a little more</div>' +
+            '<div class="t-label dim c2b" style="position:absolute;left:0;top:0;white-space:nowrap">below $100, which was too much</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card c3">' +
+          '<div style="display:flex;gap:28px">' +
+            '<div style="width:300px"><div class="t-caps faint">Model says</div><div class="t-num r-sugg" style="color:var(--orange-t);font-size:112px;margin-top:8px">$95</div></div>' +
+            '<div><div class="t-caps faint">Penalty</div><div class="t-num r-pen" style="font-size:112px;margin-top:8px">5</div></div>' +
+          '</div>' +
+          '<div class="t-label r-why" style="margin-top:14px;min-height:34px;white-space:nowrap"></div>' +
+        '</div>' +
+      '</div>' +
+
+      // one-sided caution (step 5) — sits under the chart
+      '<div class="t-label onlyone" style="position:absolute;left:120px;top:858px;width:1060px;color:var(--text-2)">' +
+        'Use only unbooked nights, and the lowest-penalty price is <b class="c-orange">$0</b>. You need both.' +
+      '</div>' +
+
+      // THE equation (step 6) — replaces the right column as a stacked definition
+      '<div class="card eqcard" style="position:absolute;left:1214px;top:268px;width:586px;display:flex;flex-direction:column;gap:18px;padding:36px 32px">' +
+        '<div class="t-caps faint">The loss, in symbols</div>' +
+        '<div class="eq">penalty =</div>' +
+        '<div class="eqt"><div class="eq" style="color:var(--sky-t)">&nbsp;&nbsp;max(0, L − price)</div><div class="t-label c-sky" style="margin:6px 0 0 64px">how far below the zone</div></div>' +
+        '<div class="eqt"><div class="eq" style="color:var(--red-t)">+ max(0, price − U)</div><div class="t-label c-red" style="margin:6px 0 0 64px">how far above the zone</div></div>' +
+        '<div class="t-label dim eqkey" style="margin-top:8px"><span class="t-mono c-teal">[L, U]</span> = the no-penalty zone</div>' +
+      '</div>' +
+
+      // keep this line short: the right-hand card reaches down to y≈1040, so a
+      // longer footer would run underneath it
+      Kit.src('Interval loss: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Zone widths (×0.9, ×1.1) are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var svg = q('svg.lv');
+      var st = { f: 85, t: 0, fl: 0, g: 0, s: 0 };   // f = suggestion $, t = booked→not booked, fl/g = floor & walls grow, s = suggestion visible
+      var wl = q('.wl'), fl = q('.fl'), wr = q('.wr'), band = q('.band'), bandlab = q('.bandlab');
+      var sLine = q('.s-line'), sBar = q('.s-bar'), sDot = q('.s-dot'), sKnob = q('.s-knob'), sVal = q('.s-val'), hit = q('.hit');
+      var rSugg = q('.r-sugg'), rPen = q('.r-pen'), rWhy = q('.r-why'), hint = q('.draghint');
+
+      function zone() { return [100 - 10 * st.t, 110 - 10 * st.t]; }
+      function render() {
+        var z = zone(), L = z[0], U = z[1];
+        // band
+        band.setAttribute('x', X(L)); band.setAttribute('width', Math.max(0, X(U) - X(L)));
+        bandlab.setAttribute('x', (X(L) + X(U)) / 2);
+        // valley: floor grows from the zone centre, walls grow outward
+        var mid = (L + U) / 2, h = (U - L) / 2 * st.fl;
+        fl.setAttribute('d', 'M' + X(mid - h) + ',' + BASE + ' L' + X(mid + h) + ',' + BASE);
+        var pl = L + (P0 - L) * st.g, pr = U + (P1 - U) * st.g;
+        wl.setAttribute('d', 'M' + X(L) + ',' + BASE + ' L' + X(pl) + ',' + Y(lossAt(pl, L, U)));
+        wr.setAttribute('d', 'M' + X(U) + ',' + BASE + ' L' + X(pr) + ',' + Y(lossAt(pr, L, U)));
+        wl.style.opacity = st.g > 0 ? 1 : 0; wr.style.opacity = st.g > 0 ? 1 : 0; fl.style.opacity = st.fl > 0 ? 1 : 0;
+        // suggestion
+        var f = st.f, ls = lossAt(f, L, U), xf = X(f);
+        sLine.setAttribute('x1', xf); sLine.setAttribute('x2', xf);
+        sBar.setAttribute('x1', xf); sBar.setAttribute('x2', xf); sBar.setAttribute('y1', BASE); sBar.setAttribute('y2', Y(ls));
+        var col = f < L ? C.skyT : f > U ? C.redT : C.tealT;
+        sBar.setAttribute('stroke', col); sBar.style.opacity = ls > .05 ? 1 : 0;
+        sDot.setAttribute('cx', xf); sDot.setAttribute('cy', Y(ls));
+        sKnob.setAttribute('cx', xf); sVal.setAttribute('x', xf); sVal.textContent = '$' + Math.round(f);
+        hit.setAttribute('x', xf - 40);
+        hint.setAttribute('x', xf + 40);
+        // readouts
+        var pen = Math.round(ls);
+        rSugg.textContent = '$' + Math.round(f);
+        rPen.textContent = pen; rPen.style.color = pen === 0 ? C.tealT : col;
+        var why;
+        if (pen === 0) why = '<span class="c-teal">Inside the zone:</span> no penalty';
+        else if (f < L) why = st.t < .5 ? '<span class="c-sky">Too low:</span> a guest already paid $100' : '<span class="c-sky">Too low:</span> $' + pen + ' under the zone';
+        else why = st.t >= .5 ? '<span class="c-red">Too high:</span> $100 already failed' : '<span class="c-red">Too high:</span> $' + pen + ' over the zone';
+        rWhy.innerHTML = why;
+      }
+      var R = { onUpdate: render };
+      render();
+
+      // ---- drag (works whenever the suggestion is visible) ----
+      var detach = Kit.dragX(svg, q('.sugg'), function (x) {
+        if (st.s < .5) return;
+        var p = P0 + (x - X0) * (P1 - P0) / (X1 - X0);
+        st.f = Math.max(72, Math.min(128, Math.round(p)));
+        render();
+        gsap.to(hint, { autoAlpha: 0, duration: .3 });
+      });
+      ctx.cleanup(detach);
+
+      // ---- initial hidden states ----
+      // elements revealed by to() tweens start hidden; elements revealed by Kit.show/fromTo hide themselves
+      gsap.set([hint, q('.both'), q('.lab-lo'), q('.lab-hi'), band, q('.evt-b'), q('.c1b'), qa('.c2b')], { autoAlpha: 0 });
+
+      // ---- STEP 0: one booked night ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.draw(tl, [q('.xax'), q('.yax')], { at: .2, duration: .8 });
+      Kit.fade(tl, [qa('.tick'), q('.ylab')], { at: .5, stagger: .03 });
+      tl.from(q('.evt'), { y: 40, autoAlpha: 0, duration: .7, ease: Kit.ease.back }, .9);
+      Kit.rise(tl, q('.c1'), { at: 1.0 });
+      ctx.pause();
+
+      // ---- STEP 1: the zone ----
+      tl.set([band, bandlab], { autoAlpha: 1 });
+      tl.fromTo(band, { attr: { width: 0 } }, { attr: { width: X(110) - X(100) }, duration: .8, ease: Kit.ease.out });
+      Kit.show(tl, bandlab, { at: '-=.3', y: 10, duration: .4 });
+      Kit.show(tl, q('.c2'), { at: '<' });
+      ctx.pause();
+
+      // ---- STEP 2: the valley ----
+      tl.to(st, Object.assign({ fl: 1, duration: .6, ease: 'power2.out' }, R));
+      tl.to(st, Object.assign({ g: 1, duration: 1.0, ease: 'power2.inOut' }, R));
+      tl.to([q('.lab-lo'), q('.lab-hi')], { autoAlpha: 1, duration: .5, stagger: .15 }, '-=.4');
+      ctx.pause();
+
+      // ---- STEP 3: a suggestion you can drag ----
+      tl.to(st, Object.assign({ s: 1, duration: .01 }, R));
+      tl.fromTo(q('.sugg'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .4 });
+      Kit.show(tl, q('.c3'), { at: '<' });
+      tl.to(st, Object.assign({ f: 121, duration: 1.6, ease: 'power2.inOut' }, R), '+=.2');
+      tl.to(st, Object.assign({ f: 95, duration: 1.3, ease: 'power2.inOut' }, R));
+      tl.fromTo(hint, { autoAlpha: 0 }, { autoAlpha: 1, duration: .4 });
+      ctx.pause();
+
+      // ---- STEP 4: flip — same night, not booked ----
+      tl.to(hint, { autoAlpha: 0, duration: .2 });
+      tl.to(st, Object.assign({ f: 105, duration: .8, ease: 'power2.inOut' }, R));
+      tl.to([q('.evt-a'), q('.c1a')], { autoAlpha: 0, duration: .25 }, '+=.3');
+      tl.to([q('.evt-b'), q('.c1b')], { autoAlpha: 1, duration: .35 });
+      tl.to(st, Object.assign({ t: 1, duration: 1.1, ease: 'power3.inOut' }, R), '-=.1');
+      tl.to(qa('.c2a'), { autoAlpha: 0, duration: .25 }, '<');
+      tl.to(qa('.c2b'), { autoAlpha: 1, duration: .35 }, '<+.3');
+      ctx.pause();
+
+      // ---- STEP 5: why both sides ----
+      tl.to([q('.valley'), q('.band'), q('.bandlab'), q('.sugg'), q('.lab-lo'), q('.lab-hi')], { opacity: .22, duration: .4 });
+      tl.to(q('.both'), { autoAlpha: 1, duration: .01 });
+      Kit.draw(tl, [q('.arr-up'), q('.arr-dn')], { duration: .7, stagger: .25 });
+      tl.from(qa('.arr-up-t, .arr-dn-t'), { autoAlpha: 0, y: 10, duration: .4, stagger: .08 }, '-=.3');
+      Kit.show(tl, q('.onlyone'));
+      ctx.pause();
+
+      // ---- STEP 6: THE equation ----
+      tl.to([q('.both'), q('.onlyone')], { autoAlpha: 0, duration: .35 });
+      tl.to([q('.valley'), q('.band'), q('.bandlab'), q('.sugg'), q('.lab-lo'), q('.lab-hi')], { opacity: 1, duration: .4 }, '<');
+      tl.to([q('.c1'), q('.c2'), q('.c3')], { autoAlpha: 0, x: 40, duration: .35, stagger: .06, ease: 'power2.in' }, '<');
+      Kit.show(tl, q('.eqcard'), { y: 0, duration: .01 });
+      Kit.show(tl, qa('.eqcard > *'), { y: 26, stagger: .14, at: '<' });
+      tl.fromTo(q('.wl'), { attr: { 'stroke-width': 9 } }, { attr: { 'stroke-width': 14 }, duration: .3, yoyo: true, repeat: 1 }, '-=.4');
+      tl.fromTo(q('.wr'), { attr: { 'stroke-width': 9 } }, { attr: { 'stroke-width': 14 }, duration: .3, yoyo: true, repeat: 1 }, '>');
+    },
+
+    notes:
+      'Airbnb never sees the right price for a night. It only ever sees what happened. ' +
+      'Take one night: it booked at a hundred dollars.' +
+      '[click] What does that tell us? The right price was at least a hundred, because a guest paid it. Maybe a bit more. ' +
+      'So instead of one correct answer, we get a zone: about a hundred to a hundred and ten.' +
+      '[click] Now we can grade any suggestion. Inside the zone: no penalty. Outside, the penalty grows with distance. ' +
+      'Too low on the left, too high on the right. A valley with a flat floor, flat because the data honestly can’t tell those prices apart.' +
+      '[click] Here is the model’s suggestion. Watch the penalty follow it. At ninety-five, the penalty is five: too low, a guest already paid a hundred. ' +
+      '(Optional: drag it into the zone and the penalty drops to zero.)' +
+      '[click] Now flip the story. Same night, same hundred dollars, but nobody booked. The zone slides down, to ninety through a hundred. ' +
+      'And a suggestion of one-oh-five is now penalized, because a hundred already failed.' +
+      '[click] Why do we need both kinds of nights? Booked nights push prices up. Unbooked nights push them down. ' +
+      'Train on unbooked nights alone and the safest price is zero. Across millions of nights, the two pressures balance.' +
+      '[click] And this is the only equation in the talk. It is just the picture in symbols: how far below the zone, plus how far above it. ' +
+      'At most one of those is ever non-zero. That is Airbnb’s custom loss. The zone widths I used are illustrative; Airbnb never published theirs.'
+  };
+
+  /* ======================================================================
+     PROBLEM — the right price is never revealed (60 s)
+     Steps: 0 the question · 1 three walls · 2 prices back · 3 one bit back
+     ====================================================================== */
+  var NIGHTS = [
+    { d: 'Fri 12', p: '$120', ok: true },
+    { d: 'Sat 13', p: '$140', ok: false },
+    { d: 'Sun 14', p: '$95', ok: true },
+    { d: 'Fri 19', p: '$160', ok: false },
+    { d: 'Sat 20', p: '$110', ok: true }
+  ];
+  var WALLS = ['Every listing is one of a kind', 'Demand changes every day', 'The host sets the final price'];
+
+  var PROBLEM = {
+    id: 'problem',
+    title: 'The pricing problem',
+    heading: 'The pricing problem',
+    budgetSec: 60,
+    html: function () {
+      var tiles = NIGHTS.map(function (n, i) {
+        return '<div class="nt" style="left:' + (120 + i * 184) + 'px">' +
+          '<div class="nt-d t-caps">' + n.d + '</div>' +
+          '<div class="nt-p t-mono">' + n.p + '</div>' +
+          '<div class="nt-g" style="color:' + (n.ok ? 'var(--teal-t)' : 'var(--red-t)') + '">' + (n.ok ? '✓' : '✕') + '</div>' +
+        '</div>';
+      }).join('');
+      var walls = WALLS.map(function (t, i) {
+        return '<div class="wall card" style="top:' + (340 + i * 150) + 'px"><i></i><span class="t-body">' + t + '</span></div>';
+      }).join('');
+      return '' +
+        '<div class="card pcard" style="position:absolute;left:120px;top:290px;width:620px;height:240px">' +
+          '<div class="t-caps faint">One listing, one night</div>' +
+          '<div class="t-num pq" style="margin-top:10px">' +
+            '<span class="pq-d">$</span><span style="display:inline-block;width:40px"></span>' +
+            '<span class="pq-q" style="color:var(--orange)">?</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="t-caps faint striplab" style="position:absolute;left:120px;top:580px">What Airbnb gets back</div>' +
+        tiles +
+        '<div class="t-label ncap" style="position:absolute;left:120px;top:852px;width:920px;color:var(--text-2)">' +
+          'Booked or empty. Never the right price.</div>' +
+        '<div class="t-caps faint walllab" style="position:absolute;left:1120px;top:290px">Why hotel pricing fails here</div>' +
+        walls +
+        Kit.src('Why textbook revenue management breaks down here: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Dates and prices shown are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+
+      // ---- entrance: the question ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.rise(tl, q('.pcard'), { at: .25 });
+      tl.from(q('.pq-d'), { scale: .9, autoAlpha: 0, duration: .5, ease: Kit.ease.out, transformOrigin: 'left bottom' }, .55);
+      tl.from(q('.pq-q'), { scale: .9, autoAlpha: 0, duration: .55, ease: Kit.ease.back, transformOrigin: 'left bottom' }, .95);
+      ctx.pause();
+
+      // ---- click 1: three walls arrive one at a time ----
+      Kit.fade(tl, q('.walllab'), { duration: .4 });
+      Kit.slideIn(tl, qa('.wall'), { x: 60, stagger: .12, duration: .6, at: '-=.2' });
+      ctx.pause();
+
+      // ---- click 2: what comes back — the prices only ----
+      Kit.fade(tl, q('.striplab'));
+      Kit.rise(tl, qa('.nt'), { stagger: .07, duration: .55, at: '-=.25' });
+      ctx.pause();
+
+      // ---- click 3: …and one bit, landing after the price ----
+      tl.from(qa('.nt-g'), { scale: .3, autoAlpha: 0, duration: .5, ease: Kit.ease.back, stagger: .08, transformOrigin: 'center center' });
+      Kit.fade(tl, q('.ncap'), { at: '-=.2' });
+    },
+
+    notes:
+      'Start with the simplest question in the talk. A host has a room, and it is free tonight. What should it cost?' +
+      '[click] A hotel answers that with a demand curve: two hundred near-identical rooms, and years of data on how ' +
+      'bookings move with price. Airbnb has three problems with that. Every listing is one of a kind. Demand changes ' +
+      'daily, and some events have no history at all. And Airbnb can only suggest, because the host sets the final price. ' +
+      'Airbnb did try the textbook route, and its own A/B tests showed it did not raise host revenue.' +
+      '[click] So what does Airbnb get back? For every night, the price the host chose.' +
+      '[click] And one bit. Booked, or empty. Nobody ever says what that night was really worth. ' +
+      'Everything in the next five minutes exists because that number is missing.'
+  };
+
+  /* ======================================================================
+     TREE — one decision tree, and one night routed through it (30 s)
+     Steps: 0 the tree · 1 route one night · 2 one tree is rough
+     ====================================================================== */
+  var TR = {
+    W: 1120, H: 580,
+    rows: [40, 206, 372, 538],
+    nodeH: 72
+  };
+
+  var TREE = {
+    id: 'tree',
+    title: 'Decision trees',
+    heading: 'Decision trees',
+    budgetSec: 30,
+    html: function () {
+      var R = TR.rows, h = TR.nodeH;
+      function box(cls, cx, cy, w, label, leaf) {
+        return '<g class="' + cls + '">' +
+          '<rect class="bx" x="' + (cx - w / 2) + '" y="' + (cy - h / 2) + '" width="' + w + '" height="' + h + '" rx="16" ' +
+            'fill="' + C.surface + '" stroke="' + (leaf ? C.tealT : C.line) + '" stroke-width="2.5"/>' +
+          '<text x="' + cx + '" y="' + (cy + (leaf ? 14 : 11)) + '" text-anchor="middle" ' +
+            'font-family="' + (leaf ? 'JetBrains Mono' : 'Archivo') + '" font-size="' + (leaf ? 38 : 30) + '" ' +
+            'font-weight="700" fill="' + (leaf ? C.tealT : C.text) + '">' + label + '</text>' +
+        '</g>';
+      }
+      function edge(x1, y1, x2, y2) {
+        return '<line class="ed" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + C.line + '" stroke-width="3"/>';
+      }
+      function elab(x, y, t, anchor) {
+        return '<text class="elab" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-family="Archivo" ' +
+          'font-size="28" font-weight="600" fill="' + C.text3 + '">' + t + '</text>';
+      }
+      return '' +
+        '<div class="t-caps faint tlab" style="position:absolute;left:120px;top:280px">A short list of yes-or-no questions</div>' +
+        '<svg class="tvsvg" width="' + TR.W + '" height="' + TR.H + '" viewBox="0 0 ' + TR.W + ' ' + TR.H + '" ' +
+          'style="position:absolute;left:120px;top:340px;overflow:visible">' +
+          edge(430, R[0] + 36, 120, R[1] - 36) + edge(430, R[0] + 36, 720, R[1] - 36) +
+          edge(720, R[1] + 36, 490, R[2] - 36) + edge(720, R[1] + 36, 880, R[2] - 36) +
+          edge(880, R[2] + 36, 740, R[3] - 36) + edge(880, R[2] + 36, 1010, R[3] - 36) +
+          elab(268, 128, 'no', 'end') + elab(600, 112, 'yes', 'start') +
+          elab(598, 294, 'no', 'end') + elab(820, 276, 'yes', 'start') +
+          // every node reads the same way: "no" goes left, "yes" goes right
+          elab(796, 442, 'no', 'end') + elab(952, 460, 'yes', 'start') +
+          '<path class="tr tr1" d="M430,' + (R[0] + 36) + ' L720,' + (R[1] - 36) + '" fill="none" stroke="' + C.orange + '" stroke-width="7" stroke-linecap="round"/>' +
+          '<path class="tr tr2" d="M720,' + (R[1] + 36) + ' L880,' + (R[2] - 36) + '" fill="none" stroke="' + C.orange + '" stroke-width="7" stroke-linecap="round"/>' +
+          '<path class="tr tr3" d="M880,' + (R[2] + 36) + ' L1010,' + (R[3] - 36) + '" fill="none" stroke="' + C.orange + '" stroke-width="7" stroke-linecap="round"/>' +
+          box('q0', 430, R[0], 360, 'Within 7 days?') +
+          box('lf35', 120, R[1], 180, '35%', 1) +
+          box('q1', 720, R[1], 260, 'Saturday?') +
+          box('lf55', 490, R[2], 180, '55%', 1) +
+          box('q2', 880, R[2], 440, 'Price above the median?') +
+          box('lf80', 740, R[3], 180, '80%', 1) +
+          box('lf50', 1010, R[3], 180, '50%', 1) +
+        '</svg>' +
+        '<div class="t-label dim tleg" style="position:absolute;left:120px;top:922px">Each leaf gives a booking chance.</div>' +
+        '<div class="rc" style="position:absolute;left:1300px;top:290px;width:500px;display:flex;flex-direction:column;gap:26px">' +
+          '<div class="card exn">' +
+            '<div class="t-caps faint">One night</div>' +
+            '<div class="t-h2" style="margin-top:8px">Saturday</div>' +
+            '<div class="t-label dim" style="margin-top:8px">in 4 days &middot; $180 &middot; area median $150</div>' +
+          '</div>' +
+          '<div class="card ans">' +
+            '<div class="t-caps faint">This tree says</div>' +
+            '<div class="t-num av c-teal" style="font-size:112px;margin-top:10px">&mdash;</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="t-label dim rough" style="position:absolute;left:1300px;top:860px;width:500px">One tree is a rough guess.</div>' +
+        Kit.src('Airbnb scores booking probability with gradient boosting machines (Ye et al., <em>KDD 2018</em>, via Colyer, 2018); tree structure from Google’s Decision Forests course. The questions and leaf values here are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var segs = [q('.tr1'), q('.tr2'), q('.tr3')];
+      var lens = segs.map(function (p) { return p.getTotalLength(); });
+      var nodes = [q('.q0'), q('.q1'), q('.q2'), q('.lf50')];
+      var av = q('.av');
+      var st = { p: 0 };                       // 0 → 3: how far the night has travelled
+
+      function render() {
+        for (var i = 0; i < segs.length; i++) {
+          var f = Math.max(0, Math.min(1, st.p - i));
+          segs[i].style.strokeDasharray = lens[i];
+          segs[i].style.strokeDashoffset = lens[i] * (1 - f);
+          segs[i].style.opacity = f > 0 ? 1 : 0;
+        }
+        for (var k = 0; k < nodes.length; k++) {
+          var on = st.p >= k - .001 && st.p > 0;
+          var r = nodes[k].querySelector('.bx');
+          r.setAttribute('stroke', on ? C.orange : (k === 3 ? C.tealT : C.line));
+          r.setAttribute('stroke-width', on ? 5 : 2.5);
+        }
+        av.textContent = st.p >= 2.99 ? '50%' : '—';
+      }
+      render();
+
+      gsap.set([q('.ans'), q('.rough')], { autoAlpha: 0 });
+
+      // ---- entrance: the tree itself ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.fade(tl, q('.tlab'), { at: .25, duration: .4 });
+      tl.from(q('.q0'), { autoAlpha: 0, y: -16, duration: .4, ease: Kit.ease.out }, .35);
+      Kit.draw(tl, qa('.ed'), { duration: .5, stagger: .07, at: .6 });
+      tl.from(qa('.elab'), { autoAlpha: 0, duration: .3, stagger: .05 }, '-=.35');
+      tl.from([q('.lf35'), q('.q1'), q('.lf55'), q('.q2'), q('.lf80'), q('.lf50')],
+        { autoAlpha: 0, scale: .85, duration: .4, ease: Kit.ease.back, stagger: .07, transformOrigin: 'center center' }, '-=.3');
+      Kit.show(tl, q('.tleg'), { duration: .4, at: '-=.1' });
+      Kit.rise(tl, q('.exn'), { duration: .5, at: '-=.3' });
+      ctx.pause();
+
+      // ---- click 1: route one night, question by question ----
+      tl.to(st, { p: 1, duration: .5, ease: 'none', onUpdate: render });
+      tl.to(st, { p: 2, duration: .5, ease: 'none', onUpdate: render }, '+=.35');
+      tl.to(st, { p: 3, duration: .5, ease: 'none', onUpdate: render }, '+=.35');
+      Kit.show(tl, q('.ans'), { duration: .5, at: '-=.1' });
+      ctx.pause();
+
+      // ---- click 2: one tree is not enough ----
+      Kit.show(tl, q('.rough'), { duration: .5 });
+    },
+
+    notes:
+      'A decision tree is a short list of yes/no questions about the night. Every path ends in a leaf, and the ' +
+      'leaf holds the chance that night books. On the right is one night: a Saturday, four days out, priced ' +
+      'above the area median.' +
+      '[click] Walk it down the tree. Within seven days, yes. Saturday, yes. Above the median, yes. Fifty percent.' +
+      '[click] One tree is a rough guess. Airbnb uses hundreds of them.'
+  };
+
+  /* ======================================================================
+     BOOST — many small trees, each trained on what is still wrong (35 s)
+     Steps: 0 the gaps · 1 tree 1 · 2 tree 2 · 3 two hundred
+     ====================================================================== */
+  var BN = [
+    { lab: 'Night 1 · booked', target: 100, r: .66 },
+    { lab: 'Night 2 · empty',  target: 0,   r: .70 },
+    { lab: 'Night 3 · booked', target: 100, r: .62 },
+    { lab: 'Night 4 · booked', target: 100, r: .68 },
+    { lab: 'Night 5 · empty',  target: 0,   r: .64 }
+  ];
+  var BX0 = 300, BX1 = 1060, BROW = [60, 165, 270, 375, 480];
+  function BX(v) { return BX0 + v * (BX1 - BX0) / 100; }
+
+  var BOOST = {
+    id: 'boost',
+    title: 'Boosting',
+    heading: 'Boosting',
+    budgetSec: 35,
+    html: function () {
+      var rows = BN.map(function (n, i) {
+        var y = BROW[i], tx = BX(n.target);
+        return '<g class="br b' + i + '">' +
+          '<text x="0" y="' + (y + 24) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">' + n.lab + '</text>' +
+          '<line class="trk" x1="' + BX0 + '" y1="' + (y + 15) + '" x2="' + BX1 + '" y2="' + (y + 15) + '" stroke="' + C.line + '" stroke-width="2"/>' +
+          '<rect class="pb" x="' + BX0 + '" y="' + y + '" width="0" height="30" rx="8" fill="' + C.sky + '" fill-opacity=".9"/>' +
+          '<line class="tg" x1="' + tx + '" y1="' + (y - 10) + '" x2="' + tx + '" y2="' + (y + 40) + '" stroke="' + C.tealT + '" stroke-width="6" stroke-linecap="round"/>' +
+          '<line class="gp" y1="' + (y + 56) + '" y2="' + (y + 56) + '" stroke="' + C.orange + '" stroke-width="8" stroke-linecap="round"/>' +
+        '</g>';
+      }).join('');
+      return '' +
+        '<div class="t-caps faint blab" style="position:absolute;left:120px;top:280px">Chance this night books</div>' +
+        '<svg class="bosvg" width="1120" height="620" viewBox="0 0 1120 620" style="position:absolute;left:120px;top:330px;overflow:visible">' +
+          rows +
+          '<text class="ax a0" x="' + BX0 + '" y="600" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="500" fill="' + C.text3 + '">0%</text>' +
+          '<text class="ax a1" x="' + BX1 + '" y="600" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="500" fill="' + C.text3 + '">100%</text>' +
+        '</svg>' +
+        '<div class="rc" style="position:absolute;left:1300px;top:300px;width:500px;display:flex;flex-direction:column;gap:24px">' +
+          '<div class="card tctr">' +
+            '<div class="t-caps faint">Trees added</div>' +
+            '<div class="t-num cnt" style="font-size:112px;margin-top:8px">0</div>' +
+          '</div>' +
+          '<div class="legend">' +
+            '<div class="lg"><i style="background:' + C.sky + '"></i><span class="t-label dim">model&rsquo;s guess</span></div>' +
+            '<div class="lg"><i style="background:' + C.tealT + '"></i><span class="t-label dim">what happened</span></div>' +
+            '<div class="lg"><i style="background:' + C.orange + '"></i><span class="t-label dim">how wrong it still is</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="t-label dim bnote" style="position:absolute;left:1300px;top:780px;width:500px">Each new tree is trained on the orange gaps.</div>' +
+        '<div class="t-label dim bsum" style="position:absolute;left:1300px;top:870px;width:500px">Hundreds of rough guesses add up to an accurate one.</div>' +
+        Kit.src('Boosting procedure from Google’s Introduction to Gradient Boosted Decision Trees; Airbnb trains one booking model per market (Ye et al., <em>KDD 2018</em>, via Colyer, 2018). The five nights and the shrinking gaps here are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var pbs = BN.map(function (_, i) { return q('.b' + i + ' .pb'); });
+      var gps = BN.map(function (_, i) { return q('.b' + i + ' .gp'); });
+      var cnt = q('.cnt');
+      var st = { k: 0, in: 0 };                // k = trees added, in = entrance growth 0→1
+
+      function pred(i) {
+        var n = BN[i];
+        return n.target + (50 - n.target) * Math.pow(n.r, st.k);
+      }
+      function render() {
+        for (var i = 0; i < pbs.length; i++) {
+          var p = pred(i) * st.in, t = BN[i].target;
+          pbs[i].setAttribute('width', Math.max(0, BX(p) - BX0));
+          var a = Math.min(BX(p), BX(t)), b = Math.max(BX(p), BX(t));
+          gps[i].setAttribute('x1', a); gps[i].setAttribute('x2', b);
+          gps[i].style.opacity = (b - a) > 4 ? 1 : 0;
+        }
+        cnt.textContent = Math.round(st.k);
+      }
+      render();
+
+      gsap.set([q('.bnote'), q('.bsum')], { autoAlpha: 0 });
+
+      // ---- entrance: five nights, one flat guess, five gaps ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.fade(tl, [q('.blab')].concat(qa('.trk, .ax')), { at: .25, stagger: .04 });
+      tl.from(qa('.br text'), { autoAlpha: 0, x: -20, duration: .4, stagger: .06 }, .3);
+      Kit.draw(tl, qa('.tg'), { at: .55, duration: .4, stagger: .06 });
+      tl.to(st, { in: 1, duration: .7, ease: Kit.ease.out, onUpdate: render }, .8);
+      Kit.rise(tl, q('.tctr'), { at: .9 });
+      Kit.rise(tl, qa('.legend .lg'), { at: 1.0, stagger: .08, duration: .5 });
+      ctx.pause();
+
+      // ---- click 1: the first tree, fitted to the gaps ----
+      Kit.show(tl, q('.bnote'), { duration: .45 });
+      tl.to(st, { k: 1, duration: .9, ease: 'power2.inOut', onUpdate: render }, '-=.2');
+      ctx.pause();
+
+      // ---- click 2: the second tree ----
+      tl.to(st, { k: 2, duration: .9, ease: 'power2.inOut', onUpdate: render });
+      ctx.pause();
+
+      // ---- click 3: two hundred of them ----
+      tl.to(st, { k: 200, duration: 1.7, ease: 'power2.out', onUpdate: render });
+      Kit.show(tl, q('.bsum'), { duration: .45, at: '-=.6' });
+    },
+
+    notes:
+      'Boosted means many small trees added together. Five nights. Teal is what happened, booked or empty. ' +
+      'Blue is the model’s guess, the same for every night at the start. Orange is how wrong it still is.' +
+      '[click] The first tree is trained on those orange gaps, not on the outcomes. Add it, and every gap shrinks.' +
+      '[click] The second tree is trained on what is left.' +
+      '[click] Do that two hundred times. Every tree is a rough guess. Hundreds of them add up to an accurate one.'
+  };
+
+  /* ======================================================================
+     GBT-USE — what "gradient" means, and how Airbnb uses the model (35 s)
+     Steps: 0 the arrows · 1 a tree follows them · 2 one model per market
+            3 price as an input, feeding the price model
+     ====================================================================== */
+  var GA = [170, -78, 104, 195, -52];          // error direction and size, per night (illustrative)
+  var GZERO = 210, GCOL = [300, 410, 520, 630, 740];
+
+  var GBTUSE = {
+    id: 'gbt-use',
+    title: 'Gradient boosting at Airbnb',
+    heading: 'Gradient boosting at Airbnb',
+    budgetSec: 35,
+    html: function () {
+      var arrows = GA.map(function (v, i) {
+        var x = GCOL[i];
+        return '<g class="ar a' + i + '">' +
+          '<line class="sh" x1="' + x + '" y1="' + GZERO + '" x2="' + x + '" y2="' + GZERO + '" ' +
+            'stroke="' + (v > 0 ? C.skyT : C.redT) + '" stroke-width="13" stroke-linecap="butt"/>' +
+          '<path class="hd2" fill="' + (v > 0 ? C.skyT : C.redT) + '"/>' +
+        '</g>';
+      }).join('');
+      var nums = GA.map(function (v, i) {
+        return '<text class="gnum" x="' + GCOL[i] + '" y="' + (GZERO + 130) + '" text-anchor="middle" ' +
+          'font-family="JetBrains Mono" font-size="28" font-weight="500" fill="' + C.text3 + '">' + (i + 1) + '</text>';
+      }).join('');
+      return '' +
+        '<div class="t-caps faint glab" style="position:absolute;left:120px;top:280px">The error on each night</div>' +
+        '<svg class="gsvg" width="840" height="420" viewBox="0 0 840 420" style="position:absolute;left:120px;top:340px;overflow:visible">' +
+          '<line class="zl" x1="230" y1="' + GZERO + '" x2="800" y2="' + GZERO + '" stroke="' + C.line + '" stroke-width="3"/>' +
+          '<text class="zt" x="0" y="' + (GZERO + 10) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">0 = exactly right</text>' +
+          arrows + nums +
+          '<text class="gcap" x="0" y="' + (GZERO + 205) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">Each arrow is one night: which way, and how far</text>' +
+        '</svg>' +
+        '<div class="chip gfix" style="position:absolute;left:120px;top:800px"><span class="dot"></span>' +
+          '<span>A new tree is trained to follow the arrows</span></div>' +
+        '<div class="card gu gu1" style="position:absolute;left:960px;top:285px;width:840px;height:160px">' +
+          '<div class="t-caps faint">How many models</div>' +
+          '<div class="t-h2" style="margin-top:8px">One per market</div>' +
+        '</div>' +
+        '<div class="card gu gu2" style="position:absolute;left:960px;top:465px;width:840px;height:160px">' +
+          '<div class="t-caps faint">What it outputs</div>' +
+          '<div class="t-h2" style="margin-top:8px">The chance a night books</div>' +
+        '</div>' +
+        '<div class="card gu gu3" style="position:absolute;left:960px;top:645px;width:840px;height:230px">' +
+          '<div class="t-caps faint">Price is one of the inputs</div>' +
+          '<div class="wi w1 t-mono">$150 <span class="faint">&rarr;</span> <b class="c-sky">62%</b></div>' +
+          '<div class="wi w2 t-mono">$180 <span class="faint">&rarr;</span> <b class="c-sky">41%</b></div>' +
+        '</div>' +
+        '<div class="chip gnxt" style="position:absolute;left:960px;top:906px"><span class="dot"></span>' +
+          '<span>Booking chance &rarr; the price model</span></div>' +
+        Kit.src('Each tree is fitted to the gradient of the loss (Google, Gradient boosting; Friedman, 2001). One model per market and price as an input feature: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). The arrow sizes and the two what-if prices are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var shafts = GA.map(function (_, i) { return q('.a' + i + ' .sh'); });
+      var heads = GA.map(function (_, i) { return q('.a' + i + ' .hd2'); });
+      var st = { g: 0 };                        // g = arrow length as a fraction of the full error
+
+      var GHEAD = 26;                           // arrowhead length, constant so small errors stay legible
+      function render() {
+        for (var i = 0; i < GA.length; i++) {
+          var x = GCOL[i], d = GA[i] > 0 ? 1 : -1;
+          var len = Math.abs(GA[i] * st.g);
+          var on = len > 1;
+          var eff = Math.max(len, GHEAD);       // never shorter than its own head
+          var tip = GZERO - d * eff, base = GZERO - d * (eff - GHEAD);
+          shafts[i].setAttribute('y2', base);
+          shafts[i].style.opacity = on && eff > GHEAD + 2 ? 1 : 0;
+          heads[i].style.opacity = on ? 1 : 0;
+          heads[i].setAttribute('d',
+            'M' + (x - GHEAD * .72) + ',' + base + ' L' + x + ',' + tip + ' L' + (x + GHEAD * .72) + ',' + base + ' z');
+        }
+      }
+      render();
+
+      gsap.set([q('.gfix'), q('.gu1'), q('.gu2'), q('.gu3'), q('.gnxt')], { autoAlpha: 0 });
+
+      // ---- entrance: one arrow per night, different directions and lengths ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.fade(tl, q('.glab'), { at: .25, duration: .4 });
+      Kit.draw(tl, q('.zl'), { at: .3, duration: .6 });
+      Kit.fade(tl, q('.zt'), { at: .5, duration: .4 });
+      Kit.fade(tl, qa('.gnum'), { at: .55, duration: .35, stagger: .05 });
+      tl.to(st, { g: 1, duration: .8, ease: Kit.ease.out, onUpdate: render }, .65);
+      Kit.fade(tl, q('.gcap'), { at: 1.1, duration: .4 });
+      ctx.pause();
+
+      // ---- click 1: a tree that follows the arrows shortens them ----
+      Kit.show(tl, q('.gfix'), { duration: .45 });
+      tl.to(st, { g: .35, duration: .9, ease: 'power2.inOut', onUpdate: render }, '-=.15');
+      ctx.pause();
+
+      // ---- click 2: how Airbnb runs it ----
+      Kit.show(tl, q('.gu1'), { duration: .5 });
+      Kit.show(tl, q('.gu2'), { duration: .5, at: '-=.3' });
+      ctx.pause();
+
+      // ---- click 3: price goes in, booking chance comes out ----
+      Kit.show(tl, q('.gu3'), { duration: .5 });
+      Kit.show(tl, qa('.gu3 .wi'), { y: 16, stagger: .18, duration: .4, at: '-=.2' });
+      Kit.show(tl, q('.gnxt'), { duration: .45, at: '-=.1' });
+    },
+
+    notes:
+      'Why gradient? Each night’s error has a direction and a size. Up means guess higher, down means lower.' +
+      '[click] Each new tree is trained to follow those arrows, so every round moves downhill on the error.' +
+      '[click] Airbnb runs one model per market, because Tokyo and Tahoe behave differently. ' +
+      'It outputs the chance a night books.' +
+      '[click] Price is one of the inputs, so they can re-score the night at a hundred and fifty, or a ' +
+      'hundred and eighty. That chance is what the price model grades next.'
+  };
+
+  /* ======================================================================
+     RESULTS — prices down, revenue up (75 s)
+     Steps: 0 the two numbers · 1 the causal chain · 2 who measured it
+     ====================================================================== */
+  var RESULTS = {
+    id: 'results',
+    title: 'Results',
+    heading: 'Results',
+    budgetSec: 75,
+    html: function () {
+      function num(cls, left, caps, glyph, col, sub) {
+        return '<div class="card rcard ' + cls + '" style="left:' + left + 'px">' +
+          '<div class="t-caps faint">' + caps + '</div>' +
+          '<div class="row"><span class="gl" style="color:var(--' + col + ')">' + glyph + '</span>' +
+            '<span class="t-num val" style="color:var(--' + col + ')"></span></div>' +
+          '<div class="t-label sub">' + sub + '</div>' +
+        '</div>';
+      }
+      function chip(cls, left, w, t) {
+        return '<div class="chip lnk ' + cls + '" style="left:' + left + 'px;width:' + w + 'px"><span class="dot"></span><span>' + t + '</span></div>';
+      }
+      return '' +
+        num('rA', 120, 'Nightly price', '↓', 'sky-t', 'what adopters charged') +
+        num('rB', 980, 'Daily revenue', '↑', 'teal-t', 'what adopters earned') +
+        '<svg class="ressvg" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;pointer-events:none">' +
+          '<defs><marker id="resArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
+            '<path d="M0,0 L10,5 L0,10 z" fill="' + C.text3 + '"/></marker></defs>' +
+          '<line class="ca ca1" x1="600" y1="715" x2="660" y2="715" stroke="' + C.text3 + '" stroke-width="4"/>' +
+          '<line class="ca ca2" x1="1220" y1="715" x2="1280" y2="715" stroke="' + C.text3 + '" stroke-width="4"/>' +
+        '</svg>' +
+        chip('k1', 120, 460, 'lower price') +
+        chip('k2', 680, 520, 'more nights booked') +
+        chip('k3', 1300, 440, 'more money') +
+        '<div class="ev a">' +
+          '<span class="flag">Self-reported</span>' +
+          '<div class="t-label cl">Airbnb, 2015: priced within 5% of the tip → 4× more likely to book · a correlation</div>' +
+        '</div>' +
+        '<div class="ev b">' +
+          '<span class="flag">Independent</span>' +
+          '<div class="t-label cl">Marketing Science, 2021: adoption as a quasi-experiment</div>' +
+          '<span class="up">↑</span>' +
+        '</div>' +
+        Kit.src('Zhang, Mehta, Singh &amp; Srinivasan, <em>Marketing Science</em> (2021): among adopters, average nightly rate −5.7%, average daily revenue +8.6%. Airbnb’s 4× claim is company-reported and correlational.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(q('.ev .up'), { autoAlpha: 0 });
+
+      // ---- entrance: two numbers moving in opposite directions ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.rise(tl, qa('.rcard'), { at: .25, stagger: .1 });
+      tl.from(qa('.rcard .gl'), { autoAlpha: 0, duration: .01 }, .3);
+      Kit.count(tl, q('.rA .val'), { from: 0, to: 5.7, decimals: 1, prefix: '\u2212', suffix: '%', duration: 1.2, at: .55 });
+      Kit.count(tl, q('.rB .val'), { from: 0, to: 8.6, decimals: 1, prefix: '+', suffix: '%', duration: 1.2, at: .55 });
+      tl.to(qa('.rcard .gl'), { autoAlpha: 1, duration: .4, stagger: .1 }, 1.55);
+      ctx.pause();
+
+      // ---- click 1: why a price drop raised revenue ----
+      Kit.rise(tl, q('.k1'), { y: 20, duration: .45 });
+      Kit.draw(tl, q('.ca1'), { duration: .3 });
+      tl.set(q('.ca1'), { attr: { 'marker-end': 'url(#resArr)' } });
+      Kit.rise(tl, q('.k2'), { y: 20, duration: .45 });
+      Kit.draw(tl, q('.ca2'), { duration: .3 });
+      tl.set(q('.ca2'), { attr: { 'marker-end': 'url(#resArr)' } });
+      Kit.rise(tl, q('.k3'), { y: 20, duration: .45 });
+      ctx.pause();
+
+      // ---- click 2: which number is independent ----
+      Kit.rise(tl, qa('.ev'), { y: 60, duration: .6, stagger: .1 });
+      tl.to(q('.ev.b'), { backgroundColor: '#3C3537', duration: .4 }, '-=.35');
+      tl.fromTo(q('.ev .up'), { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .5, ease: Kit.ease.out }, '-=.2');
+    },
+
+    notes:
+      'So does it work? An independent study in Marketing Science in 2021 followed hosts who switched Smart Pricing on. ' +
+      'Their nightly rate fell five point seven percent. Their daily revenue rose eight point six percent.' +
+      '[click] Those two arrows point in opposite directions, and that is the whole story. A lot of hosts were overpricing. ' +
+      'A lower price filled more nights, and the extra nights more than paid for the discount.' +
+      '[click] One thing worth noticing. That is not Airbnb’s own number. Airbnb’s own claim is that hosts who priced within ' +
+      'five percent of the tip were four times more likely to book — self-reported, and a correlation: hosts who follow tips are ' +
+      'different from hosts who ignore them. The study on the right used the rollout as a quasi-natural experiment, which is why it is ' +
+      'the number I quote. And keep one caveat: this is revenue, not profit. The model never sees what a night actually costs the ' +
+      'host in cleaning and hassle.'
+  };
+
+  /* ======================================================================
+     TAKEAWAYS — what carries past Airbnb (45 s)
+     Steps: 0 row 01 · 1 row 02 · 2 row 03 + the hand-off
+     CANONICAL CLOSER: this layout (tk-img / tk-veil / three tk-rows / thru)
+     is shared pixel-for-pixel by rufus/takeaways and griffin/takeaway.
+     Only the text, the image and the section colour differ. Do not drift.
+     ====================================================================== */
+  var TKROWS = [
+    ['01', 'Boosted trees', 'Data in rows and columns?<br>Start with boosted trees.',
+      'Strong on tables, fast to train, easy to inspect.'],
+    ['02', 'Custom loss', 'No right answer to copy?<br>Grade what you can see.',
+      'Booked or empty became a price range, not a target.'],
+    ['03', 'Objectives', 'A model exploits any gap<br>in its own score.',
+      'Grade only unbooked nights, and $0 wins.']
+  ];
+  var THRU = [
+    { t: 'Price', cls: 'tk-price' },
+    { t: 'Assist', cls: 'tk-assist' },
+    { t: 'Interact', cls: '' },
+    { t: 'Negotiate', cls: '' }
+  ];
+
+  var TAKEAWAYS = {
+    id: 'takeaways',
+    title: 'Takeaways',
+    heading: 'Takeaways',
+    budgetSec: 45,
+    html: function () {
+      var rows = TKROWS.map(function (r, i) {
+        return '<div class="tk-row r' + i + '" style="top:' + (268 + i * 210) + 'px">' +
+          '<div class="n t-mono">' + r[0] + '</div>' +
+          '<div class="rule"></div>' +
+          '<div class="tg t-caps">' + r[1] + '</div>' +
+          '<div class="ln t-h2">' + r[2] + '</div>' +
+          '<div class="sb t-label">' + r[3] + '</div>' +
+        '</div>';
+      }).join('');
+      var strip = THRU.map(function (k, i) {
+        return (i ? '<span class="sep t-caps">·</span>' : '') +
+          '<span class="tok ' + k.cls + '"><span class="bg"></span><span class="tx t-caps">' + k.t + '</span></span>';
+      }).join('');
+      return '' +
+        '<img class="tk-img" src="assets/img/airbnb/nights-grid.jpg" alt="" style="object-position:58% center">' +
+        '<div class="tk-veil"></div>' +
+        rows +
+        '<div class="thru">' + strip + '</div>' +
+        Kit.src('Row 01: Grinsztajn et al., “Why do tree-based models still outperform deep learning on tabular data?”, 2022 (arXiv 2207.08815). ' +
+                'Row 03: Airbnb takes a fixed percentage of each booking (Huang, 2021).');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var slab = q('.tk-price .bg');
+
+      // strip: PRICE unfilled at entrance, everything after it tertiary
+      gsap.set(qa('.thru .tx'), { color: C.text3 });
+      gsap.set(slab, { backgroundColor: C.red, skewX: -12, scaleX: 0, transformOrigin: 'left center' });
+      // rows 2 and 3 are hidden by default, so they are revealed with Kit.show (never from())
+      gsap.set([qa('.r1 > *'), qa('.r2 > *')], { autoAlpha: 0 });
+
+      // ---- entrance: image, veil, header, row 01, strip ----
+      tl.from([q('.tk-img'), q('.tk-veil')], { autoAlpha: 0, duration: .9, ease: 'power2.out' }, 0);
+      Kit.rise(tl, qa('.hd > *'), { at: .15, stagger: .1 });
+      Kit.rise(tl, qa('.r0 > *'), { at: .45, stagger: .07, duration: .6 });
+      Kit.fade(tl, q('.thru'), { at: .7, duration: .5 });
+      ctx.pause();
+
+      // ---- click 1: the second lesson ----
+      Kit.show(tl, qa('.r1 > *'), { stagger: .07, duration: .5 });
+      ctx.pause();
+
+      // ---- click 2: the third lesson, and the throughline moves on ----
+      Kit.show(tl, qa('.r2 > *'), { stagger: .07, duration: .5 });
+      tl.to(slab, { scaleX: 1, duration: .5, ease: Kit.ease.out }, '<+.1');
+      tl.to(q('.tk-price .tx'), { color: '#FFFFFF', duration: .4 }, '<+.2');
+      tl.to(q('.tk-assist .tx'), { color: C.blueT, duration: .5 }, '<+.1');
+    },
+
+    notes:
+      'Three things to carry past Airbnb. One: if your data sits in rows and columns, start with boosted ' +
+      'trees, not a neural network. They are strong on tables, fast to train and easy to inspect.' +
+      '[click] Two: when there is no right answer to copy, grade what you can see. Booked or empty became ' +
+      'a price range instead of a target, and that move works anywhere the label is missing.' +
+      '[click] Three: a model exploits any gap in its own score. Grade only unbooked nights and zero dollars ' +
+      'wins. Remember whose score it is. Airbnb optimizes revenue, and it takes a cut of revenue. ' +
+      'That is pricing. Next: Assist.'
+  };
+
+  Deck.section({
+    id: 'airbnb', order: 1, num: '01', kicker: 'Price', title: 'Airbnb Smart Pricing',
+    slides: [
+      PROBLEM, TREE, BOOST, GBTUSE, LOSS, RESULTS, TAKEAWAYS
+    ]
+  });
+})();

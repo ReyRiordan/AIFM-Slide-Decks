@@ -1,0 +1,59 @@
+/* ==========================================================================
+   Shared components. Builders: reuse these before inventing new ones.
+   ========================================================================== */
+
+/* --- viewport / stage (engine) --- */
+#viewport { position: fixed; inset: 0; background: #0E0C0D; }
+#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; background: var(--bg); }
+
+/* --- standard header: fixed position on every content slide --- */
+.hd { position: absolute; left: var(--pad-x); top: var(--pad-top); right: var(--pad-x); }
+.hd .tag { display: inline-flex; align-items: center; gap: 14px; color: var(--text-2); }
+.hd .tag i { display: inline-block; width: 44px; height: 22px; border-radius: 6px; background: var(--sec); transform: skewX(var(--skew)); }
+.hd .tag b { color: var(--sec-t); font-weight: 800; }
+.hd .tag .sep { color: var(--line); font-weight: 400; }
+.hd h1 { margin-top: 22px; max-width: 1500px; }
+
+/* --- source footer: one pinned row, bottom-left --- */
+.src { position: absolute; left: var(--pad-x); right: var(--pad-x); bottom: 44px; font-size: var(--fs-foot); color: var(--text-3); line-height: 1.3; }
+.src em { font-style: normal; color: var(--text-2); }
+.flag { display: inline-block; font-size: var(--fs-foot); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 8px; border: 2px solid var(--text-3); color: var(--text-2); vertical-align: middle; }
+
+/* --- slanted panel (the inspo motif) --- */
+.panel { position: absolute; border-radius: var(--radius); transform: skewX(var(--skew)); }
+.panel.glass { opacity: .55; mix-blend-mode: screen; }
+.light .panel.glass { mix-blend-mode: multiply; opacity: .45; }
+
+/* --- card / chip --- */
+.card { background: var(--surface); border-radius: 24px; padding: 32px 36px; }
+.chip { display: inline-flex; align-items: center; gap: 12px; padding: 10px 22px; border-radius: 999px;
+  background: var(--surface); font-size: var(--fs-label); font-weight: 650; }
+.chip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--sec); }
+.slab { display: inline-block; padding: 6px 22px; border-radius: 12px; transform: skewX(var(--skew)); background: var(--sec); color: #fff; }
+.slab > * { display: inline-block; transform: skewX(calc(-1 * var(--skew))); }
+
+/* --- big number block --- */
+.bignum { display: flex; flex-direction: column; gap: 10px; }
+.bignum .t-num { color: var(--sec-t); }
+.bignum .t-label { color: var(--text-2); max-width: 520px; }
+
+/* --- equation (THE one) --- */
+.eq { font-family: var(--mono); font-weight: 600; font-size: 54px; letter-spacing: -.01em; white-space: nowrap; }
+
+/* --- engine chrome --- */
+#progress { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; display: flex; gap: 4px; z-index: 50; pointer-events: none; }
+#progress .seg { position: relative; height: 100%; background: rgba(255,255,255,.07); overflow: hidden; }
+#progress .seg > span { position: absolute; inset: 0 auto 0 0; width: 0; }
+#sweep { position: absolute; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+#sweep .panel { top: -80px; height: 1240px; width: 560px; opacity: .92; }
+#blackout { position: absolute; inset: 0; background: #000; z-index: 60; display: none; }
+#hint { position: absolute; right: 24px; bottom: 18px; font: 600 18px var(--font); color: rgba(255,255,255,.35); z-index: 55; pointer-events: none; }
+
+/* --- print (PDF): every slide on its own 1920×1080 page, final build state --- */
+@page { size: 1920px 1080px; margin: 0; }
+body.print { overflow: visible; background: var(--bg); }
+body.print #viewport { position: static; }
+body.print .printpage { position: relative; width: 1920px; height: 1080px; overflow: hidden; page-break-after: always; break-after: page; }
+body.print #progress, body.print #hint { display: none; }
+.eqcard .eq { font-size: 44px; }

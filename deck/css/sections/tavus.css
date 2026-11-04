@@ -1,0 +1,72 @@
+/* tavus section styles — every rule scoped under .slide[data-sec="tavus"] */
+
+/* ---------- 1 · origin ---------- */
+.slide[data-sec="tavus"] .grid .tile {
+  position: absolute; display: block; width: 36px; height: 22px;
+  border-radius: 6px; transform: skewX(var(--skew));
+}
+.slide[data-sec="tavus"] .merged {
+  border-radius: 16px; transform: skewX(var(--skew));
+  background: linear-gradient(135deg, rgba(182,86,160,.92), rgba(154,65,152,.68));
+  box-shadow: 0 18px 60px rgba(182,86,160,.28), inset 0 2px 0 rgba(255,255,255,.22);
+}
+/* founder photos (real people — sanctioned by KIT §2.6, credited in the footer) */
+.slide[data-sec="tavus"] .fp { position: absolute; width: 220px; margin: 0; }
+.slide[data-sec="tavus"] .fp.fa { left: 1140px; top: 300px; }
+.slide[data-sec="tavus"] .fp.fb { left: 1380px; top: 300px; }
+.slide[data-sec="tavus"] .fp img {
+  display: block; width: 200px; height: 200px; object-fit: cover;
+  border-radius: 20px; border: 2px solid var(--line);
+}
+.slide[data-sec="tavus"] .fp figcaption { margin: 18px 0 0; display: block; }
+.slide[data-sec="tavus"] .fp .fname { display: block; white-space: nowrap; }
+.slide[data-sec="tavus"] .fp .frole { display: block; margin-top: 8px; color: var(--sec-t); }
+
+/* Tavus wordmark (real logo — sanctioned by KIT §2.6, credited in the footer) */
+.slide[data-sec="tavus"] .tvlogo { color: var(--text-2); }
+.slide[data-sec="tavus"] .ycchip {
+  display: flex; align-items: center; gap: 22px; padding-left: 26px;
+  background: var(--surface); border-radius: 16px; overflow: hidden;
+}
+.slide[data-sec="tavus"] .ycchip .ycbar {
+  position: absolute; left: 0; top: -6px; width: 10px; height: 84px;
+  background: var(--sec); transform: skewX(var(--skew));
+}
+
+/* ---------- 3 · snapshot ---------- */
+.slide[data-sec="tavus"] .casecard { padding: 0; }
+.slide[data-sec="tavus"] .casecard .ctitle { position: absolute; left: 44px; top: 26px; }
+.slide[data-sec="tavus"] .casecard .cstat { position: absolute; top: 104px; }
+.slide[data-sec="tavus"] .casecard .cstat.ca { left: 44px; }
+.slide[data-sec="tavus"] .casecard .cstat.cb { left: 900px; }
+.slide[data-sec="tavus"] .casecard .cnum { font-size: 112px; }
+.slide[data-sec="tavus"] .casecard .clab { margin-top: 10px; }
+.slide[data-sec="tavus"] .casecard .srchip {
+  position: absolute; right: 44px; top: 32px; height: 44px; display: inline-flex; align-items: center;
+  padding: 0 18px; border-radius: 10px; background: rgba(239,90,53,.16); color: var(--orange-t);
+  letter-spacing: .08em;
+}
+.slide[data-sec="tavus"] .crowd .cchip {
+  display: inline-flex; align-items: center; height: 64px; padding: 0 28px;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 14px;
+  transform: skewX(var(--skew));
+}
+.slide[data-sec="tavus"] .crowd .cchip > b {
+  display: inline-block; transform: skewX(calc(-1 * var(--skew)));
+  color: var(--text-2); white-space: nowrap;
+}
+.slide[data-sec="tavus"] .crowd .cchip.last > b { color: var(--text-3); }
+
+/* ---------- 4 · bridge — canonical throughline strip ---------- */
+.slide[data-sec="tavus"] .strip .tk.sep { color: var(--line); margin: 0 20px; font-size: var(--fs-label); }
+.slide[data-sec="tavus"] .strip .tk.slab { padding: 10px 18px; border-radius: 12px; color: var(--text); }
+.slide[data-sec="tavus"] .strip .tk.slab > b { letter-spacing: .08em; }
+/* the fourth marker: --green is too light for white text, so it takes the stage colour */
+.slide[data-sec="tavus"] .strip .tk.slab.next > b { color: var(--bg); }
+
+/* ---------- 2 · pivot ---------- */
+/* Scale SVG groups about their own centre (GSAP's svgOrigin leaves a residual
+   translate when the origin changes mid-tween). */
+.slide[data-sec="tavus"] .pv .mc,
+.slide[data-sec="tavus"] .pv .gr,
+.slide[data-sec="tavus"] .pv .dot { transform-box: fill-box; transform-origin: center; }

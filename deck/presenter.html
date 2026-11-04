@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Presenter — AI for Automated Selling</title>
+<link rel="stylesheet" href="css/theme.css">
+<style>
+  html, body { overflow: hidden; background: #141112; color: #F4EFEA; font-family: var(--font); }
+  .wrap { display: grid; grid-template-columns: 1.25fr 1fr; grid-template-rows: auto 1fr; gap: 18px; height: 100vh; padding: 18px; }
+  .bar { grid-column: 1 / 3; display: flex; align-items: center; gap: 22px; font-size: 18px; }
+  .clock { font-family: var(--mono); font-size: 40px; font-weight: 700; }
+  .pace { font-family: var(--mono); font-size: 20px; padding: 6px 12px; border-radius: 8px; background: #2A2627; }
+  .pace.behind { color: #FF7A7C; } .pace.ahead { color: #84D484; }
+  .btn { background: #353032; color: #F4EFEA; border: 0; border-radius: 10px; padding: 10px 16px; font: 600 16px var(--font); cursor: pointer; }
+  .btn:hover { background: #4A4345; }
+  .notes { overflow: auto; background: #1E1B1C; border-radius: 14px; padding: 24px 28px; font-size: 24px; line-height: 1.5; }
+  .notes .seg { color: #6E6560; padding: 8px 0; transition: color .2s; }
+  .notes .seg.done { color: #8A817C; }
+  .notes .seg.now { color: #F4EFEA; }
+  .notes .click { display: inline-block; font: 700 13px var(--mono); color: #1E1B1C; background: #EF5A35; border-radius: 5px; padding: 1px 6px; margin-right: 6px; vertical-align: middle; }
+  .side { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+  .head { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: #9A908A; font-weight: 700; }
+  .title { font-size: 26px; font-weight: 800; }
+  .preview { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; }
+  .preview iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .list { flex: 1; overflow: auto; background: #1E1B1C; border-radius: 14px; padding: 8px; font-size: 15px; }
+  .list div { padding: 5px 10px; border-radius: 6px; cursor: pointer; display: flex; gap: 10px; }
+  .list div:hover { background: #2A2627; } .list div.now { background: #353032; font-weight: 700; }
+  .list i { width: 10px; flex: none; border-radius: 3px; } .list .b { margin-left: auto; color: #9A908A; font-family: var(--mono); }
+  .steps { font-family: var(--mono); font-size: 18px; color: #C9C0BA; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <span class="clock" id="clock">00:00</span>
+    <span class="pace" id="pace">planned 00:00</span>
+    <button class="btn" id="start">Start timer (T)</button>
+    <button class="btn" id="reset">Reset</button>
+    <span style="flex:1"></span>
+    <span class="steps" id="steps"></span>
+    <button class="btn" id="prev">◀ Back</button>
+    <button class="btn" id="next">Next ▶</button>
+    <button class="btn" id="black">Black (B)</button>
+  </div>
+  <div class="notes" id="notes"></div>
+  <div class="side">
+    <div><div class="head" id="sec"></div><div class="title" id="title"></div><div class="steps" id="budget"></div></div>
+    <div class="head">Next</div>
+    <div class="preview"><iframe id="nextFrame"></iframe></div>
+    <div class="title" id="nextTitle" style="font-size:20px"></div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+<script>
+(function () {
+  var main = window.opener, S = null, t0 = null, acc = 0, running = false, lastNext = -1;
+  function send(type, extra) { if (main && !main.closed) main.postMessage(Object.assign({ ns: 'bts', type: type }, extra || {}), '*'); }
+  function fmt(s) { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function elapsed() { return acc + (running ? (Date.now() - t0) / 1000 : 0); }
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+
+  function render() {
+    if (!S) return;
+    var s = S.slides[S.index], nx = S.slides[S.index + 1];
+    document.getElementById('sec').textContent = s.secTitle;
+    document.getElementById('title').textContent = (S.index + 1) + ' / ' + S.slides.length + ' · ' + s.title;
+    document.getElementById('steps').textContent = 'build ' + (S.step + 1) + ' / ' + S.steps;
+    var secBudget = S.slides.filter(function (x) { return x.sec === s.sec; }).reduce(function (a, x) { return a + x.budgetSec; }, 0);
+    document.getElementById('budget').textContent = 'slide ' + fmt(s.budgetSec) + ' · section ' + fmt(secBudget);
+    var segs = (s.notes || '(no notes)').split(/\[click\]/i);
+    document.getElementById('notes').innerHTML = segs.map(function (t, k) {
+      var cls = k < S.step ? 'done' : k === S.step ? 'now' : '';
+      return '<div class="seg ' + cls + '">' + (k ? '<span class="click">CLICK ' + k + '</span>' : '') + esc(t.trim()).replace(/\n\n/g, '<br><br>') + '</div>';
+    }).join('');
+    var now = document.querySelector('.seg.now'); if (now) now.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (nx && lastNext !== nx.i) { document.getElementById('nextFrame').src = 'index.html?preview=' + nx.i; lastNext = nx.i; }
+    document.getElementById('nextTitle').textContent = nx ? nx.title : '— end —';
+    document.getElementById('list').innerHTML = S.slides.map(function (x) {
+      return '<div data-i="' + x.i + '" class="' + (x.i === S.index ? 'now' : '') + '"><i style="background:' + (S.colors[x.sec] || '#888') + '"></i>' +
+        (x.i + 1) + '. ' + esc(x.title) + '<span class="b">' + fmt(x.budgetSec) + '</span></div>';
+    }).join('');
+    var cur = document.querySelector('.list .now'); if (cur) cur.scrollIntoView({ block: 'nearest' });
+  }
+  function tick() {
+    document.getElementById('clock').textContent = fmt(elapsed());
+    if (S) {
+      var planned = S.slides.slice(0, S.index).reduce(function (a, x) { return a + x.budgetSec; }, 0);
+      var d = elapsed() - planned, el = document.getElementById('pace');
+      el.textContent = 'planned ' + fmt(planned) + (running || acc ? (d > 15 ? ' · ' + fmt(d) + ' behind' : d < -15 ? ' · ' + fmt(-d) + ' ahead' : ' · on pace') : '');
+      el.className = 'pace' + (d > 15 ? ' behind' : d < -15 ? ' ahead' : '');
+    }
+  }
+  function toggleTimer() { if (running) { acc = elapsed(); running = false; } else { t0 = Date.now(); running = true; }
+    document.getElementById('start').textContent = running ? 'Pause timer (T)' : 'Start timer (T)'; }
+  window.addEventListener('message', function (e) { if (e.data && e.data.ns === 'bts' && e.data.type === 'state') { S = e.data; render(); } });
+  document.getElementById('next').onclick = function () { send('next'); };
+  document.getElementById('prev').onclick = function () { send('prev'); };
+  document.getElementById('black').onclick = function () { send('black'); };
+  document.getElementById('start').onclick = toggleTimer;
+  document.getElementById('reset').onclick = function () { acc = 0; running = false; document.getElementById('start').textContent = 'Start timer (T)'; };
+  document.getElementById('list').onclick = function (e) { var d = e.target.closest('[data-i]'); if (d) send('goto', { index: +d.dataset.i }); };
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown') { e.preventDefault(); if (!running && !acc) toggleTimer(); send('next'); }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); send('prev'); }
+    else if (k === 'b' || k === 'B' || k === '.') send('black');
+    else if (k === 't' || k === 'T') toggleTimer();
+  });
+  setInterval(tick, 250);
+  send('hello');
+})();
+</script>
+</body>
+</html>

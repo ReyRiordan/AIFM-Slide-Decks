@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# QA screenshots (~260 MB) — regenerate locally, don't version
+deck/qa/
+
+# Build/render logs
+*.log
+
+# Vercel CLI link folder
+.vercel/

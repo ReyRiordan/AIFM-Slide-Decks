@@ -1,0 +1,17 @@
+/* intro section styles — scope every rule under .slide[data-sec="intro"] */
+
+/* the agenda slide paints a full-bleed figure + scrim; the header must sit on top */
+.slide[data-sec="intro"] .hd { z-index: 3; }
+.slide[data-sec="intro"] .ag-fg { z-index: 2; }
+
+/* all three headings fit on one line at 1920 — keeps the content zone open */
+.slide[data-sec="intro"] .hd h1 { max-width: 1720px; }
+
+/* agenda: the three masked cut-outs share one frame, so they must not reflow */
+.slide[data-sec="intro"] .ag-part { will-change: transform, opacity, filter; }
+
+/* agenda: the unfilled slots — same cut-outs, drained of colour */
+.slide[data-sec="intro"] .ag-ghost { filter: grayscale(1) brightness(.8); }
+
+/* definition: the three seller-side jobs */
+.slide[data-sec="intro"] .df-card { will-change: transform, opacity; }

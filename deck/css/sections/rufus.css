@@ -1,0 +1,66 @@
+/* rufus section styles — scope every rule under .slide[data-sec="rufus"] */
+
+/* the opener paints a full-bleed hero + scrim; text must sit on top */
+.slide[data-sec="rufus"] .r-hero { z-index: 0; will-change: transform; }
+.slide[data-sec="rufus"] .hd { z-index: 3; }
+
+/* the two heading lines that fit on one line at 1920 */
+.slide[data-sec="rufus"] .hd h1 { max-width: 1720px; }
+/* "Retrieval-augmented generation (RAG)" is 1747px at the default 118% stretch,
+   so it would wrap onto the question chip. Narrow the face, keep one line. */
+.slide[data-sec="rufus"][data-slide="rag"] .hd h1 { font-stretch: 103%; }
+
+/* ---------- takeaways · CANONICAL SECTION CLOSER ----------
+   Identical in css/sections/airbnb.css and css/sections/griffin.css.
+   Only the image (and its object-position) and --sec/--sec-t differ.
+   Change all three together or they stop lining up.                      */
+.slide[data-sec="rufus"] .tk-img {
+  position: absolute; left: 1140px; top: 0; width: 780px; height: 1080px;
+  object-fit: cover; z-index: 0;
+}
+.slide[data-sec="rufus"] .tk-veil {
+  position: absolute; left: 1140px; top: 0; width: 780px; height: 1080px; z-index: 1;
+  background: linear-gradient(90deg, #1E1B1C 0%, rgba(30,27,28,.98) 12%,
+    rgba(30,27,28,.74) 42%, rgba(30,27,28,.34) 70%, rgba(30,27,28,0) 94%);
+}
+.slide[data-sec="rufus"] .tk-row { position: absolute; left: 120px; width: 1120px; height: 190px; z-index: 2; }
+.slide[data-sec="rufus"] .tk-row .n {
+  position: absolute; left: 0; top: 38px; font-size: 52px; font-weight: 600; color: var(--text-3);
+}
+.slide[data-sec="rufus"] .tk-row .rule {
+  position: absolute; left: 112px; top: 0; width: 2px; height: 190px; background: var(--line);
+}
+.slide[data-sec="rufus"] .tk-row .tg { position: absolute; left: 160px; top: 0; color: var(--sec-t); }
+.slide[data-sec="rufus"] .tk-row .ln {
+  position: absolute; left: 160px; top: 38px; width: 1060px; font-weight: 800; line-height: 1.1;
+}
+.slide[data-sec="rufus"] .tk-row .sb { position: absolute; left: 160px; top: 156px; width: 1060px; color: var(--text-2); }
+
+.slide[data-sec="rufus"] .thru { position: absolute; left: 120px; top: 890px; z-index: 2; display: flex; align-items: center; }
+.slide[data-sec="rufus"] .thru .sep { color: var(--line); margin: 0 20px; }
+.slide[data-sec="rufus"] .thru .tok { position: relative; display: inline-block; padding: 10px 18px; }
+.slide[data-sec="rufus"] .thru .tok .bg { position: absolute; inset: 0; border-radius: 12px; }
+.slide[data-sec="rufus"] .thru .tok .tx { position: relative; }
+
+/* takeaways: the image bleed must never paint over the header or the footer */
+.slide[data-sec="rufus"] .src { z-index: 3; }
+.slide[data-sec="rufus"][data-slide="takeaways"] .src { right: auto; width: 1000px; }
+
+/* RAG: stacked variants share one slot, so they must not affect layout */
+.slide[data-sec="rufus"] .rq,
+.slide[data-sec="rufus"] .ra,
+.slide[data-sec="rufus"] .rf { pointer-events: none; }
+.slide[data-sec="rufus"] .rt { transition: none; }
+.slide[data-sec="rufus"] .rtiles { position: absolute; inset: 0; }
+
+/* mono runs (prices, code, times) keep the mono face wherever they appear */
+.slide[data-sec="rufus"] .t-mono { font-family: var(--mono); }
+
+/* tool calling: the sequence labels sit over the lifelines, so they must not
+   swallow clicks meant for the stage */
+.slide[data-sec="rufus"] .sq-m,
+.slide[data-sec="rufus"] .sq-cap { pointer-events: none; }
+
+/* demo: build() resizes .dv-frame and .dv-vid from the clip's own
+   videoWidth / videoHeight, so no fixed size may be set here */
+.slide[data-sec="rufus"] .dv-vid { object-fit: contain; background: var(--bg2); }

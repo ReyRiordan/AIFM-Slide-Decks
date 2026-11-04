@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI for Automated Selling — How AI prices, assists and interacts</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/sections/intro.css">
+<link rel="stylesheet" href="css/sections/airbnb.css">
+<link rel="stylesheet" href="css/sections/rufus.css">
+<link rel="stylesheet" href="css/sections/griffin.css">
+<link rel="stylesheet" href="css/sections/tavus.css">
+<link rel="stylesheet" href="css/sections/future.css">
+<link rel="stylesheet" href="css/sections/refs.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <div id="sweep"></div>
+    <div id="progress"></div>
+    <div id="blackout"></div>
+    <div id="hint"></div>
+  </div>
+</div>
+
+<!-- vendor (GSAP 3, all plugins free since 3.13) -->
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/DrawSVGPlugin.min.js"></script>
+<script src="js/vendor/MorphSVGPlugin.min.js"></script>
+<script src="js/vendor/MotionPathPlugin.min.js"></script>
+<script src="js/vendor/SplitText.min.js"></script>
+<script src="js/vendor/CustomEase.min.js"></script>
+<script src="js/vendor/Draggable.min.js"></script>
+
+<!-- engine + shared kit -->
+<script src="js/engine.js"></script>
+<script src="js/components/kit.js"></script>
+
+<!-- sections (load order does not matter; `order` does) -->
+<script src="sections/00-intro.js"></script>
+<script src="sections/01-airbnb.js"></script>
+<script src="sections/02-rufus.js"></script>
+<script src="sections/03-griffin.js"></script>
+<script src="sections/04-tavus.js"></script>
+<script src="sections/05-future.js"></script>
+<script src="sections/99-refs.js"></script>
+
+<script>Deck.boot();</script>
+</body>
+</html>
