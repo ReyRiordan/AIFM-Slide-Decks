@@ -68,8 +68,8 @@
       var col = [C.red, C.blue, C.purple];
       var tint = ['c-red', 'c-blue', 'c-purple'];
       var mark = ['Price', 'Assist', 'Interact'];
-      var job = ['Sets the price', 'Helps the shopper choose', 'Talks face to face'];
-      var x = [120, 700, 1280], CW = 520, CH = 320, CY = 580;
+      var job = ['Sets the price', 'Helps you pick', 'Talks to you'];
+      var x = [120, 700, 1280];
 
       var out =
         '<p class="df-def t-h2" style="position:absolute;left:120px;top:304px;width:1560px;font-weight:600;color:var(--text)">' +
@@ -78,11 +78,12 @@
         '<div class="df-cap t-caps" style="position:absolute;left:120px;top:502px;color:var(--text-3)">Three of those parts</div>';
 
       for (var i = 0; i < 3; i++) {
-        out += '<div class="df-card df-card' + i + '" style="position:absolute;left:' + x[i] + 'px;top:' + CY +
-            'px;width:' + CW + 'px;height:' + CH + 'px;background:var(--surface);border-radius:24px">' +
-          '<div style="' + chipStyle(col[i], 40, 40) + '"></div>' +
-          '<div class="t-h2" style="position:absolute;left:40px;top:106px;width:440px">' + job[i] + '</div>' +
-          '<div class="t-caps ' + tint[i] + '" style="position:absolute;left:40px;bottom:36px">' + mark[i] + '</div>' +
+        // flex column: chip, job, marker. An extra wrapped line pushes the
+        // marker down instead of landing on top of it.
+        out += '<div class="df-card df-card' + i + '" style="left:' + x[i] + 'px">' +
+          '<div class="df-chip" style="background:' + col[i] + '"></div>' +
+          '<div class="df-job t-h2">' + job[i] + '</div>' +
+          '<div class="df-mark t-caps ' + tint[i] + '">' + mark[i] + '</div>' +
         '</div>';
       }
       return out;
@@ -95,11 +96,11 @@
       gsap.set(cards, { autoAlpha: 0 });
       gsap.set(q('.df-cap'), { autoAlpha: 0 });
 
-      // entrance: the heading, then the one sentence, parked in the middle of the
-      // empty stage so the slide is not three quarters black while Rey reads it
+      // entrance: the heading, then the one sentence, parked near the optical
+      // centre so the slide is not three quarters black while Rey reads it
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      tl.fromTo(q('.df-def'), { autoAlpha: 0, y: 300 },
-        { autoAlpha: 1, y: 280, duration: .7, ease: Kit.ease.out }, .3);
+      tl.fromTo(q('.df-def'), { autoAlpha: 0, y: 186 },
+        { autoAlpha: 1, y: 166, duration: .7, ease: Kit.ease.out }, .3);
 
       // step 1: the sentence moves up and the three jobs take the space it leaves
       ctx.pause();
@@ -112,7 +113,7 @@
     notes:
       'First, the term. Automated selling is software that takes over part of what a salesperson does. ' +
       'Not the whole job, any part of it. ' +
-      '[click] A seller sets the price, helps you pick, and talks to you. ' +
+      '[click] A seller sets the price, helps you pick, and talks to you face to face. ' +
       'Each of those three is a shipped product, and a section of this talk.'
   };
 
@@ -132,7 +133,7 @@
     heading: 'Agenda',
     budgetSec: 25,
     html: function () {
-      var col = [C.red, C.blue, C.purple, C.line];
+      var col = [C.red, C.blue, C.purple];
       var num = ['01', '02', '03', ''];
       var lab = ['PRICE', 'ASSIST', 'INTERACT', 'What’s next'];
       var sub = ['Airbnb Smart Pricing', 'Amazon Rufus', 'Tavus Griffin', ''];
@@ -150,15 +151,21 @@
         return '<img class="ag-part ag-' + p + '" src="assets/img/intro/part-' + p + '.png" alt="" style="' + IMG + '">';
       }).join('');
 
+      // a soft red pool behind the price tag, lit on click 1 so the eye lands on
+      // the one thing in the render that says "price"
+      var tagGlow = '<div class="ag-tagglow" style="position:absolute;left:1600px;top:620px;width:300px;height:300px;' +
+        'border-radius:50%;background:radial-gradient(circle,' + C.red + ' 0%,rgba(0,0,0,0) 68%)"></div>';
+
       var out =
-        '<div class="ag-art" style="position:absolute;inset:0">' + ghost + part + '</div>' +
+        '<div class="ag-art" style="position:absolute;inset:0">' + ghost + tagGlow + part + '</div>' +
         '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,rgba(30,27,28,.92) 32%,rgba(30,27,28,0) 54%)"></div>' +
         '<div class="ag-fg" style="position:absolute;inset:0">';
 
       for (var i = 0; i < 4; i++) {
         var muted = i === 3;
         out += '<div class="ag-row ag-row' + i + '" style="position:absolute;inset:0">' +
-          '<div style="' + chipStyle(col[i], ROW_X_CHIP, ROW_Y[i]) + (muted ? ';opacity:.7' : '') + '"></div>' +
+          // row 4 is a coda, not a numbered section: no chip, no number, no sub-line
+          (muted ? '' : '<div style="' + chipStyle(col[i], ROW_X_CHIP, ROW_Y[i]) + '"></div>') +
           (num[i] ? '<div class="t-h2 t-mono" style="position:absolute;left:' + ROW_X_NUM + 'px;top:' + (ROW_Y[i] - 10) + 'px;color:var(--text-2)">' + num[i] + '</div>' : '') +
           '<div class="t-h2" style="position:absolute;left:' + ROW_X_LAB + 'px;top:' + (ROW_Y[i] - 14) +
             'px;font-style:italic;font-weight:850;font-stretch:115%;white-space:nowrap' + (muted ? ';color:var(--text-3)' : '') + '">' + lab[i] + '</div>' +
@@ -182,23 +189,30 @@
       gsap.set(parts, { autoAlpha: 0 });
       gsap.set(ghosts, { autoAlpha: 0 });
       gsap.set(rows, { autoAlpha: 0 });
+      gsap.set(q('.ag-tagglow'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
       // entrance: the empty outline of the whole figure
-      tl.fromTo(ghosts, { autoAlpha: 0 }, { autoAlpha: .28, duration: .8, ease: 'power1.out', stagger: .12 }, .25);
+      tl.fromTo(ghosts, { autoAlpha: 0 }, { autoAlpha: .55, duration: .8, ease: 'power1.out', stagger: .12 }, .25);
 
       for (var i = 0; i < 3; i++) {
         ctx.pause();
         var at = tl.duration();
         var p = parts[i], c = col[i];
+        // the part that arrived last hands its glow over to this one
+        if (i > 0) tl.to(parts[i - 1], { filter: 'drop-shadow(0 0 0px ' + col[i - 1] + ')', duration: .6, ease: 'power2.inOut' }, at + .4);
         // the slot it filled stops being a slot
         tl.to(ghosts[i], { autoAlpha: 0, duration: .3, ease: 'power1.out' }, at + .3);
         tl.fromTo(p, Object.assign({ autoAlpha: 0 }, from[i]),
           { autoAlpha: 1, x: 0, y: 0, duration: .62, ease: 'power3.out' }, at);
-        // the part locks: one short glow in the section colour, then back to flat
+        // the part locks, then holds a low glow in the section colour so the
+        // chip beside the row still points at something once the motion stops
         tl.fromTo(p, { filter: 'drop-shadow(0 0 0px ' + c + ')' },
           { filter: 'drop-shadow(0 0 54px ' + c + ')', duration: .22, ease: 'power2.out' }, at + .5);
-        tl.to(p, { filter: 'drop-shadow(0 0 0px ' + c + ')', duration: .7, ease: 'power2.inOut' }, at + .72);
+        tl.to(p, { filter: 'drop-shadow(0 0 28px ' + c + ')', duration: .7, ease: 'power2.inOut' }, at + .72);
+        if (i === 0) tl.fromTo(q('.ag-tagglow'), { autoAlpha: 0, scale: .82 },
+          { autoAlpha: .5, scale: 1, duration: .7, ease: 'power2.out', transformOrigin: '50% 50%' }, at + .5);
+        if (i === 1) tl.to(q('.ag-tagglow'), { autoAlpha: .16, duration: .6, ease: 'power2.inOut' }, at + .4);
         Kit.show(tl, rows[i], { y: 18, duration: .4, at: at + .18 });
       }
 

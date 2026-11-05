@@ -10,8 +10,36 @@
 /* agenda: the three masked cut-outs share one frame, so they must not reflow */
 .slide[data-sec="intro"] .ag-part { will-change: transform, opacity, filter; }
 
-/* agenda: the unfilled slots — same cut-outs, drained of colour */
-.slide[data-sec="intro"] .ag-ghost { filter: grayscale(1) brightness(.8); }
+/* agenda: the unfilled slots — same cut-outs, drained of colour and lifted
+   until the outline reads as an empty figure on a projector, not a dark smudge */
+.slide[data-sec="intro"] .ag-ghost { filter: grayscale(1) brightness(2.4); }
 
-/* definition: the three seller-side jobs */
-.slide[data-sec="intro"] .df-card { will-change: transform, opacity; }
+/* agenda: the pool of red behind the price tag, lit on click 1 */
+.slide[data-sec="intro"] .ag-tagglow { will-change: transform, opacity; }
+
+/* definition: the three seller-side jobs.
+   Flex column, no fixed height: a wrapped title pushes the marker down. */
+.slide[data-sec="intro"] .df-card {
+  position: absolute;
+  top: 580px;
+  width: 520px;
+  min-height: 320px;
+  box-sizing: border-box;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  background: var(--surface);
+  border-radius: 24px;
+  will-change: transform, opacity;
+}
+.slide[data-sec="intro"] .df-chip {
+  flex: none;
+  width: 72px;
+  height: 38px;
+  border-radius: 10px;
+  transform: skewX(-12deg);
+}
+.slide[data-sec="intro"] .df-job { flex: 1 1 auto; }
+.slide[data-sec="intro"] .df-mark { flex: none; }
