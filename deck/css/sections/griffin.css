@@ -116,25 +116,38 @@
 .slide[data-sec="griffin"] .ds-lab { position: absolute; left: 840px; top: 700px; width: 650px; color: var(--text-2); }
 
 /* ---------- 8 · results ---------- */
-.slide[data-sec="griffin"] .rs-lab { position: absolute; top: 330px; color: var(--text-3); }
+.slide[data-sec="griffin"] .rs-lab { position: absolute; top: 292px; color: var(--text-3); }
+.slide[data-sec="griffin"] .rs-sublab { position: absolute; top: 336px; width: 560px; color: var(--text-3); }
 .slide[data-sec="griffin"] .rs-num { position: absolute; top: 756px; font-size: 132px; }
 .slide[data-sec="griffin"] .rs-cap { position: absolute; top: 904px; width: 540px; color: var(--text-2); }
+/* the caveats Rey speaks, in the slot the render latency used to hold */
+.slide[data-sec="griffin"] .rs-chip {
+  position: absolute; left: 1340px; top: 330px; width: 460px; box-sizing: border-box;
+  border: 2px dashed var(--line); border-radius: 18px; padding: 22px 24px;
+  color: var(--text-2);
+}
+.slide[data-sec="griffin"] .rs-chip > * + * { margin-top: 8px; }
 .slide[data-sec="griffin"] .rs-card {
-  position: absolute; left: 1340px; width: 460px; background: var(--surface);
-  border-radius: 18px; padding: 28px;
+  position: absolute; left: 1340px; top: 524px; width: 460px; box-sizing: border-box;
+  background: var(--surface); border-radius: 18px; padding: 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
 }
 .slide[data-sec="griffin"] .rs-card .v { font-size: 96px; color: var(--purple-t); }
 /* only the number Rey argues (1.9 s, against a person's 0.9 s) keeps the accent;
-   the pixel latency is supporting detail, so it stays grey. */
-.slide[data-sec="griffin"] .rs-card.k1 .v { color: var(--text-2); }
+   the render latency is supporting detail, so it is smaller and grey */
+.slide[data-sec="griffin"] .rs-sub { position: absolute; left: 1340px; top: 790px; width: 460px; }
+.slide[data-sec="griffin"] .rs-sub .v { color: var(--text-2); font-family: var(--mono); }
+.slide[data-sec="griffin"] .rs-sub .c { margin-top: 10px; color: var(--text-3); }
 /* mono numerals, proportional unit and a tightened decimal point */
 .slide[data-sec="griffin"] .rs-num .u,
-.slide[data-sec="griffin"] .rs-card .v .u {
+.slide[data-sec="griffin"] .rs-card .v .u,
+.slide[data-sec="griffin"] .rs-sub .v .u {
   font-family: var(--font); font-size: .58em; font-weight: 700;
   letter-spacing: normal; margin-left: .06em;
 }
 .slide[data-sec="griffin"] .rs-num .dp,
-.slide[data-sec="griffin"] .rs-card .v .dp { margin: 0 -.17em; }
+.slide[data-sec="griffin"] .rs-card .v .dp,
+.slide[data-sec="griffin"] .rs-sub .v .dp { margin: 0 -.17em; }
 .slide[data-sec="griffin"] .rs-card .c { margin-top: 14px; color: var(--text-2); }
 
 /* ---------- 9 · takeaway · CANONICAL SECTION CLOSER ----------

@@ -90,9 +90,9 @@
     },
     notes:
       'Our salesperson can price and it can answer. Part three is interaction: a face on a call. ' +
-      'In October, Tavus released a model called Griffin.' +
-      '[click] Griffin builds a face from one photo and draws it live, during the call. ' +
-      'The room and the shadows are drawn too.'
+      'In October, Tavus announced a model called Griffin — so far only a cut-down preview is out.' +
+      '[click] Griffin builds a face from one photo and draws it live during the call, room and shadows ' +
+      'included.'
   };
 
   /* ======================================================================
@@ -231,7 +231,7 @@
             '<line class="stop" x1="180" y1="40" x2="180" y2="310" stroke="' + C.text3 + '" stroke-width="2" stroke-dasharray="6 8"/>' +
             txt(192, 30, 'you stop', { size: 28, w: 700, fill: C.text }) +
             txt(0, 134, 'AVATAR', { size: 28, w: 700, ls: '3', fill: C.text3 }) +
-            txt((180 + CS_END) / 2, 134, '2.8 – 3.5 s before it answers', { size: 36, w: 700, anchor: 'middle', fill: C.purpleT, cls: 'meas' }) +
+            txt((180 + CS_END) / 2, 134, 'Cascaded avatars like this: 2.8 – 3.5 s', { size: 36, w: 700, anchor: 'middle', fill: C.purpleT, cls: 'meas' }) +
             boxes +
             '<path class="mbr" d="M180,282 L180,292 L' + CS_END + ',292 L' + CS_END + ',282" fill="none" stroke="' + C.purpleT + '" stroke-width="3"/>' +
             '<line class="xax" x1="60" y1="360" x2="1620" y2="360" stroke="#6E6560" stroke-width="3"/>' +
@@ -249,19 +249,21 @@
              never reads as a stage with a duration of its own. Sits outside .cs-time
              so it stays at full strength when the timeline dims. */
           '<g class="cs-ccm">' +
-            '<rect class="ccm-br" x="180" y="44" width="920" height="80" rx="12" fill="' + C.orange +
+            '<rect class="ccm-br" x="180" y="44" width="' + (CS_END - 180) + '" height="80" rx="12" fill="' + C.orange +
               '" fill-opacity=".96" stroke="' + C.orangeT + '" stroke-width="3"/>' +
-            txt(640, 96, 'One model replaces these three', { size: 36, w: 800, anchor: 'middle', fill: '#1E1B1C', cls: 'ccm-t' }) +
-            '<path class="ccm-bk" d="M180,132 L180,142 L1100,142 L1100,132" fill="none" stroke="' + C.orange + '" stroke-width="3"/>' +
-            '<line class="ccm-bk" x1="640" y1="142" x2="640" y2="146" stroke="' + C.orange + '" stroke-width="4" marker-end="url(#csOrange)"/>' +
+            txt((180 + CS_END) / 2, 96, 'One model and two streaming generators replace all five',
+                { size: 36, w: 800, anchor: 'middle', fill: '#1E1B1C', cls: 'ccm-t' }) +
+            '<path class="ccm-bk" d="M180,132 L180,142 L' + CS_END + ',142 L' + CS_END + ',132" fill="none" stroke="' + C.orange + '" stroke-width="3"/>' +
+            '<line class="ccm-bk" x1="' + (180 + CS_END) / 2 + '" y1="142" x2="' + (180 + CS_END) / 2 +
+              '" y2="146" stroke="' + C.orange + '" stroke-width="4" marker-end="url(#csOrange)"/>' +
           '</g>' +
         '</svg>' +
 
         '<div class="cs-chip c1" style="left:120px"><i></i><span class="t-body">Only ~40% of pauses mean “your turn”</span></div>' +
         '<div class="cs-chip c2" style="left:984px"><i></i><span class="t-body">It could not gesture or move its body</span></div>' +
 
-        Kit.src('Stage names and the 40% figure: Tavus CVI docs. 2.8–3.5 s against ≈0.9 s for a person: NVIDIA VideoFDB.',
-                'Self-reported');
+        Kit.src('Stage names: Tavus CVI docs. 40% of pauses: Tavus Sparrow-2. ' +
+                'Latencies: NVIDIA VideoFDB (Gemini-2.5 cascades, not Tavus).', 'Self-reported');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -318,13 +320,14 @@
       'Before Griffin, Tavus ran a pipeline of five specialists. You stop talking. ' +
       'Stage widths here are illustrative; the per-stage times are not published.' +
       '[click] Raven reads your face. Sparrow decides you have finished. A language model writes the reply, ' +
-      'text-to-speech voices it, and Phoenix draws a face to match. Each stage waits for the one before it, ' +
-      'and the chain measures about three seconds.' +
+      'text-to-speech voices it, Phoenix draws the face. Each stage waits for the one before. Systems built ' +
+      'this way measure about three seconds — that range is for cascades built on Gemini, not for Tavus’s ' +
+      'own stack.' +
       '[click] A person answers in under a second. The rest is dead air, and you feel it.' +
-      '[click] Two more problems. It starts talking when you go quiet, but only four pauses in ten mean ' +
-      '“your turn”: six times in ten, a pause just means they are thinking. And the renderer worked from a ' +
-      'face model, so it could not gesture or move its body.' +
-      '[click] Griffin replaces those first three with one model, the CCM — the next slide.'
+      '[click] Two more problems. Only four pauses in ten mean “your turn”, so it talks over you. And the ' +
+      'renderer worked from a face model, so it could not gesture.' +
+      '[click] Griffin replaces all five: one model does the thinking, two streaming generators make the ' +
+      'sound and the picture.'
   };
 
   /* ======================================================================
@@ -855,28 +858,37 @@
         '</svg>' +
 
         '<div class="rs-lab t-caps" style="left:160px">Griffin-Lite · 54 people</div>' +
+        '<div class="rs-sublab t-label" style="left:160px">a research preview, not the full model</div>' +
         '<div class="rs-num t-num c-purple" style="left:160px">' + num(0, '%') + '</div>' +
         '<div class="rs-cap rs-capa t-label" style="left:160px">thought their partner was human</div>' +
 
-        '<div class="rs-lab t-caps" style="left:760px">Previous system · 41 people</div>' +
+        '<div class="rs-lab t-caps" style="left:760px">Old system · 41 people</div>' +
         '<div class="rs-num rs-numb t-num dim" style="left:760px">' + num(0, '%') + '</div>' +
         '<div class="rs-cap rs-capb t-label" style="left:760px">thought the same</div>' +
 
-        '<div class="rs-card k1" style="top:392px;height:236px">' +
-          '<div class="v t-num">' + num('0.43', 's') + '</div>' +
-          '<div class="c t-label">audio in → pixels on screen</div>' +
+        /* the caveats Rey speaks, on screen; then the one number he argues, then
+           the render latency demoted under it so nobody reads 0.43 s as the reply */
+        '<div class="rs-chip">' +
+          '<div class="t-label">Tavus’s own study</div>' +
+          '<div class="t-label">One-minute calls</div>' +
+          '<div class="t-label">No human comparison</div>' +
         '</div>' +
-        '<div class="rs-card k2" style="top:660px;height:236px">' +
+        '<div class="rs-card k2">' +
           '<div class="v t-num">' + num('1.9', 's') + '</div>' +
           '<div class="c t-label">Griffin’s reply. A person answers in 0.9 s</div>' +
         '</div>' +
+        '<div class="rs-sub">' +
+          '<div class="v t-h2">' + num('0.43', 's') + '</div>' +
+          '<div class="c t-label">drawing the picture only,<br>not the thinking</div>' +
+        '</div>' +
 
-        Kit.src('Live study: 26 of 54 vs 1 of 41, one-minute calls, no human control arm. Latency 0.43 s: Tavus. Replies 1.89 s vs 0.90 s: NVIDIA VideoFDB.', 'Self-reported');
+        Kit.src('Live study: 26 of 54 vs 1 of 41. Latency 0.43 s: Tavus. Replies 1.89 s vs 0.90 s: NVIDIA VideoFDB.', 'Self-reported');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
 
-      gsap.set([qa('.la'), qa('.lb'), qa('.rs-card'), q('.rs-capa'), q('.rs-capb')], { autoAlpha: 0 });
+      gsap.set([qa('.la'), qa('.lb'), q('.rs-chip'), q('.rs-card'), q('.rs-sub'),
+                q('.rs-capa'), q('.rs-capb')], { autoAlpha: 0 });
       // the readouts start hidden: a bare "0%" under both grids reads as a result
       gsap.set(qa('.rs-num'), { autoAlpha: 0 });
 
@@ -901,17 +913,17 @@
       tl.to(q('.rs-capb'), { autoAlpha: 1, duration: .35 }, '-=.2');
       ctx.pause();
 
-      // ---- click 3: the slide ends on the limitation, not the boast ----
-      Kit.show(tl, qa('.rs-card'), { y: 26, stagger: .14 });
+      // ---- click 3: the slide ends on the caveats and the limitation, not the boast ----
+      Kit.show(tl, [q('.rs-chip'), q('.rs-card'), q('.rs-sub')], { y: 26, stagger: .14 });
     },
     notes:
-      'Tavus ran a test. Fifty-four people had a one-minute video call, then were asked whether their partner ' +
-      'might be a machine.' +
+      'Tavus ran their own test. Fifty-four people had a one-minute video call, then said whether their ' +
+      'partner might be a machine. What they tested is Griffin-Lite, a cut-down preview; the full model is ' +
+      'not out.' +
       '[click] Twenty-six of them, forty-eight percent, thought they had talked to a person.' +
-      '[click] With Tavus’s previous system: one person in forty-one.' +
-      '[click] Now the caveats. Tavus ran this themselves, the calls lasted a minute, and nobody talked to a ' +
-      'real human. Griffin also still replies slower than we do: one-point-nine seconds against nine tenths. ' +
-      'And point-four-three is the picture alone, not the thinking.'
+      '[click] With Tavus’s old system: one person in forty-one.' +
+      '[click] So read it with those caveats. And Griffin still replies slower than we do: one-point-nine ' +
+      'seconds against nine tenths. The point-four-three is the picture alone, not the thinking.'
   };
 
   /* ======================================================================

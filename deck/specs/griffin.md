@@ -61,7 +61,7 @@ Subject prompt (style prefix from `design/style-prefix.txt` is appended automati
 Size `1536x1024`. **Why it earns its place:** the section is about a face that is *constructed*, and this is the only place in the deck that states the metaphor without words. Regenerate if it reads as a real person, contains text, or fills the left third.
 
 **Speaker notes (20 s ≈ 43 words)**
-> Our salesperson can price and it can answer. Part three is interaction: a face on a video call. In October a company called Tavus released a model called Griffin. **[click]** Griffin builds a face from one photo and draws it live, during the call. The room and the shadows are drawn too.
+> Our salesperson can price and it can answer. Part three is interaction: a face on a call. In October, Tavus announced a model called Griffin — so far only a cut-down preview is out. **[click]** Griffin builds a face from one photo and draws it live, during the call, room and shadows included.
 
 **Sources**
 - "generated live from one reference image": report ¶122 — "Every pixel of every frame is generated from one reference image, including the movement of the chair, cast shadows and the background." [1] Tavus. Self-reported (a product claim, not a measurement — no number on screen, so no footer needed).
@@ -127,12 +127,12 @@ Size `1536x1024`. **Why it earns its place:** the section is about a face that i
 - Five stage boxes, the real CVI model name inside each and its job under it (28 px, `--text-3`, stretch 82%):
   `Raven` (perception) · `Sparrow` (turn-taking) · `LLM` (writes the reply) · `TTS` (voices it) · `Phoenix` (draws the face).
   Box x/width: 180/165, 345/165, 510/330, 840/165, 1005/198 — illustrative proportions of the published 2.8–3.5 s total.
-- **Click 4:** the first three boxes' labels fade, and an orange band (x 180, w 656) wipes in over them: **One model replaces three** / `Griffin drops Raven, Sparrow and the LLM`. The band does not name the CCM; the overview slide introduces that acronym with its expansion. The band sits outside `.cs-time`, so it stays at full strength while the timeline is dimmed.
-- Measurement label: **2.8 – 3.5 s before it answers**
+- **Click 4:** an orange band wipes in above all five boxes: **One model and two streaming generators replace all five**, bracketed down onto the whole cascade. The band does not name the CCM; the overview slide introduces that acronym with its expansion. The band sits outside `.cs-time`, so it stays at full strength while the timeline is dimmed.
+- Measurement label: **Cascaded avatars like this: 2.8 – 3.5 s** (the range is for Gemini-2.5 cascades on VideoFDB, not for Tavus's own stack)
 - Human pin: **a person answers at ≈ 0.9 s**
 - Bracket label between them: **dead air**
 - Two chips (click 3): `Only ~40% of pauses mean “your turn”` · `It could not gesture or move its body`
-- Footer: `Kit.src('Cascade 2.8–3.5 s vs humans ≈0.9 s: NVIDIA VideoFDB, republished by Tavus. Pause statistic: Tavus, Sparrow-2 (>1M silences).', 'Self-reported (Tavus analysis)')`
+- Footer: `Kit.src('Stage names: Tavus CVI docs. 40% of pauses: Tavus Sparrow-2. Latencies: NVIDIA VideoFDB (Gemini-2.5 cascades, not Tavus).', 'Self-reported')`
 
 **Layout — SVG at left 120, top 296, 1680×500 (viewBox `0 0 1680 500`)**
 - Time map: `X(t) = 180 + t * 330`, t in seconds, 0 → 4.0 s (x 180 → 1500).
@@ -147,7 +147,7 @@ Size `1536x1024`. **Why it earns its place:** the section is about a face that i
   | TTS | 2.00 | 2.50 | 840 | 165 | `#518CC8` |
   | Phoenix | 2.50 | 3.10 | 1005 | 198 | `#9A4198` |
   (Boxes abut with a 4 px gap; the lightness steps upward so they read as a queue, and labels carry the meaning — never hue alone.)
-- Measurement label: at x 1215, y 212, Archivo 32 weight 700, `--purple-t`, anchored start: `2.8 – 3.5 s before it answers`. A bracket under the boxes from X(0) to X(3.1) at y 276.
+- Measurement label: at x 1215, y 212, Archivo 32 weight 700, `--purple-t`, anchored start: `Cascaded avatars like this: 2.8 – 3.5 s`. A bracket under the boxes from X(0) to X(3.1) at y 276.
 - **Human pin**: at X(0.9) = 477, a 4 px `--orange` vertical line from y 400 up to y 320, with a 14 px orange dot at the top and label at x 495, y 312, Archivo 30 weight 700, `--orange-t`: `a person answers here`.
 - **Dead-air bracket**: from X(0.9) to X(3.1) at y 436 (below the axis), thin `--text-3` bracket, centred label at y 476, Archivo 30 weight 700, `--text-2`: `dead air`.
 - **Chips** (HTML, not SVG): two cards at y 846, h 100, radius 16, `--surface`; left x 120 w 816, right x 984 w 816. Each: a 6 px purple left bar + `t-body` text, vertically centred.
@@ -372,12 +372,13 @@ Keep `portrait-src.png` out of the shipped assets (or leave it; it is small). Al
 - **ONE IDEA:** Half the people in a one-minute call thought Griffin was a person — a twenty-fold jump on the old system, in a study the company ran on itself.
 
 **On-screen content**
-- Left grid label: `GRIFFIN-LITE · 54 PEOPLE` → big number **48%** · caption `thought their partner was human`
-- Right grid label: `PREVIOUS SYSTEM · 41 PEOPLE` → big number **2.4%**
-- Right column cards (click 3):
-  - **0.43 s** / `audio in → pixels on screen`
-  - **1.9 s vs 0.9 s** / `Griffin's reply vs a person's`
-- Footer: `Kit.src('Live study: 26 of 54 vs 1 of 41, one-minute calls, run by Tavus with no human control arm. Render latency 0.43 s: Tavus. Response times 1.89 s vs 0.90 s: NVIDIA VideoFDB.', 'Self-reported (study)')`
+- Left grid label: `GRIFFIN-LITE · 54 PEOPLE`, sub-line `a research preview, not the full model` → big number **48%** · caption `thought their partner was human`
+- Right grid label: `OLD SYSTEM · 41 PEOPLE` → big number **2.4%**
+- Right column (click 3), top to bottom:
+  - caveat chip (dashed outline): `Tavus's own study` · `One-minute calls` · `No human comparison`
+  - card **1.9 s** / `Griffin's reply. A person answers in 0.9 s`
+  - demoted line **0.43 s** / `drawing the picture only, not the thinking`
+- Footer: `Kit.src('Live study: 26 of 54 vs 1 of 41. Latency 0.43 s: Tavus. Replies 1.89 s vs 0.90 s: NVIDIA VideoFDB.', 'Self-reported')`
 
 **Layout**
 - **Grid A**: 54 dots, 9 columns × 6 rows, dot radius 19, pitch 58. Origin x 160, y 392 → block 522×348 (x 160–682, y 392–740).
@@ -472,7 +473,7 @@ Keep `portrait-src.png` out of the shipped assets (or leave it; it is small). Al
 | The 35–61% confidence interval and the 2.4% / 2% / 3% discrepancy | Kept in Rey's head for Q&A; on screen it would crowd out the simpler "they ran it themselves". |
 | Safety, disclosure features, consent for cloned identities | One spoken sentence at most; the argument belongs to the Future section. |
 | WebRTC, Daily, Baseten, Cerebrium, H100s, Queen Mary University | Infrastructure, not a technique. |
-| Griffin-Lite vs full Griffin distinction | Mentioned once in the slide-8 note ("what they tested was the small version"); not on screen. |
+| Griffin-Lite vs full Griffin distinction | On screen on `results` as the label sub-line `a research preview, not the full model`, and in the `open` and `results` notes. |
 
 ---
 
@@ -499,8 +500,8 @@ Reviewed by a student reviewer and a design reviewer; the notes below record the
   `01-airbnb.js` and `02-rufus.js`.
 - **cascade** — the time axis rescales to 460 px/s, so the five stage boxes now fill the frame out to
   x 1606 instead of stopping at x 1203. Box x/width: 180/230, 410/230, 640/460, 1100/230, 1330/276.
-  Click 4 floats the orange band **above** the axis (x 180, y 44, 920×80) with a bracket pointing down
-  at Raven / Sparrow / LLM, so it can no longer be read as a duration; the `2.8 – 3.5 s` caption and the
+  Click 4 floats the orange band **above** the axis (x 180, y 44, 1426×80) with a bracket pointing down
+  at all five boxes, so it can no longer be read as a duration; the measurement caption and the
   dead-air bracket leave the screen on that step, `.cs-time` and both chips dim to 0.55, and the three
   stage names stay readable under the bracket. Chips move up to top 820. Footer is one line.
 - **overview** — `you see it` labels the return arc; `it keeps watching you while it talks` now labels the
@@ -534,5 +535,5 @@ Reviewed by a student reviewer and a design reviewer; the notes below record the
   fills 87% of its card instead of 100%; the two CCM→generator arrows end at x 967 and the
   video→output arrow starts at x 1333.
 - **results** — only two numbers carry the accent: **48%** (the claim) and **1.9 s** (the honest
-  comparison against a person's 0.9 s). `0.43 s` drops to `var(--text-2)` — it is supporting detail,
-  not a claim.
+  comparison against a person's 0.9 s). `1.9 s` leads the right column under the caveat chip, and
+  `0.43 s` sits beneath it at `t-h2` in `var(--text-2)` — supporting detail, not a claim.
