@@ -48,12 +48,17 @@ own (R: Rufus launch note).
 
 ### 3 · `overview` (34 s, 3 pauses)
 Three cards, each a **preview of the slide that explains it**, revealed one per click, then card 01
-takes the orange border and a "start here" label.
+takes the orange border and a "start here" label. One-line titles, and all three bodies start at the
+same card-y (190) so the row reads as one grid.
 - 01 **Looks it up** — three source chips (reviews teal · listing sky · delivery orange) that match the
   RAG tiles on slide 5.
 - 02 **Calls tools** — `getDelivery(item, zip)` then `→ "Thu"`, the same call slide 6 animates.
-- 03 **Learns from ratings** — thumbs-up and thumbs-down buttons, drawn by the local `thumb()` SVG
-  helper (never an emoji font), reused on slide 8.
+- 03 **It learns** — thumbs-up and thumbs-down buttons, drawn by the local `thumb()` SVG
+  helper (never an emoji font), reused on slide 8. The title names the mechanism (ratings feed
+  back into training), not just the input.
+
+Cards are 500 wide at x 120 / 710 / 1300, matching the `thumbs` card row, with a 440 px nowrap
+title box so every one-line title keeps >= 10% slack.
 
 ### 4 · `demo` (26 s, 1 pause)
 Rey's own capture at `assets/capture/rufus-demo.mp4`, with the poster and a "capture missing"
@@ -86,15 +91,17 @@ are illustrative and the footer says so.
 No image. A six-month price line (`PRICES`, illustrative) against a dashed target at $70.
 Beats: axes → the model writes one record (item, target, expires in 6 months) and the target line
 draws → plain code watches, the price line draws across six months → the line crosses, the marker
-pulses, "bought within 30 minutes". Closing line: "The model writes the record once. Code does the
+pulses, "bought within 30 minutes". The line **stops at the buy point**: the crossing ends the story. Closing line: "The model writes the record once. Code does the
 waiting." Source: AWS 2025, flagged `Self-reported` (R:142: a record in a price-alert service,
 requests active six months, purchase within 30 minutes of the target).
 
 ### 8 · `thumbs` (32 s, 3 pauses)
-Three boxes — what shoppers do (the two rating buttons) → a second model that predicts the rating →
-the writer, trained toward high scores with a limit on how far it moves — and a return arrow,
-"new answers, new ratings". The footer says Amazon has not published the reward design, the algorithm
-or the update cadence, and that the pipeline shown is the standard RLHF recipe.
+Three cards on one internal grid (caps label → two-line title → body band → sub-line), flex columns so
+an extra line pushes rather than overlaps: two buttons per answer (the rating buttons sit in the body
+band) → a second model that predicts the rating → the writer, trained for high scores with a cap on how
+far it moves — then a return arrow, "new answers, new ratings". Card 01's sub-line
+("few answers get rated") is held until click 1, where Rey makes that point. The footer says the reward
+design is unpublished and that the pipeline shown is the standard RLHF recipe.
 
 ### 9 · `trap` (24 s, 2 pauses)
 Two columns: reward approval → flattery; reward purchases → overselling. The second column takes the
@@ -103,14 +110,16 @@ as the report's analysis, not an Amazon disclosure.
 
 ### 10 · `results` (46 s, 3 pauses)
 400M+ customers with interactions +570%, then ~$12B incremental sales, then the "60% more likely to
-complete a purchase" quote, which is then demoted: a Selection bias badge, two dot groups (already
+complete a purchase" quote, which is then demoted: a neutral Selection bias badge sitting clear above
+the shrunken chip, two dot groups (already
 shopping / just browsing), "They were already closer to buying." and "A clean test hides the feature
 from a random slice of customers." All figures `Self-reported`.
 
 ### 11 · `takeaways` (36 s, 2 pauses)
 The canonical section closer: image bleed, three numbered rows, and the throughline strip.
 Rows: RAG (fetch instead of retraining) · Tool calling (the model writes the request, plain code runs
-it) · Learning from ratings (reward approval and you get flattery). The strip is
+it) · Learning from ratings (reward approval and you get flattery). Three elements per row — index,
+caps label, headline. **No sub-line**: that detail lives in the notes. The strip is
 **PRICE · ASSIST · INTERACT · NEGOTIATE**: PRICE already slabbed red, ASSIST wipes in blue on the last
 click, INTERACT turns `--purple-t`, NEGOTIATE stays `--text-3`. Keep this slide pixel-identical to
 `airbnb/takeaways` and `griffin/takeaway` apart from text, image and section colour.

@@ -58,7 +58,7 @@
     }).join('') + '</div>';
   }
 
-  var RENAME = 'Amazon renamed Rufus to <em>Alexa for Shopping</em> on 13 May 2026. Amazon says the same engine still powers parts of it.';
+  var RENAME = 'Rufus was renamed <em>Alexa for Shopping</em>, May 2026.';
 
   /* ======================================================================
      1 · OPENER — section opener (12 s, no clicks)
@@ -187,34 +187,34 @@
         { t: 'listing', col: C.skyT },
         { t: 'delivery', col: C.orangeT }
       ].map(function (c, i) {
-        return '<div class="t-label" style="position:absolute;left:28px;top:' + (206 + i * 80) + 'px;height:66px;padding:0 30px;' +
+        return '<div class="t-label" style="position:absolute;left:28px;top:' + (190 + i * 72) + 'px;height:64px;padding:0 30px;' +
           'display:inline-flex;align-items:center;border-radius:33px;background:' + C.bg + ';border:2px solid ' + c.col + ';color:' + c.col + '">' + c.t + '</div>';
       }).join('');
       // card 2 · one tool call and its result (previews the tool-calling slide)
-      var callv = '<div class="t-mono" style="position:absolute;left:28px;top:248px;font-size:28px;color:var(--sky-t)">getDelivery(item, zip)</div>' +
-        '<div class="t-mono" style="position:absolute;left:68px;top:312px;font-size:36px;color:var(--teal-t)">&#8594; "Thu"</div>';
+      var callv = '<div class="t-mono" style="position:absolute;left:28px;top:190px;font-size:28px;color:var(--sky-t)">getDelivery(item, zip)</div>' +
+        '<div class="t-mono" style="position:absolute;left:68px;top:254px;font-size:36px;color:var(--teal-t)">&#8594; "Thu"</div>';
       // card 3 · the two buttons under every answer (previews the ratings slide)
-      var rate = '<div style="position:absolute;left:28px;top:270px;width:130px;height:84px;border-radius:20px;background:' + C.bg +
+      var rate = '<div style="position:absolute;left:28px;top:190px;width:130px;height:84px;border-radius:20px;background:' + C.bg +
           ';border:3px solid ' + C.tealT + ';display:flex;align-items:center;justify-content:center">' + thumb('up', C.tealT, 48) + '</div>' +
-        '<div style="position:absolute;left:178px;top:270px;width:130px;height:84px;border-radius:20px;background:' + C.bg +
+        '<div style="position:absolute;left:178px;top:190px;width:130px;height:84px;border-radius:20px;background:' + C.bg +
           ';border:3px solid ' + C.text3 + ';display:flex;align-items:center;justify-content:center">' + thumb('down', C.text3, 48) + '</div>';
 
       var cards = [
         { tag: '01', t: 'Looks it up', body: chips },
         { tag: '02', t: 'Calls tools', body: callv },
-        { tag: '03', t: 'Learns from ratings', body: rate }
+        { tag: '03', t: 'It learns', body: rate }
       ];
       var h = '';
       cards.forEach(function (c, i) {
-        var x = [120, 740, 1360][i];
-        h += '<div class="oc oc' + i + '" ' + at(x, 400, 'width:440px;height:460px;border-radius:28px;background:var(--surface);border:3px solid transparent') + '>' +
+        var x = [120, 710, 1300][i];
+        h += '<div class="oc oc' + i + '" ' + at(x, 400, 'width:500px;height:430px;border-radius:28px;background:var(--surface);border:3px solid transparent') + '>' +
           '<div class="t-mono" style="position:absolute;left:28px;top:24px;font-size:28px;color:var(--text-3)">' + c.tag + '</div>' +
-          '<div class="t-h2" style="position:absolute;left:28px;top:70px;width:384px">' + c.t + '</div>' +
+          '<div class="t-h2 oct" style="position:absolute;left:28px;top:70px;width:440px;white-space:nowrap">' + c.t + '</div>' +
           c.body +
         '</div>';
       });
       h += '<div class="ofoc t-label" ' + at(148, 352, 'color:var(--orange-t)') + '>start here</div>';
-      return h + Kit.src('Amazon Science, “The technology behind Rufus”, Oct 2024; AWS, “How Rufus scales… with Amazon Bedrock”, 2025. The tool call shown is illustrative. ' + RENAME);
+      return h + Kit.src('Amazon Science, “The technology behind Rufus”, Oct 2024; AWS on Amazon Bedrock, 2025. Tool call illustrative. ' + RENAME);
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q;
@@ -264,20 +264,16 @@
 
       '<div class="dv-ask" ' + at(800, 300, 'width:1000px') + '>' +
         '<div class="t-caps" style="color:var(--text-2)">I asked</div>' +
-        '<div class="t-mono" style="margin-top:14px;font-size:44px;line-height:1.3;color:var(--orange-t)">“What do I need for<br>cold-weather golf?”</div>' +
+        '<div class="t-mono" style="margin-top:14px;font-size:36px;line-height:1.3;color:var(--orange-t)">“What do I need for<br>cold-weather golf?”</div>' +
       '</div>' +
 
       '<div class="dv-watch" ' + at(800, 560, 'width:1000px') + '>' +
         '<div class="t-caps" style="color:var(--text-2)">Watch for</div>' +
-        '<div class="dv-w dv-w0" style="margin-top:22px;display:flex;gap:22px;align-items:baseline">' +
-          '<span class="t-mono" style="font-size:36px;color:var(--text-3)">1</span>' +
-          '<span class="t-body">It <b class="c-blue">searches</b> before it writes</span></div>' +
-        '<div class="dv-w dv-w1" style="margin-top:22px;display:flex;gap:22px;align-items:baseline">' +
-          '<span class="t-mono" style="font-size:36px;color:var(--text-3)">2</span>' +
-          '<span class="t-body">Then <b class="c-blue">real products</b>, grouped by layer</span></div>' +
-        '<div class="dv-w dv-w2" style="margin-top:22px;display:flex;gap:22px;align-items:baseline">' +
-          '<span class="t-mono" style="font-size:36px;color:var(--text-3)">3</span>' +
-          '<span class="t-body">No product title says any of this</span></div>' +
+        ['searches first', 'real products', 'no matching title'].map(function (t, i) {
+          return '<div class="dv-w dv-w' + i + '" style="margin-top:26px;display:flex;gap:22px;align-items:baseline">' +
+            '<span class="t-mono" style="font-size:36px;color:var(--text-3)">' + (i + 1) + '</span>' +
+            '<span class="t-body c-blue">' + t + '</span></div>';
+        }).join('') +
       '</div>' +
       Kit.src('Screen capture from Rey’s own Amazon account (Alexa for Shopping panel, Nov 2026); account details cropped out.');
     },
@@ -418,7 +414,7 @@
         '<div class="t-mono" style="position:absolute;left:1280px;top:16px;font-size:32px;color:var(--text-2)">reviews <span class="tk tk2">2,311</span></div>' +
       '</div>';
       // closing line
-      h += '<div class="rcl t-h2" ' + at(120, 862, 'width:1680px;line-height:1.08') + '>Rufus runs these three steps on every question.<br>' +
+      h += '<div class="rcl t-h2" ' + at(120, 884, 'width:1680px;line-height:1.08') + '>Rufus runs these three steps on every question.<br>' +
         '<span style="color:var(--orange-t)">Picking the source is learned.</span></div>';
       // arrows + chips + barrier
       var svg = '' +
@@ -630,7 +626,7 @@
       });
       var defs = MSGS.map(function (m, i) { return head('sqA' + i, m.col); }).join('');
       return h + svgOverlay(svg, defs) +
-        Kit.src('Amazon, SIGIR 2026 industry paper (abstract only; the full text is paywalled): the Rufus agent follows a ReAct-style framework pairing LLM reasoning with deterministic backend services. AWS, 2025, describes the same split. Function name, arguments and result are illustrative.');
+        Kit.src('Amazon, SIGIR 2026 (abstract only): Rufus follows a ReAct-style loop pairing LLM reasoning with deterministic backend services. Call illustrative.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -692,22 +688,23 @@
     html: function () {
       var hit = -1;
       for (var i = 0; i < PRICES.length; i++) { if (PRICES[i] <= TARGET) { hit = i; break; } }
-      var pts = PRICES.map(function (p, i) { return px(i).toFixed(1) + ',' + py(p).toFixed(1); }).join(' ');
+      // the line stops at the buy point: the crossing ends the story
+      var pts = PRICES.slice(0, hit + 1).map(function (p, i) { return px(i).toFixed(1) + ',' + py(p).toFixed(1); }).join(' ');
       var ty = py(TARGET).toFixed(1);
 
       var h = '';
       // axis labels
       h += '<div class="pz-y t-caps" ' + at(PX0, 384, 'color:var(--text-3)') + '>price</div>';
       h += '<div class="pz-x t-caps" ' + at(PX0, 828, 'width:' + (PX1 - PX0) + 'px;text-align:center;color:var(--text-3)') + '>six months</div>';
-      h += '<div class="pz-t t-mono" ' + at(PX0 + 14, 596, 'font-size:32px;color:var(--orange-t)') + '>target $70</div>';
+      h += '<div class="pz-t t-mono" ' + at(PX0 + 14, 592, 'font-size:36px;color:var(--orange-t)') + '>target $70</div>';
       // the record the model writes, once
-      h += '<div class="pz-rec" ' + at(1340, 400, 'width:460px;height:300px;border-radius:28px;background:var(--surface)') + '>' +
+      h += '<div class="pz-rec" ' + at(1320, 400, 'width:480px;height:300px;border-radius:28px;background:var(--surface)') + '>' +
         '<div class="t-caps" style="position:absolute;left:28px;top:26px;color:var(--text-3)">The record</div>' +
-        '<div class="t-mono" style="position:absolute;left:28px;top:90px;font-size:32px;color:var(--text)">item: golf gloves</div>' +
-        '<div class="t-mono" style="position:absolute;left:28px;top:150px;font-size:32px;color:var(--orange-t)">target: $70</div>' +
-        '<div class="t-mono" style="position:absolute;left:28px;top:210px;font-size:32px;color:var(--text)">expires: 6 months</div>' +
+        '<div class="t-mono" style="position:absolute;left:28px;top:90px;font-size:36px;color:var(--text)">item: golf gloves</div>' +
+        '<div class="t-mono" style="position:absolute;left:28px;top:150px;font-size:36px;color:var(--orange-t)">target: $70</div>' +
+        '<div class="t-mono" style="position:absolute;left:28px;top:210px;font-size:36px;color:var(--text)">expires: 6 months</div>' +
       '</div>';
-      h += '<div class="pz-code t-label" ' + at(1340, 732, 'width:440px;color:var(--text-2);font-weight:500') + '>Plain code checks the price. The model is not running.</div>';
+      h += '<div class="pz-code t-label" ' + at(1320, 732, 'width:460px;color:var(--text-2);font-weight:500') + '>Plain code checks the price. The model is not running.</div>';
       h += '<div class="pz-buy t-body" ' + at(660, 712, 'width:480px;text-align:right;color:var(--orange-t);font-weight:600') + '>bought within 30 minutes</div>';
       h += '<div class="pz-cl t-h2" ' + at(120, 888, 'width:1680px;color:var(--text-2)') + '>The model writes the record once. ' +
         '<span style="color:var(--orange-t)">Code does the waiting.</span></div>';
@@ -726,7 +723,7 @@
         '<line class="pz-lead" x1="1150" y1="' + (py(PRICES[hit]) + 14).toFixed(1) + '" x2="1150" y2="724" stroke="' + C.orangeT + '" stroke-width="3"/>';
 
       return h + svgOverlay(svg) +
-        Kit.src('AWS, “How Rufus scales… with Amazon Bedrock”, 2025: the model writes a record in a price-alert service, conventional software watches the price, requests stay active for six months, and purchases complete within 30 minutes of the target. The price line is illustrative.', 'Self-reported');
+        Kit.src('AWS, 2025: the model writes a price-alert record; plain code watches six months and buys within 30 minutes. Price line illustrative.', 'Self-reported');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -775,38 +772,41 @@
     id: 'thumbs', title: 'Learning from ratings',
     heading: 'Learning from ratings', budgetSec: 32,
     html: function () {
+      // the two buttons under every answer, drawn as SVG (same icon as the overview)
+      function btn(cls, dir, col) {
+        return '<div class="' + cls + '" style="width:124px;height:80px;border-radius:20px;background:' + C.bg + ';border:3px solid ' + col +
+          ';display:flex;align-items:center;justify-content:center">' + thumb(dir, col, 46) + '</div>';
+      }
       var boxes = [
-        { caps: 'What shoppers do', t: '', s: 'few answers get rated' },
-        { caps: 'A second model', t: 'Predicts the rating', s: 'it grades every answer' },
-        { caps: 'The writer', t: 'Trained toward high scores', s: 'with a limit on how far it moves' }
+        { caps: 'What shoppers do', t: 'Two buttons<br>per answer', body: btn('tg-up', 'up', C.tealT) + btn('tg-dn', 'down', C.text3),
+          s: 'few answers get rated' },
+        { caps: 'A second model', t: 'Predicts<br>the rating', body: '', s: 'it grades every answer' },
+        { caps: 'The writer', t: 'Trained for<br>high scores', body: '', s: 'with a cap on how far it moves' }
       ];
       var h = '';
       boxes.forEach(function (b, i) {
-        var x = [120, 730, 1340][i];
-        h += '<div class="tb tb' + i + '" ' + at(x, 400, 'width:460px;height:340px;border-radius:28px;background:var(--surface)') + '>' +
-          '<div class="t-caps" style="position:absolute;left:28px;top:28px;width:404px;color:var(--text-3)">' + b.caps + '</div>' +
-          (b.t ? '<div class="t-h2" style="position:absolute;left:28px;top:86px;width:404px">' + b.t + '</div>' : '') +
-          '<div class="t-label" style="position:absolute;left:28px;top:266px;width:404px;color:var(--text-2);font-weight:500">' + b.s + '</div>' +
+        var x = [120, 710, 1300][i];
+        h += '<div class="tb tb' + i + '" ' + at(x, 380, 'width:500px;border-radius:28px;background:var(--surface);' +
+          'padding:36px;display:flex;flex-direction:column;align-items:flex-start') + '>' +
+          '<div class="t-caps" style="color:var(--text-3)">' + b.caps + '</div>' +
+          '<div class="t-h2" style="margin-top:20px;line-height:1.1">' + b.t + '</div>' +
+          '<div class="tb-body" style="margin-top:24px;height:80px;display:flex;gap:20px;align-items:center">' + b.body + '</div>' +
+          '<div class="sb t-label" style="margin-top:24px;color:var(--text-2);font-weight:500">' + b.s + '</div>' +
         '</div>';
       });
-      // the two buttons under every answer, drawn as SVG (same icon as the overview)
-      h += '<div class="tg-up" ' + at(148, 490, 'width:130px;height:84px;border-radius:20px;background:' + C.bg + ';border:3px solid ' + C.tealT +
-        ';display:flex;align-items:center;justify-content:center') + '>' + thumb('up', C.tealT, 48) + '</div>';
-      h += '<div class="tg-dn" ' + at(298, 490, 'width:130px;height:84px;border-radius:20px;background:' + C.bg + ';border:3px solid ' + C.text3 +
-        ';display:flex;align-items:center;justify-content:center') + '>' + thumb('down', C.text3, 48) + '</div>';
-      h += '<div class="tr-lab t-label" ' + at(660, 872, 'width:600px;text-align:center;color:var(--text-3);font-weight:500') + '>new answers, new ratings</div>';
+      h += '<div class="tr-lab t-label" ' + at(660, 876, 'width:600px;text-align:center;color:var(--text-3);font-weight:500') + '>new answers, new ratings</div>';
       var svg =
-        '<path class="tf tf0" d="M580,570 L724,570" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#thA)"/>' +
-        '<path class="tf tf1" d="M1190,570 L1334,570" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#thA)"/>' +
+        '<path class="tf tf0" d="M628,580 L700,580" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#thA)"/>' +
+        '<path class="tf tf1" d="M1218,580 L1290,580" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#thA)"/>' +
         // solid, not dashed: DrawSVG overwrites stroke-dasharray, so a dashed path cannot also be drawn
-        '<path class="tret" d="M1570,740 L1570,820 Q1570,840 1550,840 L370,840 Q350,840 350,820 L350,746" fill="none" stroke="' + C.text3 +
+        '<path class="tret" d="M1550,792 L1550,828 Q1550,848 1530,848 L390,848 Q370,848 370,828 L370,798" fill="none" stroke="' + C.text3 +
           '" stroke-width="3" marker-end="url(#thB)"/>';
       return h + svgOverlay(svg, head('thA', C.blue) + head('thB', C.text3)) +
-        Kit.src('Amazon says customers mark answers liked or disliked and that Rufus learns from that through reinforcement learning; the reward design, the algorithm and the update cadence are unpublished. The pipeline shown is the standard RLHF recipe.');
+        Kit.src('Amazon says shoppers mark answers liked or disliked and Rufus learns from that; the reward design is unpublished. Pipeline shown is standard RLHF.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set([q('.tb1'), q('.tb2'), q('.tr-lab')], { autoAlpha: 0 });
+      gsap.set([q('.tb1'), q('.tb2'), q('.tr-lab'), q('.tb0 .sb')], { autoAlpha: 0 });
       gsap.set(qa('.tf'), { autoAlpha: 0 });
       gsap.set(q('.tret'), { autoAlpha: 0 });
 
@@ -815,7 +815,8 @@
       tl.from(qa('.tg-up, .tg-dn'), { scale: .7, autoAlpha: 0, transformOrigin: '50% 50%', duration: .4, ease: Kit.ease.back, stagger: .12 }, '-=.2');
       ctx.pause();
 
-      // ---- 1 · ratings → grader
+      // ---- 1 · few people press them, so a grader learns to predict the rating
+      Kit.show(tl, q('.tb0 .sb'), { y: 10, duration: .35 });
       tl.set(q('.tf0'), { autoAlpha: 1 });
       Kit.draw(tl, q('.tf0'), { duration: .4 });
       Kit.show(tl, q('.tb1'), { y: 36, duration: .55, at: '-=.1' });
@@ -836,7 +837,7 @@
       'Last part. Every Rufus answer carries a thumbs-up and a thumbs-down. ' +
       '[click] Few shoppers press them, so you cannot train on them directly. Instead a second model learns to predict the rating, ' +
       'and grades every answer. ' +
-      '[click] Then you train the writer toward answers the grader scores highly, with a limit so it does not drift into nonsense. ' +
+      '[click] Then you train the writer toward answers the grader scores highly, with a cap so it does not drift into nonsense. ' +
       '[click] New answers, new ratings, round again. Compare Airbnb: there we wrote the grader by hand. Here it is learned from people.'
   };
 
@@ -856,7 +857,7 @@
         h += '<div class="tp tp' + i + '">' +
           '<div class="tp-pill" style="position:absolute;left:' + (c.x - 240) + 'px;top:400px;width:480px;height:88px;border-radius:44px;background:var(--surface);' +
             'border:2px solid ' + C.line + ';display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--text-2)">' + c.pill + '</div>' +
-          '<div class="tp-card" style="position:absolute;left:' + (c.x - 270) + 'px;top:620px;width:540px;height:180px;border-radius:24px;background:var(--surface);' +
+          '<div class="tp-card" style="position:absolute;left:' + (c.x - 310) + 'px;top:620px;width:620px;height:180px;border-radius:24px;background:var(--surface);' +
             'border:3px solid ' + c.tint + ';display:flex;align-items:center;justify-content:center">' +
             '<span class="t-h1" style="color:' + c.tint + '">' + c.word + '</span></div>' +
         '</div>';
@@ -890,7 +891,7 @@
 
       // ---- 2 · weight moves to the uncomfortable case
       tl.to(q('.tp1').querySelector('.tp-card'), { borderWidth: 5, duration: .3 });
-      tl.to(q('.tp0'), { opacity: .5, duration: .35 }, '<');
+      tl.to(q('.tp0'), { opacity: .7, duration: .35 }, '<');
       Kit.show(tl, q('.tp-cl'), { y: 18, duration: .5, at: '<' });
     },
     notes:
@@ -916,11 +917,11 @@
       }
       var h =
         card('ra-a', 120, 'num-a', 'Customers', 'in the 12 months to Sept 2026',
-          '<div class="t-mono" style="position:absolute;left:360px;top:196px;width:400px;text-align:right;font-size:32px;color:var(--blue-t)">interactions +570%</div>') +
+          '<div class="t-mono" style="position:absolute;left:340px;top:194px;width:420px;text-align:right;font-size:36px;color:var(--blue-t)">interactions +570%</div>') +
         card('ra-b', 980, 'num-b', 'Incremental sales', 'annualized, Amazon’s own estimate (Q4 2025)');
       h += '<div class="ra-chip" ' + at(120, 680, 'width:1680px;height:110px;border-radius:24px;background:#2A2627;border:2px solid ' + C.line) + '>' +
         '<div class="ra-q t-h2" style="position:absolute;left:40px;top:28px;width:1600px;color:var(--text-2)">“Users are 60% more likely to complete a purchase.”</div></div>';
-      h += '<div class="ra-badge t-caps" ' + at(140, 648, 'padding:8px 18px;border-radius:999px;background:var(--bg);border:2px solid var(--orange-t);color:var(--orange-t)') + '>Selection bias</div>';
+      h += '<div class="ra-badge t-caps" ' + at(140, 622, 'padding:8px 18px;border-radius:999px;background:var(--bg);border:2px solid ' + C.line + ';color:var(--text-2)') + '>Selection bias</div>';
       // two-group picture
       var dots = '';
       [[1230, C.orangeT], [1560, C.text3]].forEach(function (g, gi) {
@@ -934,10 +935,10 @@
         '<div class="t-caps" ' + at(1080, 854, 'width:300px;text-align:center;color:var(--text-2)') + '>opened it</div>' +
         '<div class="t-caps" ' + at(1410, 854, 'width:300px;text-align:center;color:var(--text-3)') + '>didn’t</div>' +
       '</div>';
-      h += '<div class="ra-verdict t-h2" ' + at(120, 806, 'width:980px;font-stretch:100%') + '>They were <span style="color:var(--orange-t)">already closer to buying</span>.</div>';
-      h += '<div class="ra-fix t-label" ' + at(120, 884, 'width:940px;color:var(--text-2);font-weight:500') + '>A clean test hides the feature from a random slice of customers.</div>';
+      h += '<div class="ra-verdict t-h2" ' + at(120, 858, 'width:940px;font-stretch:100%') + '>They were <span style="color:var(--orange-t)">already closer to buying</span>.</div>';
+      h += '<div class="ra-fix t-label" ' + at(120, 930, 'width:940px;color:var(--text-2);font-weight:500') + '>A clean test hides the feature from a random slice of customers.</div>';
       return h + svgOverlay(dots) +
-        Kit.src('Amazon Q3 2026 results and Q4 2025 earnings call, via the report’s timeline. All figures company-reported, unaudited, published without a method. The $12B figure is for Rufus (Q4 2025); no comparable figure was given for Alexa for Shopping in Oct 2026.', 'Self-reported');
+        Kit.src('Amazon Q3 2026 results and the Q4 2025 earnings call. Unaudited, no method published. The $12B is for Rufus, Q4 2025.', 'Self-reported');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -964,9 +965,9 @@
       ctx.pause();
 
       // ---- 3 · demote the claim, show who opened it
-      tl.to(q('.ra-chip'), { width: 900, opacity: .45, duration: .5, ease: 'power2.inOut' });
+      tl.to(q('.ra-chip'), { width: 900, height: 150, opacity: .45, duration: .5, ease: 'power2.inOut' });
       // the quote keeps its words but gives up its size, so it still fits the smaller chip
-      tl.to(q('.ra-q'), { fontSize: 36, width: 820, top: 14, duration: .5, ease: 'power2.inOut' }, '<');
+      tl.to(q('.ra-q'), { fontSize: 36, width: 820, top: 28, duration: .5, ease: 'power2.inOut' }, '<');
       Kit.show(tl, q('.ra-badge'), { y: 14, duration: .35, ease: Kit.ease.back, at: '<' });
       tl.set(q('.ra-pic'), { autoAlpha: 1 });
       tl.to(qa('.dg0'), { autoAlpha: 1, duration: .25, stagger: .02 }, '-=.2');
@@ -988,12 +989,9 @@
      griffin/takeaway apart from text, image and section colour.
      ====================================================================== */
   var TKROWS = [
-    ['01', 'RAG', 'Facts change faster than<br>you can retrain. Fetch them.',
-      'Frozen weights, fresh evidence.'],
-    ['02', 'Tool calling', 'Let the model write the request.<br>Let plain code run it.',
-      'Costly or irreversible steps stay in code.'],
-    ['03', 'Learning from ratings', 'Reward approval and<br>you get flattery.',
-      'A model chases the signal, not your intent.']
+    ['01', 'RAG', 'Facts change faster than<br>you can retrain. Fetch them.'],
+    ['02', 'Tool calling', 'Let the model write the request.<br>Let plain code run it.'],
+    ['03', 'Learning from ratings', 'Reward approval and<br>you get flattery.']
   ];
 
   var TAKEAWAYS = {
@@ -1001,12 +999,11 @@
     heading: 'Takeaways', budgetSec: 36,
     html: function () {
       var rows = TKROWS.map(function (r, i) {
-        return '<div class="tk-row r' + i + '" style="top:' + (268 + i * 210) + 'px">' +
+        return '<div class="tk-row r' + i + '" style="top:' + (285 + i * 190) + 'px">' +
           '<div class="n t-mono">' + r[0] + '</div>' +
           '<div class="rule"></div>' +
           '<div class="tg t-caps">' + r[1] + '</div>' +
           '<div class="ln t-h2">' + r[2] + '</div>' +
-          '<div class="sb t-label">' + r[3] + '</div>' +
         '</div>';
       }).join('');
       return '' +
@@ -1014,8 +1011,7 @@
         '<div class="tk-veil"></div>' +
         rows +
         stripHtml() +
-        Kit.src('Section recap. Retrieval and tool calling: Amazon Science, Oct 2024; Amazon, SIGIR 2026. ' +
-                'Reward hacking is the report’s analysis, not an Amazon disclosure.');
+        Kit.src('Amazon Science, Oct 2024; Amazon, SIGIR 2026. Reward hacking: the report’s analysis.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;

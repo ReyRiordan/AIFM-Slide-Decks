@@ -34,7 +34,6 @@
 .slide[data-sec="rufus"] .tk-row .ln {
   position: absolute; left: 160px; top: 38px; width: 1060px; font-weight: 800; line-height: 1.1;
 }
-.slide[data-sec="rufus"] .tk-row .sb { position: absolute; left: 160px; top: 156px; width: 1060px; color: var(--text-2); }
 
 .slide[data-sec="rufus"] .thru { position: absolute; left: 120px; top: 890px; z-index: 2; display: flex; align-items: center; }
 .slide[data-sec="rufus"] .thru .sep { color: var(--line); margin: 0 20px; }
