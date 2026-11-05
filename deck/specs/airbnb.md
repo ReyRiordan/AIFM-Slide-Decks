@@ -45,7 +45,8 @@ On screen: price card (`ONE LISTING, ONE NIGHT` / `$ ?`), three wall cards under
 `WHY HOTEL PRICING FAILS HERE`, five night tiles under `WHAT AIRBNB GETS BACK`, and the caption
 `Booked or empty. Never the right price.`
 
-Build: entrance (the question) → walls → prices → outcome glyphs + caption.
+Build: entrance (the question) → walls → prices → outcome glyphs + caption. Each tile's outcome slot
+holds a dimmed dash from the start, so the intermediate state never looks like a failed render.
 
 Spoken only, not on screen: Airbnb tried the textbook route and its own A/B tests showed no revenue gain.
 
@@ -57,7 +58,8 @@ Source: Ye et al., KDD 2018 via Colyer, 2018. Dates and prices are illustrative.
 
 Layout: label `A SHORT LIST OF YES/NO QUESTIONS` at y 280; SVG tree (1120×580) at x 120, y 340,
 four rows at local y 40 / 206 / 372 / 538; legend `Each leaf gives a booking chance.` at y 922;
-right column at x 1300 (`One night` card, `This tree says` card) and `One tree is a rough guess.` at y 860.
+right column at x 1240, width 560 (`One night` card, `This tree says` card) and `One tree is a rough
+guess.` at y 860.
 
 Tree: `Within 7 days?` → no → `35%`; yes → `Saturday?` → no → `55%`; yes → `Price above the median?`
 → yes → `50%`, no → `80%`.
@@ -94,20 +96,23 @@ The five nights and the shrinking gaps are illustrative.
 **The one idea:** the gradient is the direction and size of the error, and Airbnb's model turns a price
 into a booking chance.
 
-Layout: label `THE ERROR ON EACH NIGHT` at y 280; SVG (840×420) at x 120, y 340 with a zero line at
-local y 210 and five arrows at local x 300 / 410 / 520 / 630 / 740, numbered 1-5 at local y 340;
+Layout: label `HOW TO FIX EACH NIGHT` at y 280; SVG (840×420) at x 120, y 340 with a zero line at
+local y 210 and five arrows at local x 300 / 410 / 520 / 630 / 740, numbered 1-5 at local y 340.
+Left of the zero line, three stacked keys say which way an arrow points: `↑ guess higher` (sky, local
+y 166), `0 = exactly right` (local y 220) and `↓ guess lower` (red, local y 274). They match Rey's
+line "Up means guess higher, down means lower", so the arrows cannot be read as the error itself;
 caption `Each arrow is one night: which way, and how far` at local y 415; chip `A new tree is trained
 to follow the arrows` at y 800.
 Right column at x 960, width 840: `Booking models` / `One per market`, `The chance a night books`, `Price is one of the
-inputs` ($150 → 62%, $180 → 41%), then the chip `Next: a second model sets the price` at y 906.
+inputs` ($150 → 62%, $180 → 41%). No hand-off chip: Rey speaks the hand-off.
 The footer says each tree follows the gradient of *the booking model's own loss*, so students don't confuse it
 with the custom loss two slides later.
 
 State: `st.g`, the arrow length as a fraction of the full error. `render()` redraws each shaft and head. The head is a fixed 26 px, and an arrow is never drawn shorter
-than its own head, so small errors stay readable.
+than its head plus a 12 px shaft, so even the smallest error still reads as an arrow.
 
-Build: entrance (arrows) → a tree follows them and they shrink to 35% → the two model cards → the
-what-if prices and the hand-off chip.
+Build: entrance (arrows) → a tree follows them and they shrink to 60% → the two model cards → the
+what-if prices.
 
 No formula on this slide. The one equation in the talk is the loss, on the next slide.
 
@@ -155,20 +160,26 @@ The fix pass changed only the heading (`The loss function`) and three labels (`W
 `Prices the night supports`, `The loss, in symbols`). The price-model pass renamed the readout
 `Model says` → `Price model`, opened the notes with "Now we grade the price model's suggestion", and added
 one closing sentence: training adjusts each listing's two settings until its total penalty is smallest.
+The review pass stacked the `.c3` readout (`SUGGESTED` / `PENALTY`, 76 px mono, label column 272 px and
+both values left-aligned at the same x, penalty carries a `$` so it is not a bare integer)
+so the card clears y 990 and the two numbers can never be read as one; dimmed `.c1`–`.c3` with the chart
+on step 5, so the arrows own that beat; and hid the `◂ drag ▸` hint until a pointer moves over the chart.
 
 Source: Ye et al., KDD 2018 (via Colyer, 2018). Zone widths (×0.9, ×1.1) are illustrative.
 
 ## 7 · `results` — 60 s
 
 Two numbers (−5.7% nightly price, +8.6% daily revenue), the causal chain, and the self-reported versus
-independent contrast. On screen unchanged apart from the heading; the notes were trimmed from 75 s to 60 s.
+independent contrast. The self-reported card is set in `--text-3` and states the verdict
+(`A correlation, not a result`); the independent card keeps full contrast and its teal rule.
 
 Source: Zhang, Mehta, Singh & Srinivasan, Marketing Science (2021). Airbnb's 4× claim is company-reported
 and correlational, and carries the `Self-reported` flag.
 
 ## 8 · `takeaways` — 45 s
 
-Canonical section closer: image, veil, three numbered rows, marker strip. The strip reads
+Canonical section closer: image, veil, three numbered rows, marker strip. Each row is index + label +
+two-line headline only; rows sit at `285 + i * 190`. No sub-line: the detail lives in the notes. The strip reads
 **PRICE · ASSIST · INTERACT · NEGOTIATE**, with `PRICE` filled and `ASSIST` tinted on the last click.
 
 Rows: `Boosted trees` / `Custom loss` / `Objectives`.

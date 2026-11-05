@@ -12,7 +12,13 @@
 }
 .slide[data-sec="airbnb"] .nt-d { color: var(--text-3); letter-spacing: .05em; }
 .slide[data-sec="airbnb"] .nt-p { font-size: 36px; color: var(--text); }
-.slide[data-sec="airbnb"] .nt-g { font-size: 40px; font-weight: 700; line-height: 1; }
+.slide[data-sec="airbnb"] .nt-s { position: relative; width: 100%; height: 44px; }
+.slide[data-sec="airbnb"] .nt-x,
+.slide[data-sec="airbnb"] .nt-g {
+  position: absolute; left: 0; right: 0; top: 0; text-align: center;
+  font-size: 40px; font-weight: 700; line-height: 1;
+}
+.slide[data-sec="airbnb"] .nt-x { color: var(--text-3); opacity: .55; }
 
 .slide[data-sec="airbnb"] .wall {
   position: absolute; left: 1120px; width: 680px; height: 120px;
@@ -39,8 +45,7 @@
 /* ---------- gbt-use ---------- */
 .slide[data-sec="airbnb"] .gu { padding: 22px 32px; }
 .slide[data-sec="airbnb"] .gu .wi { font-size: 44px; font-weight: 600; margin-top: 14px; color: var(--text); }
-.slide[data-sec="airbnb"] .gfix,
-.slide[data-sec="airbnb"] .gnxt { height: 64px; font-size: var(--fs-label); font-weight: 650; }
+.slide[data-sec="airbnb"] .gfix { height: 64px; font-size: var(--fs-label); font-weight: 650; }
 
 /* ---------- results ---------- */
 .slide[data-sec="airbnb"] .rcard { position: absolute; top: 300px; width: 800px; height: 300px; padding: 36px; }
@@ -54,10 +59,12 @@
 }
 
 .slide[data-sec="airbnb"] .ev { position: absolute; top: 795px; width: 800px; height: 160px; border-radius: 20px; padding: 20px 28px; }
-.slide[data-sec="airbnb"] .ev.a { left: 120px; background: var(--bg-2); opacity: .6; }
+.slide[data-sec="airbnb"] .ev.a { left: 120px; background: var(--bg-2); }
 .slide[data-sec="airbnb"] .ev.b { left: 980px; background: var(--surface); border-left: 3px solid var(--teal-t); }
 .slide[data-sec="airbnb"] .ev .cl { margin-top: 12px; color: var(--text-2); }
-.slide[data-sec="airbnb"] .ev .up { position: absolute; right: 26px; top: 18px; font-size: 44px; line-height: 1; color: var(--teal-t); }
+/* the rejected, self-reported claim reads as a footnote, not as evidence */
+.slide[data-sec="airbnb"] .ev.a .cl,
+.slide[data-sec="airbnb"] .ev.a .flag { color: var(--text-3); }
 
 /* ---------- takeaways · CANONICAL SECTION CLOSER ----------
    Identical in css/sections/rufus.css and css/sections/griffin.css.
@@ -72,18 +79,17 @@
   background: linear-gradient(90deg, #1E1B1C 0%, rgba(30,27,28,.98) 12%,
     rgba(30,27,28,.74) 42%, rgba(30,27,28,.34) 70%, rgba(30,27,28,0) 94%);
 }
-.slide[data-sec="airbnb"] .tk-row { position: absolute; left: 120px; width: 1120px; height: 190px; z-index: 2; }
+.slide[data-sec="airbnb"] .tk-row { position: absolute; left: 120px; width: 1120px; height: 165px; z-index: 2; }
 .slide[data-sec="airbnb"] .tk-row .n {
   position: absolute; left: 0; top: 38px; font-size: 52px; font-weight: 600; color: var(--text-3);
 }
 .slide[data-sec="airbnb"] .tk-row .rule {
-  position: absolute; left: 112px; top: 0; width: 2px; height: 190px; background: var(--line);
+  position: absolute; left: 112px; top: 0; width: 2px; height: 165px; background: var(--line);
 }
 .slide[data-sec="airbnb"] .tk-row .tg { position: absolute; left: 160px; top: 0; color: var(--sec-t); }
 .slide[data-sec="airbnb"] .tk-row .ln {
   position: absolute; left: 160px; top: 38px; width: 1060px; font-weight: 800; line-height: 1.1;
 }
-.slide[data-sec="airbnb"] .tk-row .sb { position: absolute; left: 160px; top: 156px; width: 1060px; color: var(--text-2); }
 
 .slide[data-sec="airbnb"] .thru { position: absolute; left: 120px; top: 890px; z-index: 2; display: flex; align-items: center; }
 .slide[data-sec="airbnb"] .thru .sep { color: var(--line); margin: 0 20px; }
@@ -126,3 +132,12 @@
   background: var(--orange); transform: skewX(var(--skew));
 }
 .slide[data-sec="airbnb"] .pmnx { height: 64px; font-size: var(--fs-label); font-weight: 650; }
+
+/* ---------- loss · the readout card ----------
+   The price and the penalty stack, so two mono numbers never read as one. */
+.slide[data-sec="airbnb"] .c3 { padding: 24px 36px; }
+.slide[data-sec="airbnb"] .c3 .rr { display: flex; align-items: center; height: 76px; }
+.slide[data-sec="airbnb"] .c3 .rr .t-caps { flex: none; width: 272px; }
+.slide[data-sec="airbnb"] .c3 .rr .t-num { flex: none; font-size: 76px; text-align: left; }
+.slide[data-sec="airbnb"] .c1,
+.slide[data-sec="airbnb"] .c2 { padding: 24px 36px; }
