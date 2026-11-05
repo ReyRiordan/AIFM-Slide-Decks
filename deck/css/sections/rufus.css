@@ -48,7 +48,9 @@
 /* RAG: stacked variants share one slot, so they must not affect layout */
 .slide[data-sec="rufus"] .rq,
 .slide[data-sec="rufus"] .ra,
-.slide[data-sec="rufus"] .rf { pointer-events: none; }
+.slide[data-sec="rufus"] .rfg { pointer-events: none; }
+/* RAG: the fetched words fly as one block, so the wrapper carries the transform */
+.slide[data-sec="rufus"] .rfly { will-change: transform; }
 .slide[data-sec="rufus"] .rt { transition: none; }
 .slide[data-sec="rufus"] .rtiles { position: absolute; inset: 0; }
 
@@ -63,3 +65,9 @@
 /* demo: build() resizes .dv-frame and .dv-vid from the clip's own
    videoWidth / videoHeight, so no fixed size may be set here */
 .slide[data-sec="rufus"] .dv-vid { object-fit: contain; background: var(--bg2); }
+
+/* results: the two caps labels carry scope and period, so they need more room
+   than the default caps tracking leaves on an 800px card */
+.slide[data-sec="rufus"][data-slide="results"] .rc-caps {
+  letter-spacing: .06em; font-stretch: 100%; white-space: nowrap;
+}

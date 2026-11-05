@@ -185,7 +185,7 @@
       var chips = [
         { t: 'reviews', col: C.tealT },
         { t: 'listing', col: C.skyT },
-        { t: 'delivery', col: C.orangeT }
+        { t: 'community Q&A', col: C.purpleT }
       ].map(function (c, i) {
         return '<div class="t-label" style="position:absolute;left:28px;top:' + (190 + i * 72) + 'px;height:64px;padding:0 30px;' +
           'display:inline-flex;align-items:center;border-radius:33px;background:' + C.bg + ';border:2px solid ' + c.col + ';color:' + c.col + '">' + c.t + '</div>';
@@ -232,8 +232,8 @@
       Kit.show(tl, q('.ofoc'), { y: 12, duration: .4, at: '<' });
     },
     notes:
-      'Amazon trained Rufus on its own shopping data: the catalogue, the reviews, the community questions. ' +
-      'Three parts do the work. First, it looks things up. Reviews, the product listing, a live delivery service. ' +
+      'Three parts do the work. First, it looks things up. Customer reviews, the product listing, ' +
+      'the questions other shoppers have asked. ' +
       '[click] Second, it calls tools. It writes a request like getDelivery, and ordinary software runs it. ' +
       '[click] Third, every answer carries a thumbs-up and a thumbs-down, and those ratings feed back into training. ' +
       '[click] We start with looking things up, because that idea is everywhere now.'
@@ -254,7 +254,7 @@
       return '' +
       '<div class="dv-frame" ' + at(DV_BOX.x, DV_BOX.y, 'width:' + (DV_FALLBACK.w + 8) + 'px;height:' + (DV_FALLBACK.h + 8) +
         'px;border-radius:24px;background:var(--bg2);border:4px solid var(--sec);overflow:hidden;cursor:pointer') + '>' +
-        '<video class="dv-vid" src="' + DEMO_SRC + '" muted playsinline preload="auto" poster="assets/capture/rufus-demo-poster.jpg" ' +
+        '<video class="dv-vid" src="' + DEMO_SRC + '" muted playsinline preload="auto" poster="assets/img/rufus/demo-poster.jpg" ' +
           'style="position:absolute;left:0;top:0;width:' + DV_FALLBACK.w + 'px;height:' + DV_FALLBACK.h + 'px;object-fit:contain;display:none"></video>' +
         '<div class="dv-ph" style="position:absolute;inset:0;background:#2A2627;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">' +
           '<div class="t-h2" style="color:var(--text-2)">Rufus demo</div>' +
@@ -267,10 +267,10 @@
         '<div class="t-mono" style="margin-top:14px;font-size:36px;line-height:1.3;color:var(--orange-t)">“What do I need for<br>cold-weather golf?”</div>' +
       '</div>' +
 
-      '<div class="dv-watch" ' + at(800, 560, 'width:1000px') + '>' +
+      '<div class="dv-watch" ' + at(800, 492, 'width:1000px') + '>' +
         '<div class="t-caps" style="color:var(--text-2)">Watch for</div>' +
         ['searches first', 'real products', 'no matching title'].map(function (t, i) {
-          return '<div class="dv-w dv-w' + i + '" style="margin-top:26px;display:flex;gap:22px;align-items:baseline">' +
+          return '<div class="dv-w dv-w' + i + '" style="margin-top:34px;display:flex;gap:22px;align-items:baseline">' +
             '<span class="t-mono" style="font-size:36px;color:var(--text-3)">' + (i + 1) + '</span>' +
             '<span class="t-body c-blue">' + t + '</span></div>';
         }).join('') +
@@ -322,7 +322,16 @@
       ctx.pause();
 
       // click 1: play the capture; the three things to watch for arrive with it
-      tl.add(function () { if (ok && ctx.mode === 'show') { try { v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} } });
+      // GSAP fires this callback in both directions: forward it plays the clip,
+      // backward (← to the entrance) it stops and reloads so the poster shows again
+      var playAt = tl.duration();
+      tl.add(function () {
+        if (!ok || ctx.mode !== 'show') return;
+        try {
+          if (tl.time() < playAt) { v.pause(); v.load(); return; }
+          v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {});
+        } catch (e) {}
+      }, playAt);
       tl.set(q('.dv-watch'), { autoAlpha: 1 });
       Kit.show(tl, qa('.dv-w'), { y: 16, stagger: .15, duration: .45 });
     },
@@ -340,14 +349,16 @@
      The three numbered steps light in order: Retrieve → Add to prompt → Generate.
      ====================================================================== */
   var TILE = [
-    { y: 470, caps: 'REVIEWS',  sub: 'how it feels in use',     col: C.teal,   tint: C.tealT },
-    { y: 600, caps: 'LISTING',  sub: 'facts the seller typed',  col: C.sky,    tint: C.skyT },
-    { y: 730, caps: 'LIVE API', sub: 'price, stock, delivery',  col: C.orange, tint: C.orangeT }
+    { y: 470, caps: 'REVIEWS',       sub: 'how it feels in use',       col: C.teal,   tint: C.tealT },
+    { y: 600, caps: 'LISTING',       sub: 'facts the seller typed',    col: C.sky,    tint: C.skyT },
+    { y: 730, caps: 'COMMUNITY Q&amp;A', sub: 'what other shoppers asked', col: C.purple, tint: C.purpleT }
   ];
+  /* One worked question per source. `frag` is the fetched text that flies into
+     the prompt slot, so the audience sees real words crossing, not a blob. */
   var QA = [
-    { q: '“Is this cordless drill easy to hold?”', a: ['Reviewers say the', 'grip is bulky for', 'small hands.'], f: ['2 of 2,318 reviews'] },
-    { q: '“Is this jacket machine washable?”',     a: ['The listing says:', 'machine wash cold.'],               f: ['the listing:', 'Care instructions'] },
-    { q: '“Will it get here by Friday?”',          a: ['It arrives Thursday.'],                                  f: ['the delivery service,', 'just now'] }
+    { q: '“Is this cordless drill easy to hold?”', frag: '“bulky for small hands”', a: ['Reviewers say the', 'grip is bulky for', 'small hands.'] },
+    { q: '“Is this jacket machine washable?”',     frag: '“machine wash cold”',     a: ['The listing says:', 'machine wash cold.'] },
+    { q: '“Does the drill come with a battery?”',  frag: '“no battery included”',   a: ['Shoppers answered:', 'no battery included.'] }
   ];
   var STEPS = [
     { x: 120,  n: '1', t: 'Retrieve' },
@@ -391,75 +402,45 @@
         '<div class="rslot" style="position:absolute;left:24px;top:210px;width:332px;height:50px;border-radius:12px;border:2px dashed ' + C.line + '"></div>' +
         '<div class="rslot-t t-caps" style="position:absolute;left:24px;top:224px;width:332px;text-align:center;font-size:28px;color:var(--text-3)">the prompt</div>' +
       '</div>';
-      // answer card
-      h += '<div class="rabg" ' + at(1120, 450, 'width:680px;height:430px;border-radius:28px;background:var(--surface)') + '></div>' +
-        '<div class="ra-caps t-caps" ' + at(1148, 490, 'color:var(--text-3)') + '>Answer</div>';
-      QA.forEach(function (d, i) {
-        h += '<div class="ra ra' + i + ' t-h2" ' + at(1148, 532, 'width:624px') + '>' + d.a.join('<br>') + '</div>';
-      });
-      h += '<div class="rfrom">' +
-        '<div ' + at(1148, 714, 'width:624px;height:1px;background:' + C.line) + '></div>' +
-        '<div class="t-caps" ' + at(1148, 740, 'color:var(--text-3)') + '>From</div>';
-      QA.forEach(function (d, i) {
-        h += '<div class="rf rf' + i + '" ' + at(1148, 786, 'width:624px;font-size:32px;font-weight:500;line-height:1.2') + '>' + d.f.join('<br>') + '</div>';
-      });
-      h += '</div>';
-      // ticker
-      h += '<div class="rtick" ' + at(120, 892, 'width:1680px;height:64px;border-radius:16px;background:#2A2627') + '>' +
-        '<div class="t-label" style="position:absolute;left:24px;top:18px;font-weight:500;color:var(--text-3)">the store, this hour</div>' +
-        '<div class="t-mono" style="position:absolute;left:360px;top:16px;font-size:32px;color:var(--text-2)">price <span class="tk tk0">$89</span></div>' +
-        '<div class="t-mono" style="position:absolute;left:700px;top:16px;font-size:32px;color:var(--text-3)">·</div>' +
-        '<div class="t-mono" style="position:absolute;left:820px;top:16px;font-size:32px;color:var(--text-2)">in stock <span class="tk tk1">12</span></div>' +
-        '<div class="t-mono" style="position:absolute;left:1160px;top:16px;font-size:32px;color:var(--text-3)">·</div>' +
-        '<div class="t-mono" style="position:absolute;left:1280px;top:16px;font-size:32px;color:var(--text-2)">reviews <span class="tk tk2">2,311</span></div>' +
+      // the fetched words, in flight from the lit tile to the prompt slot
+      h += '<div class="rfly" ' + at(684, 700, 'width:332px;height:50px') + '>' +
+        QA.map(function (d, i) {
+          return '<div class="rfg rfg' + i + ' t-label" style="position:absolute;left:0;top:11px;width:332px;text-align:center;' +
+            'font-weight:500;white-space:nowrap">' + d.frag + '</div>';
+        }).join('') +
       '</div>';
+      // answer card (drawn at step 3, with the text it holds)
+      h += '<div class="rabg" ' + at(1120, 470, 'width:680px;height:300px;border-radius:28px;background:var(--surface)') + '></div>' +
+        '<div class="ra-caps t-caps" ' + at(1148, 500, 'color:var(--text-3)') + '>Answer</div>';
+      QA.forEach(function (d, i) {
+        h += '<div class="ra ra' + i + ' t-h2" ' + at(1148, 548, 'width:624px') + '>' + d.a.join('<br>') + '</div>';
+      });
       // closing line
-      h += '<div class="rcl t-h2" ' + at(120, 884, 'width:1680px;line-height:1.08') + '>Rufus runs these three steps on every question.<br>' +
-        '<span style="color:var(--orange-t)">Picking the source is learned.</span></div>';
-      // arrows + chips + barrier
+      h += '<div class="rcl t-h2" ' + at(120, 900, 'width:1680px;color:var(--orange-t)') + '>Picking the source is learned.</div>';
+      // arrows
       var svg = '' +
         '<path class="arrC" d="M420,378 C420,444 560,470 648,496" fill="none" stroke="' + C.text3 + '" stroke-width="4" marker-end="url(#rgC)"/>' +
         '<path class="arrA" d="M580,530 C620,530 620,635 660,635" fill="none" stroke="' + C.tealT + '" stroke-width="4" marker-end="url(#rgA)"/>' +
-        '<path class="arrB" d="M1040,635 L1112,635" fill="none" stroke="' + C.blue + '" stroke-width="4" marker-end="url(#rgB)"/>' +
-        '<g class="barrier">' +
-          '<line x1="660" y1="818" x2="1040" y2="818" stroke="' + C.orangeT + '" stroke-width="3" stroke-dasharray="8 10"/>' +
-          '<text x="850" y="864" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.orangeT + '">can’t see this</text>' +
-        '</g>' +
-        '<g class="chips">' +
-          '<rect class="chip chip0" x="0" y="0" width="80" height="18" rx="9" fill="' + C.teal + '"/>' +
-          '<rect class="chip chip1" x="0" y="0" width="80" height="18" rx="9" fill="' + C.teal + '"/>' +
-          '<rect class="chip chip2" x="0" y="0" width="80" height="18" rx="9" fill="' + C.teal + '"/>' +
-        '</g>';
+        '<path class="arrB" d="M1040,635 L1112,635" fill="none" stroke="' + C.blue + '" stroke-width="4" marker-end="url(#rgB)"/>';
       h += svgOverlay(svg, head('rgA', C.tealT) + head('rgB', C.blue) + head('rgC', C.text3));
-      return h + Kit.src('Amazon Science, Oct 2024: Rufus pulls from reviews, the catalogue and community Q&amp;A, and calls Stores APIs. Source selection is the hard part. Values illustrative.');
+      return h + Kit.src('Amazon Science, Oct 2024: Rufus pulls from reviews, the catalogue and community Q&amp;A. Source selection is the hard part. Examples illustrative.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      var tiles = qa('.rt'), chips = qa('.chip');
+      var tiles = qa('.rt'), fly = q('.rfly');
       var arrA = q('.arrA'), arrB = q('.arrB');
       var cols = [TILE[0].col, TILE[1].col, TILE[2].col];
       var tints = [TILE[0].tint, TILE[1].tint, TILE[2].tint];
 
-      var st = { q: 0, lit: 0, litOn: 0, tiles: 0, tick: 0, bar: 0, fly: 0, chip: 0, pulse: 0,
-                 ans: 0, from: 0, tickOut: 0, close: 0, s0: 0, s1: 0, s2: 0 };
-
-      function pt(t) {                                 // chip flight: quadratic bezier tile → prompt slot
-        var y0 = 530 + st.lit * 130, x0 = 566;
-        var cx = 620, cy = 620, x1 = 0, y1 = 716;      // x1 filled per chip
-        return function (i) {
-          x1 = 714 + i * 96;
-          var u = 1 - t;
-          return { x: u * u * x0 + 2 * u * t * cx + t * t * x1, y: u * u * y0 + 2 * u * t * cy + t * t * y1 };
-        };
-      }
+      var st = { q: 0, lit: 0, litOn: 0, tiles: 0, fly: 0, frag: 0, pulse: 0, card: 0, ans: 0, close: 0, s0: 0, s1: 0, s2: 0 };
 
       function render() {
-        var lit = st.lit, litCol = mix3(cols, lit), litTint = mix3(tints, lit);
+        var lit = st.lit, litTint = mix3(tints, lit);
         // the three named steps
         [st.s0, st.s1, st.s2].forEach(function (v, i) {
           var el = q('.rs' + i);
           el.style.color = mix(C.text3, C.orangeT, v);
-          el.style.opacity = .5 + .5 * v;
+          el.style.opacity = v;
         });
         // tiles group
         q('.rtiles').style.opacity = st.tiles;
@@ -478,71 +459,53 @@
         arrA.style.opacity = st.litOn;
         arrA.setAttribute('marker-end', st.litOn > .5 ? 'url(#rgA)' : '');
         q('#rgA').firstChild.setAttribute('fill', litTint);
-        // chips
-        var f = pt(st.fly);
-        chips.forEach(function (c, i) {
-          var p = f(i), s = 1 + .22 * st.pulse;
-          c.setAttribute('x', p.x - 40 * (s - 1));
-          c.setAttribute('y', p.y - 9 * (s - 1));
-          c.setAttribute('width', 80 * s);
-          c.setAttribute('height', 18 * s);
-          c.setAttribute('fill', litCol);
-          c.style.opacity = st.chip;
-        });
-        q('.rslot-t').style.opacity = 1 - st.chip;
-        // ticker values
-        var v = st.tick;
-        q('.tk0').textContent = '$' + Math.round(89 - 10 * v);
-        q('.tk1').textContent = String(Math.round(12 - 9 * v));
-        q('.tk2').textContent = String(Math.round(2311 + 7 * v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        // answer + from
+        // the fetched words: start inside the lit tile, land in the prompt slot
+        var u = 1 - st.fly, s = 1 + .18 * st.pulse;
+        fly.style.transform = 'translate(' + (-534 * u) + 'px,' + ((-200 + 130 * lit) * u) + 'px) scale(' + s + ')';
+        fly.style.opacity = st.frag * cl(st.fly * 2.2);
+        q('.rslot-t').style.opacity = 1 - st.frag;
+        // question, fetched words and answer all follow the same index
         QA.forEach(function (d, i) {
-          q('.ra' + i).style.opacity = wt(st.q, i) * st.ans;
-          q('.rf' + i).style.opacity = wt(st.q, i) * st.from;
-          q('.rf' + i).style.color = litTint;
-          q('.rq' + i).style.opacity = wt(lit, i);
+          var w = wt(st.q, i);
+          q('.rq' + i).style.opacity = w;
+          q('.rfg' + i).style.opacity = w;
+          q('.rfg' + i).style.color = litTint;
+          q('.ra' + i).style.opacity = w * st.ans;
         });
-        q('.rfrom').style.opacity = st.from;
-        // ticker in / out, barrier, closing line
-        var tk = q('.rtick');
-        tk.style.opacity = st.tick * (1 - st.tickOut);
-        tk.style.transform = 'translateY(' + (40 * (1 - st.tick)) + 'px)';
-        q('.barrier').style.opacity = st.bar * (1 - st.tickOut);
+        // closing line
         q('.rcl').style.opacity = st.close;
         q('.rcl').style.transform = 'translateY(' + (20 * (1 - st.close)) + 'px)';
       }
       var R = { onUpdate: render, onComplete: render };
       render();
 
-      // ---- entrance (step 0)
+      // ---- entrance (step 0): the question and the frozen model
       Kit.rise(tl, q('.hd'), { y: 24 });
       Kit.slideIn(tl, [q('.rqbg'), q('.rq0')], { at: .15, x: -160, duration: .8 });
       Kit.rise(tl, q('.rm'), { at: .5, y: 26, duration: .6 });
-      Kit.rise(tl, [q('.rabg'), q('.ra-caps')], { at: .7, y: 24, duration: .6, stagger: .06 });
+      gsap.set([q('.rabg'), q('.ra-caps')], { autoAlpha: 0 });
       tl.set(arrB, { autoAlpha: 0 });
       Kit.draw(tl, q('.arrC'), { at: .95, duration: .6 });
       ctx.pause();
 
-      // ---- 1 · the store moves, and the frozen model cannot see it
-      tl.to(st, Object.assign({ tick: 1, duration: .9, ease: 'power2.out' }, R));
-      tl.to(st, Object.assign({ bar: 1, duration: .45 }, R), '-=.2');
-      ctx.pause();
-
-      // ---- 2 · step 1 Retrieve, then step 2 Add to prompt
+      // ---- 1 · step 1 Retrieve: three sources, one of them lights
       tl.to(st, Object.assign({ tiles: 1, duration: .55, ease: Kit.ease.out }, R));
       tl.to(st, Object.assign({ s0: 1, duration: .35 }, R), '<');
       tl.to(st, Object.assign({ litOn: 1, duration: .4 }, R));
-      tl.to(st, Object.assign({ chip: 1, duration: .2 }, R));
-      tl.to(st, Object.assign({ s1: 1, duration: .35 }, R), '<');
+      ctx.pause();
+
+      // ---- 2 · step 2 Add to prompt: the fetched words cross into the prompt
+      tl.to(st, Object.assign({ s1: 1, duration: .35 }, R));
+      tl.to(st, Object.assign({ frag: 1, duration: .2 }, R), '<');
       tl.to(st, Object.assign({ fly: 1, duration: .85, ease: 'power2.inOut' }, R), '-=.1');
       ctx.pause();
 
-      // ---- 3 · step 3 Generate, and the answer says where it came from
+      // ---- 3 · step 3 Generate: the answer card arrives with its answer
       tl.set(arrB, { autoAlpha: 1 });
       Kit.draw(tl, arrB, { duration: .45 });
       tl.to(st, Object.assign({ s2: 1, duration: .35 }, R), '<');
+      Kit.show(tl, [q('.rabg'), q('.ra-caps')], { y: 24, duration: .5, stagger: .06, at: '-=.2' });
       tl.to(st, Object.assign({ ans: 1, duration: .5 }, R), '-=.1');
-      tl.to(st, Object.assign({ from: 1, duration: .45 }, R), '+=.15');
       tl.to(st, Object.assign({ pulse: 1, duration: .3, yoyo: true, repeat: 1 }, R), '<');
       ctx.pause();
 
@@ -550,25 +513,25 @@
       tl.to(st, Object.assign({ q: 1, lit: 1, duration: .6, ease: 'power2.inOut' }, R));
       ctx.pause();
 
-      // ---- 5 · a third kind: live data, the thing it could not see
+      // ---- 5 · a third source: what other shoppers asked
       tl.to(st, Object.assign({ q: 2, lit: 2, duration: .6, ease: 'power2.inOut' }, R));
-      tl.to(st, Object.assign({ tickOut: 1, duration: .4 }, R), '-=.2');
       tl.to(st, Object.assign({ close: 1, duration: .5, ease: Kit.ease.out }, R), '-=.1');
     },
     notes:
       // LOAD-BEARING: the phrase "one word at a time" below is called back by Griffin's distillation slide. Do not cut it.
-      'Is this cordless drill easy to hold? ' +
-      'The model was trained months ago. Everything it knows froze then. ' +
-      '[click] The store does not hold still. Prices, stock and reviews change by the hour. ' +
-      'Answer from memory and you answer from an old snapshot, confidently. ' +
-      '[click] So it does three things, in this order. Step one, retrieve. “Easy to hold” is about feel, so it fetches customer reviews. ' +
-      'Step two, add to prompt: that evidence is pasted in next to your question. ' +
-      '[click] Step three, generate. The frozen model writes the answer from the evidence in front of it, one word at a time, ' +
-      'and it can say where the claim came from. That is retrieval-augmented generation. Frozen weights, fresh evidence. ' +
+      'Is this cordless drill easy to hold? The model was trained months ago. Everything it knows froze then, ' +
+      'and the store does not hold still. ' +
+      '[click] So it does three things, in this order. Step one, retrieve. It has three places to look, ' +
+      'and only one of them answers this. Easy to hold is about feel, ' +
+      'so it fetches customer reviews, not the listing and not other shoppers. ' +
+      '[click] Step two, add to prompt. The fetched words are pasted in next to your question. ' +
+      'The model reads them instead of recalling them. ' +
+      '[click] Step three, generate. The frozen model writes the answer from the evidence in front of it, one word at a time. ' +
+      'That is retrieval-augmented generation. Frozen weights, fresh evidence. ' +
       '[click] Change the question. Is this jacket machine washable? That is a fact off the listing. ' +
       'Same three steps, different source. ' +
-      '[click] Will it get here by Friday? Neither of those. That is a live call to the delivery service, answered as you ask. ' +
-      'Rufus runs these three steps on every question, and Amazon says the hard part is choosing the source. The system has to learn that.'
+      '[click] Does the drill come with a battery? Other shoppers already answered that one, in the community questions. ' +
+      'Amazon says choosing the source is the hard part, and the system has to learn it.'
   };
 
   /* ======================================================================
@@ -664,9 +627,9 @@
       Kit.show(tl, q('.sq-cap'), { y: 16, duration: .5, at: '+=.1' });
     },
     notes:
-      'How does the model call a tool? It does not run code. Read this top to bottom. ' +
-      '[click] The shopper asks whether the parcel arrives by Friday. ' +
-      '[click] The model cannot know. So instead of prose, it writes a request: a function name and two arguments. ' +
+      'Some questions have no document to fetch. Read this one top to bottom. ' +
+      '[click] The shopper asks whether the parcel arrives by Friday. Nothing written down says that yet. ' +
+      '[click] So instead of prose, the model writes a request: a function name and two arguments. ' +
       '[click] Store software runs that function against the real delivery system and hands back one value. Thursday. ' +
       '[click] Now the model writes the sentence. That is the split: the model writes the request, ordinary software runs it. ' +
       'Amazon says Rufus works this way.'
@@ -908,54 +871,41 @@
     id: 'results', title: 'Results',
     heading: 'Results', budgetSec: 46,
     html: function () {
-      function card(cls, x, numCls, caps, sub, extra) {
+      // One caps label carrying scope and period, one value, one caption.
+      function card(cls, x, numCls, caps, cap, capMono) {
         return '<div class="' + cls + '" ' + at(x, 320, 'width:800px;height:300px;border-radius:28px;background:var(--surface)') + '>' +
           '<div class="' + numCls + ' t-num" style="position:absolute;left:40px;top:40px"></div>' +
-          '<div class="t-caps" style="position:absolute;left:40px;top:200px;color:var(--text-3)">' + caps + '</div>' +
-          '<div class="t-label" style="position:absolute;left:40px;top:244px;color:var(--text-2);font-weight:500;width:720px">' + sub + '</div>' +
-          (extra || '') + '</div>';
+          '<div class="rc-caps t-caps" style="position:absolute;left:40px;top:200px;width:720px;color:var(--text-3)">' + caps + '</div>' +
+          '<div class="' + (capMono ? 't-mono' : 't-label') + '" style="position:absolute;left:40px;top:244px;width:720px;color:var(--text-2);font-weight:500' +
+            (capMono ? ';font-size:36px' : '') + '">' + cap + '</div>' +
+        '</div>';
       }
       var h =
-        card('ra-a', 120, 'num-a', 'Customers', 'in the 12 months to Sept 2026',
-          '<div class="t-mono" style="position:absolute;left:340px;top:194px;width:420px;text-align:right;font-size:36px;color:var(--blue-t)">interactions +570%</div>') +
-        card('ra-b', 980, 'num-b', 'Incremental sales', 'annualized, Amazon’s own estimate (Q4 2025)');
+        card('ra-a', 120, 'num-a', 'Customers · 12 months to Sept 2026',
+          '<span class="ra-int" style="color:var(--blue-t)">interactions +570%</span>', true) +
+        card('ra-b', 980, 'num-b', 'Incremental sales · Q4 2025', 'Amazon’s own estimate, annualized');
       h += '<div class="ra-chip" ' + at(120, 680, 'width:1680px;height:110px;border-radius:24px;background:#2A2627;border:2px solid ' + C.line) + '>' +
         '<div class="ra-q t-h2" style="position:absolute;left:40px;top:28px;width:1600px;color:var(--text-2)">“Users are 60% more likely to complete a purchase.”</div></div>';
       h += '<div class="ra-badge t-caps" ' + at(140, 622, 'padding:8px 18px;border-radius:999px;background:var(--bg);border:2px solid ' + C.line + ';color:var(--text-2)') + '>Selection bias</div>';
-      // two-group picture
-      var dots = '';
-      [[1230, C.orangeT], [1560, C.text3]].forEach(function (g, gi) {
-        for (var r = 0; r < 4; r++) for (var c = 0; c < 5; c++) {
-          dots += '<circle class="dot dg' + gi + '" cx="' + (g[0] - 68 + c * 34) + '" cy="' + (706 + r * 34) + '" r="10" fill="' + g[1] + '"/>';
-        }
-      });
-      h += '<div class="ra-pic">' +
-        '<div class="t-label" ' + at(1080, 652, 'width:300px;text-align:center;color:var(--orange-t);font-weight:500') + '>already shopping</div>' +
-        '<div class="t-label" ' + at(1410, 652, 'width:300px;text-align:center;color:var(--text-3);font-weight:500') + '>just browsing</div>' +
-        '<div class="t-caps" ' + at(1080, 854, 'width:300px;text-align:center;color:var(--text-2)') + '>opened it</div>' +
-        '<div class="t-caps" ' + at(1410, 854, 'width:300px;text-align:center;color:var(--text-3)') + '>didn’t</div>' +
-      '</div>';
-      h += '<div class="ra-verdict t-h2" ' + at(120, 858, 'width:940px;font-stretch:100%') + '>They were <span style="color:var(--orange-t)">already closer to buying</span>.</div>';
-      h += '<div class="ra-fix t-label" ' + at(120, 930, 'width:940px;color:var(--text-2);font-weight:500') + '>A clean test hides the feature from a random slice of customers.</div>';
-      return h + svgOverlay(dots) +
+      h += '<div class="ra-verdict t-h2" ' + at(120, 850, 'width:1680px;font-stretch:100%') + '>They were <span style="color:var(--orange-t)">already closer to buying</span>.</div>';
+      h += '<div class="ra-fix t-label" ' + at(120, 930, 'width:1680px;color:var(--text-2);font-weight:500') + '>A clean test hides the feature from a random slice of customers.</div>';
+      return h +
         Kit.src('Amazon Q3 2026 results and the Q4 2025 earnings call. Unaudited, no method published. The $12B is for Rufus, Q4 2025.', 'Self-reported');
     },
     build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var tl = ctx.tl, q = ctx.q;
       var nb = q('.num-b'); nb.style.color = C.orangeT;
       gsap.set([q('.ra-b'), q('.ra-chip'), q('.ra-badge'), q('.ra-verdict'), q('.ra-fix')], { autoAlpha: 0 });
-      gsap.set(q('.ra-pic'), { autoAlpha: 0 });
-      gsap.set(qa('.dot'), { autoAlpha: 0 });
       q('.num-a').textContent = '0';
       nb.textContent = '~$0B';
 
       Kit.rise(tl, q('.hd'), { y: 24 });
       Kit.rise(tl, q('.ra-a'), { at: .15, y: 32, duration: .6 });
       Kit.count(tl, q('.num-a'), { to: 400, suffix: 'M+', duration: .9, at: '-=.3' });
-      Kit.fade(tl, q('.ra-a').querySelector('.t-mono'), { at: '-=.1' });
+      Kit.fade(tl, q('.ra-int'), { at: '-=.1' });
       ctx.pause();
 
-      // ---- 1 · the second company number
+      // ---- 1 · the second company number, a year older than the first
       Kit.show(tl, q('.ra-b'), { y: 32, duration: .55 });
       Kit.count(tl, nb, { to: 12, prefix: '~$', suffix: 'B', duration: .9, at: '-=.25' });
       ctx.pause();
@@ -964,22 +914,19 @@
       Kit.show(tl, q('.ra-chip'), { y: 28, duration: .55 });
       ctx.pause();
 
-      // ---- 3 · demote the claim, show who opened it
-      tl.to(q('.ra-chip'), { width: 900, height: 150, opacity: .45, duration: .5, ease: 'power2.inOut' });
-      // the quote keeps its words but gives up its size, so it still fits the smaller chip
-      tl.to(q('.ra-q'), { fontSize: 36, width: 820, top: 28, duration: .5, ease: 'power2.inOut' }, '<');
+      // ---- 3 · demote the claim and name what is wrong with it
+      tl.to(q('.ra-chip'), { opacity: .45, duration: .5, ease: 'power2.inOut' });
       Kit.show(tl, q('.ra-badge'), { y: 14, duration: .35, ease: Kit.ease.back, at: '<' });
-      tl.set(q('.ra-pic'), { autoAlpha: 1 });
-      tl.to(qa('.dg0'), { autoAlpha: 1, duration: .25, stagger: .02 }, '-=.2');
-      tl.to(qa('.dg1'), { autoAlpha: 1, duration: .25, stagger: .02 }, '-=.25');
       Kit.show(tl, [q('.ra-verdict'), q('.ra-fix')], { y: 18, duration: .5, stagger: .12, at: '-=.1' });
     },
     notes:
-      'Does it work? Amazon says over four hundred million customers used it in twelve months, with interactions up five hundred and seventy percent. ' +
-      '[click] And nearly twelve billion dollars in extra annualized sales. Every one is Amazon’s own number, unaudited, published without a method. ' +
+      'Does it work? Amazon says over four hundred million customers used it in the twelve months to September, ' +
+      'with interactions up five hundred and seventy percent. ' +
+      '[click] And nearly twelve billion dollars in extra annualized sales. That one is a year older, ' +
+      'and Amazon has not repeated it since the rename. Both numbers are Amazon’s own, unaudited. ' +
       '[click] This one deserves a harder look. Users are sixty percent more likely to complete a purchase. ' +
       '[click] Who opens a shopping assistant? People already researching a purchase. ' +
-      'So that gap mixes the assistant’s effect with who opened it. Statisticians call it selection bias. ' +
+      'So the gap mixes the assistant’s effect with who used it. Statisticians call it selection bias. ' +
       'A clean test hides the feature from a random slice of customers. Amazon has not said whether it did that.'
   };
 

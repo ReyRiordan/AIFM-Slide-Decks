@@ -50,8 +50,8 @@ own (R: Rufus launch note).
 Three cards, each a **preview of the slide that explains it**, revealed one per click, then card 01
 takes the orange border and a "start here" label. One-line titles, and all three bodies start at the
 same card-y (190) so the row reads as one grid.
-- 01 **Looks it up** — three source chips (reviews teal · listing sky · delivery orange) that match the
-  RAG tiles on slide 5.
+- 01 **Looks it up** — three source chips (reviews teal · listing sky · community Q&A purple) that match
+  the RAG tiles on slide 5. Each card previews exactly one mechanism, so delivery lives on card 02 only.
 - 02 **Calls tools** — `getDelivery(item, zip)` then `→ "Thu"`, the same call slide 6 animates.
 - 03 **It learns** — thumbs-up and thumbs-down buttons, drawn by the local `thumb()` SVG
   helper (never an emoji font), reused on slide 8. The title names the mechanism (ratings feed
@@ -72,14 +72,18 @@ the metadata arrives. Clicking the frame pauses and replays; that is not a deck 
 State object + one pure `render()`, tweened with `onUpdate` (the LOSS pattern), so back-navigation and
 print mode are correct for free. Three numbered steps sit above the three zones and light in order:
 **1 Retrieve** over the source tiles, **2 Add to prompt** over the model box, **3 Generate** over the
-answer card. Beats: the question arrives → the store ticker moves while the frozen model "can't see
-this" → tiles appear, REVIEWS lights, evidence chips fly into the prompt slot → the answer is written
-with a "From" line → the question changes to a listing fact → then to a live delivery call. Closing
-line: "Rufus runs these three steps on every question. Picking the source is learned."
-Tile captions are REVIEWS / LISTING / LIVE API, matching the overview chips.
+answer card. Beats: the question arrives next to the frozen model → tiles appear and REVIEWS lights (step 1) →
+the fetched words themselves fly into the prompt slot (step 2) → the answer card arrives with the
+answer (step 3) → the question changes to a listing fact → then to one other shoppers answered.
+Closing line: "Picking the source is learned."
+Tile captions are REVIEWS / LISTING / COMMUNITY Q&A, matching the overview chips. All three are
+genuine retrieval sources; a live delivery call is a **tool call** and belongs to slide 6 alone.
+Each question carries its own `frag`, the short quoted evidence that crosses into the prompt.
 The notes contain the phrase **"one word at a time"**, which Griffin's distillation slide calls back.
 
 ### 6 · `react` (36 s, 4 pauses)
+The spoken opening hands over from slide 5: *"Some questions have no document to fetch."* The Friday
+delivery question lives here and nowhere else.
 A three-lane sequence diagram — **Shopper · Model · Store software** — with dashed lifelines and one
 arrow per click, in time order: the question → `getDelivery(item, zip)` → a "runs it" marker on the
 software lane and `"Thursday"` back → `"It arrives Thursday."` Caption: "The model writes the request.
@@ -110,10 +114,11 @@ as the report's analysis, not an Amazon disclosure.
 
 ### 10 · `results` (46 s, 3 pauses)
 400M+ customers with interactions +570%, then ~$12B incremental sales, then the "60% more likely to
-complete a purchase" quote, which is then demoted: a neutral Selection bias badge sitting clear above
-the shrunken chip, two dot groups (already
-shopping / just browsing), "They were already closer to buying." and "A clean test hides the feature
-from a random slice of customers." All figures `Self-reported`.
+complete a purchase" quote, which is then demoted: a neutral Selection bias badge and the chip fading
+back, then "They were already closer to buying." and "A clean test hides the feature from a random
+slice of customers." across the full width. Each card carries one caps label that holds scope **and
+period** (`CUSTOMERS · 12 MONTHS TO SEPT 2026`, `INCREMENTAL SALES · Q4 2025`), because the two
+numbers are a year apart and about differently named products. All figures `Self-reported`.
 
 ### 11 · `takeaways` (36 s, 2 pauses)
 The canonical section closer: image bleed, three numbered rows, and the throughline strip.
@@ -161,7 +166,7 @@ Everything below is in the report and does **not** appear in this section. Liste
 | **Strategic context**: keeping shoppers off Google, robots.txt, the Perplexity lawsuit, Meta Muse, Jassy's "primary shopping agent" line | Business strategy, not ML. Future may use the agent-vs-agent parts. |
 | **LLM-as-a-judge** evaluation, turns-per-conversation metrics | Slide 10 already carries the measurement caution. |
 | The other adoption figures (350M, 300M, 250M, +115 %, +400 %, +140 %, +210 %, "40 %/50 % more per order") and the four cautions about changing windows and metrics | Slide 10 shows two numbers plus one claim. The window/metric caveats live in the notes if asked. |
-| **Community Q&A** as a fourth evidence tile on slide 5 | Three tiles map exactly onto Amazon's own durability/dimensions/delivery example (R:120) and keep the diagram readable. Mentioned in the slide-3 spoken line instead. |
+| A **live delivery API** as a third evidence tile on slide 5 | Delivery is a tool call, not retrieval, and slide 6 teaches it with the same question. Slide 5 keeps three genuine retrieval sources: reviews, listing, community Q&A (R:112, R:126). |
 
 ---
 
@@ -188,4 +193,5 @@ Everything below is in the report and does **not** appear in this section. Liste
 8. Notes run at 135 wpm against each slide's `budgetSec`, and the `[click]` markers match the
    `ctx.pause()` count exactly: 0 · 3 · 3 · 1 · 5 · 4 · 3 · 3 · 2 · 3 · 2.
 9. The demo clip is owned by the main thread, not this unit. Do not edit `assets/capture/`. The slide
-   fits whatever is dropped there.
+   fits whatever is dropped there. Its poster is this unit's own file, `assets/img/rufus/demo-poster.jpg`,
+   a mid-answer frame pulled from the clip with ffmpeg, so the panel never opens mostly blank.
