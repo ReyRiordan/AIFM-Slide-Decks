@@ -57,8 +57,8 @@
 
   /* ======================================================================
      AGENDA — the definition, then the salesperson assembles, one section per click (0:45)
-     Entrance: heading "Automated selling", the definition line, the grey outline.
-     Steps: 1 the line leaves, heading becomes "Agenda", Price (body + price tag)
+     Entrance: the definition line beside the grey outline.
+     Steps: 1 the line leaves, Price (body + price tag)
             · 2 Assist (speech bubble) · 3 Interact (head)
      THE AGENDA MOTIF. The Future unit's `assembled` close reuses this
      geometry verbatim: rowY 368/518/668/818, chip (130,rowY) 72×38,
@@ -70,8 +70,7 @@
   var AGENDA = {
     id: 'agenda',
     title: 'Definition and agenda',
-    // two stacked headings: the definition's, then the agenda's (swapped on click 1)
-    heading: '<span class="ag-h ag-h0">Automated selling</span><span class="ag-h ag-h1">Agenda</span>',
+    heading: 'Agenda',
     budgetSec: 45,
     html: function () {
       var col = [C.red, C.blue, C.purple];
@@ -98,13 +97,12 @@
         'border-radius:50%;background:radial-gradient(circle,' + C.red + ' 0%,rgba(0,0,0,0) 68%)"></div>';
 
       var out =
-        // nudged right so the longer first heading ("Automated selling") clears the bubble
-        '<div class="ag-art" style="position:absolute;inset:0;transform:translateX(40px)">' + ghost + tagGlow + part + '</div>' +
+'<div class="ag-art" style="position:absolute;inset:0">' + ghost + tagGlow + part + '</div>' +
         '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,rgba(30,27,28,.92) 32%,rgba(30,27,28,0) 54%)"></div>' +
         '<div class="ag-fg" style="position:absolute;inset:0">' +
         // the definition: one line of text, wrapped in the left column over the scrim
         '<p class="ag-def t-h2" style="position:absolute;left:120px;top:470px;width:880px;font-weight:600;color:var(--text)">' +
-          'Software that does <b style="color:var(--orange);font-weight:800">any part</b> of the seller\'s job.' +
+          'AI that does <b style="color:var(--orange);font-weight:800">any part</b> of the seller\'s job.' +
         '</p>';
 
       for (var i = 0; i < 4; i++) {
@@ -136,7 +134,6 @@
       gsap.set(ghosts, { autoAlpha: 0 });
       gsap.set(rows, { autoAlpha: 0 });
       gsap.set(q('.ag-tagglow'), { autoAlpha: 0 });
-      gsap.set(q('.ag-h1'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
       // entrance: the definition, beside the empty outline of the seller it describes
@@ -147,11 +144,9 @@
         ctx.pause();
         var at = tl.duration();
         if (i === 0) {
-          // the definition hands over to the agenda: line out, heading swaps
+          // the definition hands over to the agenda rows
           tl.to(q('.ag-def'), { autoAlpha: 0, y: -24, duration: .35, ease: 'power2.in' }, at);
-          tl.to(q('.ag-h0'), { autoAlpha: 0, duration: .3, ease: 'power1.out' }, at);
-          Kit.show(tl, q('.ag-h1'), { y: 16, duration: .45, at: at + .2 });
-          at += .35;
+          at += .3;
         }
         var p = parts[i], c = col[i];
         // the part that arrived last hands its glow over to this one
@@ -176,7 +171,7 @@
     },
 
     notes:
-      'First, the term. Automated selling is software that takes over part of what a salesperson does. ' +
+      'First, the term. Automated selling is AI that takes over part of what a salesperson does. ' +
       'Not the whole job, any part of it. The grey outline is that salesperson. ' +
       'Each part we add is a real product that ships today, and each one gets a section. ' +
       '[click] Price: Airbnb Smart Pricing sets the nightly rate. ' +

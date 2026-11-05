@@ -17,6 +17,3 @@
 /* agenda: the pool of red behind the price tag, lit on click 1 */
 .slide[data-sec="intro"] .ag-tagglow { will-change: transform, opacity; }
 
-/* agenda: two headings stacked in one h1 — "Automated selling", then "Agenda" */
-.slide[data-sec="intro"] .hd h1 { position: relative; }
-.slide[data-sec="intro"] .ag-h1 { position: absolute; left: 0; top: 0; white-space: nowrap; }

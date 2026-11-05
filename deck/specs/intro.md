@@ -21,15 +21,10 @@ The markers are **Price · Assist · Interact · Negotiate**. The intro shows on
 
 ## Slide 2 — `agenda` (definition, then agenda)
 
-- **id:** `agenda` · **heading:** `Automated selling`, then `Agenda` · **budgetSec:** 45 · **pauses:** 3
-- **Entrance:** the heading reads `Automated selling`. The definition line
-  `Software that does any part of the seller's job.` (`t-h2`, weight 600, `any part` in `--orange`) sits in the
-  left column at x 120, y 470, width 880 (two lines), beside the grey outline of the salesperson.
-- **Click 1:** the line lifts out (`y -24`, fade), the heading crossfades to `Agenda`, and the Price row and part
-  arrive as before. Clicks 2 and 3 are unchanged.
-- The two headings are stacked spans inside the engine's `h1` (`.ag-h0`, `.ag-h1`; `.ag-h1` is absolute at 0,0;
-  see `css/sections/intro.css`).
-- The whole `.ag-art` layer is shifted `translateX(40px)` so `Automated selling` clears the speech bubble.
+- **id:** `agenda` · **heading:** `Agenda` · **budgetSec:** 45 · **pauses:** 3
+- **Entrance:** the definition line `AI that does any part of the seller's job.` (`t-h2`, weight 600, `any part` in
+  `--orange`) sits in the left column at x 120, y 470, width 880, beside the grey outline of the salesperson.
+- **Click 1:** the line lifts out (`y -24`, fade) and the Price row and part arrive. Clicks 2 and 3 are unchanged.
 
 Rows (geometry is a contract, see below):
 

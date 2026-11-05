@@ -11,7 +11,7 @@ Screenshots of every build step are in `design/approval/`.
 
 ## 1. The talk
 - A 27-minute lecture, given by Rey alone, to students with **no ML background**. The main goal is to **teach real ML techniques through real products**.
-- Automated selling = software that automates any part of the seller's job.
+- Automated selling = AI that does any part of the seller's job.
 - Throughline: an AI salesperson, assembled piece by piece: **Price → Assist → Interact**, then **Negotiate**.
   Airbnb (Price) → Rufus (Assist) → Griffin (Interact) → Tavus (the company behind Griffin) → Future (Negotiate: agent selling capability, the negotiation arms race, payment infrastructure such as HTTP 402).
   The intro previews only the first three parts plus a muted "What's next" row; section 4 is introduced at the Tavus bridge.
