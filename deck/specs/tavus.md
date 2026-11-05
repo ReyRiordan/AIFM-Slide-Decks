@@ -46,9 +46,8 @@ and the only way to keep doing it was to make a model do it.
 | founder photo B | photo + `Quinn Favret` / `COO` |
 | logo | Tavus wordmark, top right |
 | payoff number (right) | `+450%` / `more replies` |
-| after the merge (left) | `1 recording` / `thousands of variants` |
-| chip (bottom right) | `Tavus · Y Combinator S21` |
-| source footer | `Founders' account of the origin; the reply figure is theirs. Logo: Tavus. Photos: Y Combinator founder profiles.` with `Kit.src(…, 'Self-reported')` |
+| after the merge (centre) | `1 recording` / `thousands of variants` |
+| source footer | `The 200 videos and the reply figure come from the founders. Logo: Tavus. Photos: Y Combinator.` with `Kit.src(…, 'Self-reported')` |
 
 Body words on screen ≈ 11 excluding names and labels. No sentences.
 
@@ -61,9 +60,11 @@ Body words on screen ≈ 11 excluding names and labels. No sentences.
     36 × 22 px, radius 6, `transform: skewX(-12deg)`, gap 12 px → block is 948 × 328 px
     (ends y 888). Tiles are flat fills, no glass: `rgba(182,86,160,.55)`, every 7th tile
     `rgba(182,86,160,.8)` so the block reads as many individual objects, not a texture.
-  - **merged tile** (hidden until step 3): one slanted panel 240 × 150 px, radius 16,
-    magenta glass, at **x 120, y 600**; to its right at **x 400, y 616**: `t-h2` `1 recording`
-    and under it at y 686 `t-label` `--text-2` `thousands of variants`.
+  - **merged tile** (hidden until step 3): one of the 200 tiles scaled up — 240 × 150 px,
+    radius 40, flat `rgba(182,86,160,.8)`, `skewX(-12deg)`, at **x 460, y 600**; to its right at
+    **x 760, y 616**: `t-h2` `1 recording` and under it at y 686 `t-label` `--text-2`
+    `thousands of variants`. A 3 px `--text-3` arrow curves from under the `200` into the tile's
+    left edge, so the surviving tile reads as one of the two hundred.
 - **Right column, x 1140 → 1800 (width 660).**
   - two founder photos side by side at **y 300**, 200 × 200 each, radius 20, 2 px `--line` border,
     at **x 1140** and **x 1380**. The source files are 200 × 200, so they render 1:1 on the
@@ -71,8 +72,6 @@ Body words on screen ≈ 11 excluding names and labels. No sentences.
     The founders' background lines live in the speaker notes, not on screen.
   - `+450%` — `t-num` 132 px in **orange** `--orange-t` at **x 1140, y 630**; the word
     `more replies` `t-label` `--text-2` at **x 1140, y 778**.
-  - chip (step 3) at **x 1140, y 852**: pill 520 × 72, `--surface`, `t-label`
-    `Tavus · Y Combinator S21`, with a magenta 10 px slanted bar at its left edge.
 - **Logo**, 200 px wide, at **x 1600, y 90**, `color: var(--text-2)`, fading in with the entrance.
 
 ### Build steps (3 clicks)
@@ -88,7 +87,9 @@ Body words on screen ≈ 11 excluding names and labels. No sentences.
    that explains why the company exists.
 3. **[click] Automate it.** The 200 tiles converge on the grid's top-left corner and collapse into
    the single merged panel (`gsap.to(tiles, {x: dx, y: dy, scale:.2, autoAlpha:0, stagger:{amount:.5, from:'end'}})`
-   then `Kit.show` the merged panel + its two labels); the chip fades in bottom-right.
+   then `Kit.show` the merged panel + its two labels). The `200` and its caption fade to
+   `--text-3` on the same beat and the arrow draws into the surviving tile, so the column no
+   longer reads as two live claims.
    *Why:* this is the slide's argument in motion — 200 hand-made things become one recording
    plus a model. Nothing else on the slide can say it as fast.
 
@@ -119,7 +120,7 @@ path is inlined in `04-tavus.js` so it can take `currentColor`). Everything else
 | Hassaan Raza, CEO, CS at UT Austin, PM at Apple and Google | *Founders and leadership* table: "Studied computer science at UT Austin. Engineering project manager at Apple and technical program manager at Google" | No (biographical) |
 | Quinn Favret, COO, left Michigan, Thiel Fellow 2023 | *Founders and leadership* table: "left the University of Michigan to build companies… Named a Thiel Fellow in 2023." | No |
 | 1 recording → thousands of variants | *Version one*: "let a user record one video and generate thousands of variants" | No (product description) |
-| Tavus · Y Combinator S21 | Timeline: "Summer 2021 — Joins Y Combinator's S21 batch" | No |
+| Y Combinator S21 (speaker notes only) | Timeline: "Summer 2021 — Joins Y Combinator's S21 batch" | No |
 
 > Note for the builder: the report flags that sources disagree on the founding year (2020 vs 2021).
 > **Do not put a founding year on screen.** "Y Combinator S21" is the safe, sourced fact.
@@ -156,19 +157,23 @@ Body words ≈ 12.
 
 ### Layout
 
-- **Timeline rail**, horizontal, at **y 360**, from **x 220 to x 1700**, 3 px `--line` stroke,
+- **Logo**, 200 px wide, at **x 1600, y 90** (the same corner mark as `origin` and `snapshot`).
+- **Timeline rail**, horizontal, at **y 560**, from **x 220 to x 1700**, 3 px `--line` stroke,
   drawn with `Kit.draw`. Three nodes: circles r 16 filled `--sec` at **x 300**, **x 960**, **x 1620**.
-  - Year above each node at y 316 — `t-caps` JetBrains Mono, `--sec-t`.
-  - Label below each node at y 418 — `t-label`, `--text`, centred on the node.
+  - Year above each node at y 516 — `t-caps` JetBrains Mono, `--sec-t`.
+  - Label below each node at y 618 — `t-label`, `--text`, centred on the node.
   - Node 3's year/label start hidden; revealed at step 3.
-- **Model row**, SVG, centred under the rail. Three circles **r 96**, stroke 4 px `--sec`,
-  fill `rgba(182,86,160,.14)`, centres at **(x 560, y 700)**, **(x 960, y 700)**, **(x 1360, y 700)**.
-  - Model name inside each circle, `Archivo` 36 px bold, `--text`, centred at cy − 6.
-  - One-word job under each circle at **cy + 140** (y 840), `t-label`, `--text-2`, centred.
-- **Merged circle:** same centre as the middle circle **(960, 700)** but **r 132**, fill
+- **Tether** (step 2, magenta 3 px at .75 opacity): a drop from the 2024 node at **x 960,
+  y 644 → 668**, then a bracket `M560 684 V668 H1360 V684` over the three model circles. It says
+  the three models belong to the 2024 era and nothing else on the rail.
+- **Model row**, SVG, under the bracket. Three circles **r 96**, stroke 4 px `--sec`,
+  fill `rgba(182,86,160,.14)`, centres at **(x 560, y 782)**, **(x 960, y 782)**, **(x 1360, y 782)**.
+  - Model name inside each circle, `Archivo` 36 px bold, `--text`, centred at cy + 12.
+  - One-word job under each circle at **cy + 136** (y 918), `t-label`, `--text-2`, centred.
+- **Merged circle:** under the **2026** node at **(1620, 782)**, **r 132**, fill
   `rgba(182,86,160,.34)`, stroke 5 px `--sec`; label `Griffin` `Archivo` 52 px bold `--text`
-  at y 694; caption `the model in section 03` `t-label` `--text-2` centred at **y 944**.
-- Everything stays inside y 268–990 (bottom-most text baseline y 896).
+  at y 800; caption `the model in section 03` `t-label` `--text-2` centred at **y 958**.
+- Everything stays inside y 268–990 (bottom-most text descender y 966).
 
 ### Build steps (3 clicks)
 
@@ -185,9 +190,10 @@ Body words ≈ 12.
    never says Phoenix, Raven or Sparrow (see that spec's "Deliberately cut"), so this slide owns them.
    One word of job per circle is the whole introduction they get; they exist only as the "before" of
    the next motion.
-3. **[click] They become one.** The outer two circles tween to the centre and fade (`x → 960`,
-   `scale → .7`, .8 s, `power3.inOut`) while the merged `Griffin` circle scales up from the
-   middle one; node 3 + `2026 / one model` appear on the rail at the same beat; caption fades in.
+3. **[click] They become one.** The tether fades; all three circles tween rightwards to x 1620
+   and fade (`scale → .7`, .9 s, `power3.inOut`) while the merged `Griffin` circle scales up
+   under the 2026 node; node 3 + `2026 / one model` appear on the rail at the same beat;
+   caption fades in.
    *Why:* the merge **is** the idea — three specialists becoming one model — and it also re-draws
    the link between the company's product history and the model the audience met five minutes ago.
 
@@ -237,9 +243,7 @@ customer, in a field that is filling up fast.
 | case card title | `Qualified built an AI sales rep on Tavus` |
 | case stat A | `2×` / `more conversations` |
 | case stat B | `6×` / `more meetings booked` |
-| case card flag | `SELF-REPORTED` (chip, `t-caps`, orange text on `rgba(239,90,53,.16)`) |
-| crowd label | `Competitors` |
-| crowd chips | `Anam` · `HeyGen` · `Synthesia` · `Soul Machines` · `+ a dozen more` |
+| crowd chips | `Anam` · `HeyGen` · `Synthesia` · `+ a dozen more` |
 | source footer | `Funding: round announcements. Users and customer results: Tavus. Competitors: vendor pages. Logo: Tavus.` with `Kit.src(…, 'Self-reported')`. Keep it to one line: at 22 px it wraps past about 112 characters and then collides with the competitor chips. |
 
 ### Layout
@@ -248,14 +252,18 @@ customer, in a field that is filling up fast.
   - `$64M` and `150K` — `t-num` 132 px, `--magenta-t`, baseline-aligned at y 300.
   - sub-labels `t-label` `--text-2` at y 452, directly under each number.
   - A 2 px `--line` vertical divider at x 960, y 300 → 470.
-- **Case card, x 120, y 540, w 1680, h 250.** `.card` on `--surface`, radius 24.
-  - title `t-h2` at x 164, y 580. **Never write "SDR" on screen** — it is undefined jargon for this
+- **Case card, x 120, y 540, w 1320, h 300.** `.card` on `--surface`, radius 24. The card is
+  sized to its content, not to the stage width.
+  - title `t-h2` at x 164, y 580, `white-space: nowrap` — the title and the two stat pairs are
+    absolutely positioned, so a wrapped title would land on the numerals. **Never write "SDR" on screen** — it is undefined jargon for this
     audience. "AI sales rep" is the on-screen wording everywhere in the deck.
-  - two stat pairs inside, left-aligned at x 164 (`2×`) and x 560 (`6×`), `t-num` 112 px in
-    **orange** `--orange-t`, baseline y 700; their labels `t-label` `--text-2` underneath at y 740.
-  - `SELF-REPORTED` chip pinned at the card's top-right (x ≈ 1540, y 572), height 44.
-- **Crowd row, y 850 → 950.** Label `Competitors` `t-label` `--text-3` at x 120, y 858.
-  Five chips in a row starting x 120, y 900: slanted (`skewX(-12deg)`) pills, height 64,
+  - two stat pairs inside, left-aligned at x 164 (`2×`) and x 760 (`6×`), `t-num` 112 px in
+    **orange** `--orange-t`; their labels `t-label` `--text-2` underneath, clearing the card's
+    bottom edge by 40 px.
+  - **No in-card caveat chip.** The `Self-reported` flag on the `Kit.src` footer carries the
+    caveat for the whole slide, and orange stays on the two result numbers alone.
+- **Crowd row, y 890 → 954.** No label — Rey says "competitors".
+  Four chips in a row starting x 120, y 890: slanted (`skewX(-12deg)`) pills, height 64,
   padding 0 28 px, gap 18, `--surface` fill with a 2 px `--line` border; text `t-label` `--text-2`
   un-skewed inside. The last chip `+ a dozen more` uses `--text-3`. Row must end before x 1800.
 
@@ -264,14 +272,14 @@ customer, in a field that is filling up fast.
 0. **Entrance (auto):** heading rises; both big numbers count up (`Kit.count`, `$64M` with prefix,
    `150K` with suffix), sub-labels fade in after.
    *Why:* two numbers, counted, read as scale at a glance; no sentence needed.
-1. **[click] The customer case.** The card rises in; `2×` and `6×` count up with a .2 s offset;
-   the `SELF-REPORTED` chip fades in **last**, after the numbers land.
-   *Why:* the deliberate late arrival of the flag is the teaching beat — you see the impressive
-   number, then you see who measured it.
-2. **[click] The crowd.** The five chips slide in from the right (`Kit.slideIn`, x 420, stagger .07)
-   while the two top stats dim to opacity .45.
+1. **[click] The customer case.** The card rises in while the two top stats dim to opacity .78 —
+   enough to shift focus, not enough to make magenta-on-charcoal numerals illegible in a bright
+   hall; `2×` and `6×` count up with a .2 s offset.
+   *Why:* the number lands first; Rey names who measured it, and the footer flag holds the caveat.
+   Dimming here keeps the step to two full-accent numbers, the pair the beat is about.
+2. **[click] The crowd.** The four chips slide in from the right (`Kit.slideIn`, x 420, stagger .07).
    *Why:* the chips arriving *into* the slide, crowding the space the stats occupied, is the point:
-   the capability is becoming a commodity. The dim keeps one focus at a time.
+   the capability is becoming a commodity.
 
 ### Images
 **None.** Three code-drawn blocks; an image would fight the numbers for attention.
@@ -294,11 +302,11 @@ customer, in a field that is filling up fast.
 | `$64M` raised | *Funding*: "Tavus has disclosed about $64M across three priced rounds, plus Y Combinator's initial check." | No (disclosed rounds) |
 | Sequoia, Scale, CRV | *Funding* table: Seed led by Sequoia Capital; Series A led by Scale Venture Partners; Series B led by CRV | No |
 | `150K` developers and businesses | *Products and technology*: "Tavus says 150,000 developers and businesses use its models" | **Yes** |
-| Qualified AI SDR, 2× conversations, 6× meetings | *Named deployments (all self-reported by Tavus)*: "Qualified … Piper, an AI SDR; reports 2x more conversations and 6x more meetings booked" | **Yes** — chip on card + footer flag |
+| Qualified AI SDR, 2× conversations, 6× meetings | *Named deployments (all self-reported by Tavus)*: "Qualified … Piper, an AI SDR; reports 2x more conversations and 6x more meetings booked" | **Yes** — footer flag |
 | "how many of the 150,000 pay" (notes only) | *Open questions*: "What isn't disclosed. Revenue, valuation, headcount, and how many of the 150,000 claimed users pay." | n/a |
 | Anam cheaper (notes) | *Competitors* table: "Cheaper entry ($12 a month, $0.16 per extra minute)" | Vendor marketing — notes say "its own benchmark"/"undercuts on price" only; **no latency numbers on screen** |
 | HeyGen distribution | *Competitors* table: "Brings a large existing customer base into the category." | No |
-| Synthesia, Soul Machines | *Competitors* table rows | No |
+| Synthesia | *Competitors* table row | No |
 
 > Honesty guard: do **not** put Anam's latency claims (1.24 s vs 1.86 s) on screen or in notes —
 > they are a competitor's own benchmark and would contradict the Griffin section's numbers.
@@ -332,25 +340,32 @@ agents that sell without a human, and agents that buy.
 - **Full-bleed image** (see below) covering the slide, positioned `right 8% / cover`, plus the
   same left-to-right scrim used on the title slide:
   `linear-gradient(90deg,#1E1B1C 0%,#1E1B1C 36%,rgba(30,27,28,.72) 52%,rgba(30,27,28,0) 70%)`.
-- **Line 1** `t-h1` (76 px), `--text`, at **x 120, y 400**, width 900 px (wraps to 2 lines).
-- **Line 2** `t-h1` (76 px), `--orange-t`, at **x 120, y 620**, width 900 px (wraps to 2 lines).
+- **Line 1** `t-h1` (76 px), `--text`, at **x 120, y 400**, width 1020 px, broken by hand
+  (`The AI salesperson<br>is built.`) so the line count can never change under a wider render.
+- **Line 2** `t-h1` (76 px), `--orange-t`, at **x 120, y 660**, width 1020 px, broken by hand
+  (`Agents that sell.<br>Agents that buy.`).
 - **Chip strip** at **x 120, y 890** — the deck's canonical throughline strip (geometry in
   `specs/airbnb.md` § takeaways; copy it, do not restyle it): `t-caps` 28, letter-spacing .08em,
   `·` separators in `--line`, each marker on a solid `skewX(-12deg)` slab. `PRICE` red,
-  `ASSIST` blue, `INTERACT` purple, `NEGOTIATE` green. **`NEGOTIATE` takes `--bg` text, not
+  `ASSIST` blue, `INTERACT` purple, `NEGOTIATE` green. The three finished markers sit at
+  opacity .5 and `NEGOTIATE` carries 6 px extra pill padding plus a 3 px light outline, so the
+  one still ahead is told apart by weight as well as colour. **`NEGOTIATE` takes `--bg` text, not
   `--text`:** white on `--green` measures about 2.3:1, and charcoal on `--green` about 6.5:1.
   The row ends near x 1020, inside the scrim.
 
 ### Build steps (2 clicks)
 
-0. **Entrance (auto):** image fades and scales in (2.0 s, `scale 1.06 → 1`), line 1 rises, the
-   footer fades last. Ambient: a very slow 14 s `yoyo` drift on the image, `ctx.mode === 'show'`
-   only (allowed by KIT §2.3 on image-led slides).
-1. **[click] The next section.** Line 1 dims to `--text-2`; line 2 rises in orange.
-   *Why:* the dim-and-rise shows one statement handing off to the next.
-2. **[click] The strip.** The three finished markers snap in left to right (.09 stagger,
-   `back.out`); after a .3 s beat the separator and `NEGOTIATE` pop in green.
-   *Why:* the beat separates what is built from what comes next, which is the slide's whole job.
+0. **Entrance (auto):** image fades and scales in (2.0 s, `scale 1.06 → 1`); the footer fades in.
+   Nothing else. The step-0 notes are about the name, so the name's source line is all that is on
+   screen. Ambient: a very slow 14 s `yoyo` drift on the image, `ctx.mode === 'show'` only
+   (allowed by KIT §2.3 on image-led slides).
+1. **[click] The payoff.** Line 1 rises.
+   *Why:* the deck's payoff sentence arrives on the beat Rey says it, not 15 s early as wallpaper.
+2. **[click] The next section.** Line 1 dims to `--text-2`, line 2 rises in orange, then the three
+   finished markers snap in left to right (.09 stagger, `back.out`) and, after a .3 s beat, the
+   separator and `NEGOTIATE` pop in green; the three finished markers drop to opacity .5.
+   *Why:* the dim-and-rise hands one statement to the next, and the marker beat separates what is
+   built from what comes next.
 
 ### Images — **yes, one** (`assets/img/tavus/peacock.jpg`)
 
@@ -435,8 +450,8 @@ Facts in the report that this section does **not** use, and why:
 
 - Scope all CSS under `.slide[data-sec="tavus"]` in `css/sections/tavus.css`.
 - Slides 1–3 use `heading`; slide 4 has no heading (full-bleed statement).
-- Hidden-by-default elements (merged tile, chip, node 3 labels, merged Griffin circle, case card,
-  crowd chips, line 2, chip strip) must be revealed with `Kit.show` / `tl.to(…, {autoAlpha:1})`,
+- Hidden-by-default elements (merged tile, arrow, node 3 labels, tether, merged Griffin circle,
+  case card, crowd chips, line 1, line 2, chip strip) must be revealed with `Kit.show` / `tl.to(…, {autoAlpha:1})`,
   never `Kit.rise` / `tl.from` — see KIT §4's gotcha.
 - The 200 tiles should be generated in a loop in the `html` function, not hand-written, and the
   convergence tween in step 3 should target `ctx.qa('.tile')` with a positional stagger.

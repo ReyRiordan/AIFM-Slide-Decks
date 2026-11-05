@@ -59,18 +59,20 @@
         '<div class="grid" style="position:absolute;left:120px;top:560px;width:' + (COLS * STEPX - GAP) + 'px;height:' + (ROWS * STEPY - GAP) + 'px">' + tiles + '</div>' +
 
         // ---- the merge payoff (hidden until step 3) ----
-        '<div class="merged" style="position:absolute;left:120px;top:600px;width:240px;height:150px"></div>' +
-        '<div class="mlab t-h2" style="position:absolute;left:400px;top:616px">1 recording</div>' +
-        '<div class="mlab t-label" style="position:absolute;left:400px;top:686px;color:var(--text-2)">thousands of variants</div>' +
+        // the arrow runs from the 200 and its caption into the one surviving tile
+        '<svg class="marrow" style="position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;overflow:visible">' +
+          '<path class="mline" d="M300 530 C 300 630, 360 668, 430 668" fill="none" stroke="' + C.text3 + '" stroke-width="3"/>' +
+          '<path class="mhead" d="M430 668 L 410 656 L 410 680 Z" fill="' + C.text3 + '"/>' +
+        '</svg>' +
+        '<div class="merged" style="position:absolute;left:460px;top:600px;width:240px;height:150px"></div>' +
+        '<div class="mlab t-h2" style="position:absolute;left:760px;top:616px">1 recording</div>' +
+        '<div class="mlab t-label" style="position:absolute;left:760px;top:686px;color:var(--text-2)">thousands of variants</div>' +
 
         // ---- right column: the two founders, the payoff, the chip ----
         founder('fa', 'founder-raza.jpg', 'Hassaan Raza', 'CEO') +
         founder('fb', 'founder-favret.jpg', 'Quinn Favret', 'COO') +
         '<div class="t-num pay450" style="position:absolute;left:1140px;top:630px;color:var(--orange-t)">+0%</div>' +
         '<div class="t-label payl" style="position:absolute;left:1140px;top:778px;color:var(--text-2)">more replies</div>' +
-        '<div class="ycchip" style="position:absolute;left:1140px;top:852px;width:520px;height:72px">' +
-          '<span class="ycbar"></span><span class="t-label">Tavus · Y Combinator S21</span>' +
-        '</div>' +
 
         Kit.src('The 200 videos and the reply figure come from the founders. Logo: Tavus. Photos: Y Combinator.', 'Self-reported');
     },
@@ -79,7 +81,9 @@
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
       var tiles = qa('.tile');
 
-      gsap.set([q('.merged'), qa('.mlab'), q('.fa'), q('.fb'), q('.pay450'), q('.payl'), q('.ycchip')], { autoAlpha: 0 });
+      gsap.set([q('.merged'), qa('.mlab'), q('.fa'), q('.fb'), q('.pay450'), q('.payl')], { autoAlpha: 0 });
+      gsap.set([q('.mline'), q('.mhead')], { autoAlpha: 0 });
+      gsap.set(q('.mline'), { drawSVG: '0%' });
 
       // ---- STEP 0: two hundred, by hand ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -107,9 +111,11 @@
         scale: .2, autoAlpha: 0, duration: .9, ease: 'power2.inOut',
         stagger: { amount: .5, from: 'end' }
       });
+      tl.to([q('.big200'), q('.cap200')], { color: C.text3, duration: .6 }, '<');
       Kit.show(tl, q('.merged'), { y: 0, duration: .5, ease: Kit.ease.back }, '-=.2');
+      tl.to([q('.mline'), q('.mhead')], { autoAlpha: 1, duration: .2 }, '<');
+      tl.to(q('.mline'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, '<');
       Kit.show(tl, qa('.mlab'), { y: 20, stagger: .1, at: '-=.25' });
-      Kit.show(tl, q('.ycchip'), { y: 16, at: '-=.3' });
     },
 
     notes:
@@ -137,7 +143,7 @@
     heading: 'Timeline',
     budgetSec: 45,
     html: function () {
-      var RY = 430, NODES = [300, 960, 1620];
+      var RY = 560, NODES = [300, 960, 1620], MCY = 782;
       var MODELS = [
         { x: 560, name: 'Phoenix', job: 'draws the face' },
         { x: 960, name: 'Raven', job: 'watches and listens' },
@@ -150,30 +156,36 @@
       ];
       var nodes = YEARS.map(function (n, i) {
         return '<g class="nd nd' + i + '">' +
-          '<text class="yr" x="' + n.x + '" y="386" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.magentaT + '">' + n.y + '</text>' +
+          '<text class="yr" x="' + n.x + '" y="516" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.magentaT + '">' + n.y + '</text>' +
           '<circle class="dot" cx="' + n.x + '" cy="' + RY + '" r="16" fill="' + C.magenta + '"/>' +
-          '<text class="lb" x="' + n.x + '" y="488" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text + '">' + n.lab + '</text>' +
+          '<text class="lb" x="' + n.x + '" y="618" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text + '">' + n.lab + '</text>' +
         '</g>';
       }).join('');
       var circles = MODELS.map(function (m, i) {
         return '<g class="mc mc' + i + '">' +
-          '<circle cx="' + m.x + '" cy="740" r="96" fill="rgba(182,86,160,.14)" stroke="' + C.magenta + '" stroke-width="4"/>' +
-          '<text x="' + m.x + '" y="752" text-anchor="middle" font-family="Archivo" font-size="36" font-weight="750" fill="' + C.text + '">' + m.name + '</text>' +
-          '<text x="' + m.x + '" y="880" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">' + m.job + '</text>' +
+          '<circle cx="' + m.x + '" cy="' + MCY + '" r="96" fill="rgba(182,86,160,.14)" stroke="' + C.magenta + '" stroke-width="4"/>' +
+          '<text x="' + m.x + '" y="' + (MCY + 12) + '" text-anchor="middle" font-family="Archivo" font-size="36" font-weight="750" fill="' + C.text + '">' + m.name + '</text>' +
+          '<text x="' + m.x + '" y="' + (MCY + 136) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">' + m.job + '</text>' +
         '</g>';
       }).join('');
       return '' +
+        logo(1600, 90, 200) +
         '<svg class="pv" viewBox="0 0 1920 1080" style="position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;overflow:visible">' +
           '<line class="rail" x1="220" y1="' + RY + '" x2="1700" y2="' + RY + '" stroke="' + C.line + '" stroke-width="3"/>' +
           '<line class="seg1" x1="' + NODES[0] + '" y1="' + RY + '" x2="' + NODES[1] + '" y2="' + RY + '" stroke="' + C.magenta + '" stroke-width="5"/>' +
           '<line class="seg2" x1="' + NODES[1] + '" y1="' + RY + '" x2="' + NODES[2] + '" y2="' + RY + '" stroke="' + C.magenta + '" stroke-width="5"/>' +
           nodes +
+          // tether: the 2024 node owns the three model circles
+          '<g class="tether" stroke="' + C.magenta + '" stroke-width="3" fill="none" opacity=".75">' +
+            '<path class="tdrop" d="M960 644 V 668"/>' +
+            '<path class="tbrk" d="M560 684 V 668 H 1360 V 684"/>' +
+          '</g>' +
           circles +
           '<g class="gr">' +
-            '<circle cx="960" cy="740" r="132" fill="rgba(182,86,160,.34)" stroke="' + C.magenta + '" stroke-width="5"/>' +
-            '<text x="960" y="758" text-anchor="middle" font-family="Archivo" font-size="52" font-weight="800" fill="' + C.text + '">Griffin</text>' +
+            '<circle cx="1620" cy="' + MCY + '" r="132" fill="rgba(182,86,160,.34)" stroke="' + C.magenta + '" stroke-width="5"/>' +
+            '<text x="1620" y="' + (MCY + 18) + '" text-anchor="middle" font-family="Archivo" font-size="52" font-weight="800" fill="' + C.text + '">Griffin</text>' +
           '</g>' +
-          '<text class="grcap" x="960" y="944" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">the model in section 03</text>' +
+          '<text class="grcap" x="1620" y="958" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">the model in section 03</text>' +
         '</svg>' +
         Kit.src('Tavus product timeline: Series A and developer API (Mar 2024), Conversational Video Interface (Aug 2024), Griffin research preview (Oct 1, 2026).');
     },
@@ -181,11 +193,12 @@
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
 
-      gsap.set([q('.nd1'), q('.nd2'), qa('.mc'), q('.gr'), q('.grcap')], { autoAlpha: 0 });
+      gsap.set([q('.nd1'), q('.nd2'), qa('.mc'), q('.gr'), q('.grcap'), q('.tether')], { autoAlpha: 0 });
       gsap.set([q('.seg1'), q('.seg2')], { drawSVG: '0%' });
 
       // ---- STEP 0: the axis of time ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.fade(tl, q('.tvlogo'), { at: .3, duration: .7 });
       Kit.draw(tl, q('.rail'), { at: .2, duration: .9 });
       Kit.fade(tl, q('.nd0'), { at: .9, duration: .6 });
       ctx.pause();
@@ -198,15 +211,17 @@
       ctx.pause();
 
       // ---- STEP 2: three specialist models (their only appearance in the deck) ----
-      tl.to(qa('.mc'), { autoAlpha: 1, duration: .45, stagger: .12 });
+      tl.to(q('.tether'), { autoAlpha: 1, duration: .35 });
+      tl.to(qa('.mc'), { autoAlpha: 1, duration: .45, stagger: .12 }, '<+.15');
       tl.fromTo(qa('.mc'), { scale: .6 }, { scale: 1, duration: .55, ease: Kit.ease.back, stagger: .12 }, '<');
       ctx.pause();
 
-      // ---- STEP 3: three become one ----
-      tl.to(q('.mc0'), { x: 400, scale: .7, autoAlpha: 0, duration: .8, ease: 'power3.inOut' });
-      tl.to(q('.mc2'), { x: -400, scale: .7, autoAlpha: 0, duration: .8, ease: 'power3.inOut' }, '<');
-      tl.to(q('.mc1'), { autoAlpha: 0, duration: .5, ease: 'power2.in' }, '<+.2');
-      tl.fromTo(q('.gr'), { autoAlpha: 0, scale: .55 }, { autoAlpha: 1, scale: 1, duration: .7, ease: Kit.ease.out }, '<+.3');
+      // ---- STEP 3: three become one, under the 2026 node ----
+      tl.to(q('.tether'), { autoAlpha: 0, duration: .4 });
+      tl.to(q('.mc0'), { x: 1060, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
+      tl.to(q('.mc1'), { x: 660, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
+      tl.to(q('.mc2'), { x: 260, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
+      tl.fromTo(q('.gr'), { autoAlpha: 0, scale: .55 }, { autoAlpha: 1, scale: 1, duration: .7, ease: Kit.ease.out }, '<+.45');
       tl.to(q('.seg2'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, '<');
       tl.to(q('.nd2'), { autoAlpha: 1, duration: .4 }, '<+.2');
       tl.from(qa('.nd2 .yr, .nd2 .lb'), { y: 14, duration: .5, ease: Kit.ease.out, stagger: .08 }, '<');
@@ -234,7 +249,7 @@
     heading: 'Company snapshot',
     budgetSec: 50,
     html: function () {
-      var rivals = ['Anam', 'HeyGen', 'Synthesia', 'Soul Machines', '+ a dozen more'];
+      var rivals = ['Anam', 'HeyGen', 'Synthesia', '+ a dozen more'];
       return '' +
         logo(1600, 90, 200) +
 
@@ -250,20 +265,18 @@
         '<span class="sdiv" style="position:absolute;left:960px;top:300px;width:2px;height:170px;background:var(--line)"></span>' +
 
         // ---- customer case card ----
-        '<div class="card casecard" style="position:absolute;left:120px;top:540px;width:1680px;height:250px">' +
+        '<div class="card casecard" style="position:absolute;left:120px;top:540px;width:1320px;height:300px">' +
           '<div class="t-h2 ctitle">Qualified built an AI sales rep on Tavus</div>' +
           '<div class="cstat ca"><div class="t-num cnum" style="color:var(--orange-t)">0×</div>' +
             '<div class="t-label clab" style="color:var(--text-2)">more conversations</div></div>' +
           '<div class="cstat cb"><div class="t-num cnum" style="color:var(--orange-t)">0×</div>' +
             '<div class="t-label clab" style="color:var(--text-2)">more meetings booked</div></div>' +
-          '<span class="t-caps srchip">Self-reported</span>' +
         '</div>' +
 
         // ---- competitors ----
-        '<div class="t-label crowdlab" style="position:absolute;left:120px;top:858px;color:var(--text-3)">Competitors</div>' +
-        '<div class="crowd" style="position:absolute;left:120px;top:900px;display:flex;gap:18px">' +
+        '<div class="crowd" style="position:absolute;left:120px;top:890px;display:flex;gap:18px">' +
           rivals.map(function (c, i) {
-            return '<span class="cchip' + (i === 4 ? ' last' : '') + '"><b class="t-label">' + c + '</b></span>';
+            return '<span class="cchip' + (i === rivals.length - 1 ? ' last' : '') + '"><b class="t-label">' + c + '</b></span>';
           }).join('') +
         '</div>' +
 
@@ -273,7 +286,7 @@
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
 
-      gsap.set([q('.casecard'), q('.crowdlab'), qa('.cchip'), q('.srchip')], { autoAlpha: 0 });
+      gsap.set([q('.casecard'), qa('.cchip')], { autoAlpha: 0 });
 
       // ---- STEP 0: money and reach ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -286,15 +299,13 @@
 
       // ---- STEP 1: the customer case — number first, then who measured it ----
       Kit.show(tl, q('.casecard'), { y: 32, duration: .6 });
+      tl.to([q('.s1'), q('.s2'), q('.sdiv')], { opacity: .78, duration: .5 }, '<');
       Kit.count(tl, q('.ca .cnum'), { to: 2, suffix: '×', duration: .9, at: '-=.2' });
       Kit.count(tl, q('.cb .cnum'), { to: 6, suffix: '×', duration: .9, at: '<+.2' });
-      Kit.show(tl, q('.srchip'), { y: 0, duration: .5, at: '+=.35' });
       ctx.pause();
 
       // ---- STEP 2: the field fills up ----
-      tl.to([q('.s1'), q('.s2'), q('.sdiv')], { opacity: .62, duration: .5 });
-      Kit.show(tl, q('.crowdlab'), { y: 12, duration: .4, at: '<' });
-      tl.to(qa('.cchip'), { autoAlpha: 1, duration: .5, stagger: .07 }, '<+.15');
+      tl.to(qa('.cchip'), { autoAlpha: 1, duration: .5, stagger: .07 });
       tl.from(qa('.cchip'), { x: 420, duration: .9, ease: Kit.ease.out, stagger: .07 }, '<');
     },
 
@@ -329,8 +340,8 @@
         '<div class="pk-bg" style="position:absolute;inset:0;background:url(assets/img/tavus/peacock.jpg) right 8% center / cover no-repeat"></div>' +
         '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,#1E1B1C 36%,rgba(30,27,28,.72) 52%,rgba(30,27,28,0) 70%)"></div>' +
 
-        '<div class="t-h1 bl1" style="position:absolute;left:120px;top:400px;width:900px">The AI salesperson is built.</div>' +
-        '<div class="t-h1 bl2" style="position:absolute;left:120px;top:620px;width:900px;color:var(--orange-t)">Agents that sell. Agents that buy.</div>' +
+        '<div class="t-h1 bl1" style="position:absolute;left:120px;top:400px;width:1020px">The AI salesperson<br>is built.</div>' +
+        '<div class="t-h1 bl2" style="position:absolute;left:120px;top:660px;width:1020px;color:var(--orange-t)">Agents that sell.<br>Agents that buy.</div>' +
 
         '<div class="strip" style="position:absolute;left:120px;top:890px;display:flex;align-items:center">' +
           tok('PRICE', 'var(--red)') + sep + tok('ASSIST', 'var(--blue)') + sep + tok('INTERACT', 'var(--purple)') + sep +
@@ -346,28 +357,30 @@
       var done = strip.slice(0, 5);                  // PRICE · ASSIST · INTERACT (+ separators)
       var nextSep = strip[5], nextTok = q('.strip .next');
 
-      gsap.set([q('.bl2')].concat(strip), { autoAlpha: 0 });
+      gsap.set([q('.bl1'), q('.bl2')].concat(strip), { autoAlpha: 0 });
 
       // ---- STEP 0: the peacock and the name ----
       tl.from(q('.pk-bg'), { autoAlpha: 0, scale: 1.06, duration: 2.0, ease: 'power2.out', transformOrigin: '72% 50%' }, 0);
-      Kit.rise(tl, q('.bl1'), { at: .45, y: 30, duration: .9 });
-      Kit.fade(tl, q('.src'), { at: 1.5, duration: .8 });
+      Kit.fade(tl, q('.src'), { at: 1.0, duration: .8 });
       if (ctx.mode === 'show') {
         gsap.to(q('.pk-bg'), { scale: 1.03, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4, transformOrigin: '72% 50%' });
       }
       ctx.pause();
 
-      // ---- STEP 1: the two sides of the next section ----
-      tl.to(q('.bl1'), { color: C.text2, duration: .5 });
-      Kit.show(tl, q('.bl2'), { y: 30, duration: .8, at: '<+.1' });
+      // ---- STEP 1: the payoff line ----
+      Kit.show(tl, q('.bl1'), { y: 30, duration: .9 });
       ctx.pause();
 
-      // ---- STEP 2: three markers done, the fourth arrives ----
+      // ---- STEP 2: the next section, then the markers ----
+      tl.to(q('.bl1'), { color: C.text2, duration: .5 });
+      Kit.show(tl, q('.bl2'), { y: 30, duration: .8, at: '<+.1' });
       tl.fromTo(done, { autoAlpha: 0, y: 18, scale: .8 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: Kit.ease.back, stagger: .09 });
+        { autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: Kit.ease.back, stagger: .09 }, '+=.25');
       tl.to(nextSep, { autoAlpha: 1, duration: .3 }, '+=.3');
       tl.fromTo(nextTok, { autoAlpha: 0, y: 18, scale: .7 },
         { autoAlpha: 1, y: 0, scale: 1, duration: .7, ease: Kit.ease.back }, '<');
+      // three done, the fourth is the one still ahead
+      tl.to(done, { opacity: .5, duration: .4 }, '<+.3');
     },
 
     notes:
