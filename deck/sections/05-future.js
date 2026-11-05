@@ -219,7 +219,7 @@
       return '' +
       '<div class="sub t-h2" style="position:absolute;left:120px;top:290px;color:var(--text-2);font-weight:500">Scored only on the final balance.</div>' +
       card('ca', 120, 'Lying to a supplier', 'Invented a price history', 'to push a supplier’s price down') +
-      card('cb', 980, 'Price-fixing with rivals', 'Joined price cartels', 'in all six multi-agent games') +
+      card('cb', 980, 'Price-fixing with rivals', 'Joined price cartels', 'when several models ran machines side by side') +
       '<div class="punch t-h2" style="position:absolute;left:120px;top:745px;width:1680px;font-weight:600">' +
         '<span class="p1">Nobody asked for this.</span> <b class="p2 c-orange">Profit was the only score.</b>' +
       '</div>' +
@@ -244,10 +244,11 @@
       Kit.show(tl, q('.p2'), { y: 16, duration: .45, at: '-=.25' });
     },
     notes:
-      'That leaderboard has a cost. The models are graded on one number, so one of them faked a price history ' +
-      'to push a supplier down.' +
-      '[click] Another joined a price cartel in all six games.' +
-      '[click] Nobody told them to. We graded profit, so we got profit.'
+      'That leaderboard has a cost. Scored on one number, one model invented a price history to push a ' +
+      'supplier down.' +
+      '[click] Andon also runs an arena where several models trade with each other. One joined a price ' +
+      'cartel in all six games.' +
+      '[click] Nobody asked for that. We graded profit, so we got profit.'
   };
 
   /* ======================================================================
@@ -294,7 +295,7 @@
       '<div class="card now" style="position:absolute;left:120px;top:700px;width:820px;height:200px;padding:28px 36px">' +
         '<div class="t-caps faint">Running today</div>' +
         '<div class="t-h2" style="margin-top:16px">2,000 suppliers at once</div>' +
-        '<div class="t-label dim" style="margin-top:16px">Walmart’s smaller contracts, via Pactum. 3% saved.</div>' +
+        '<div class="t-label dim" style="margin-top:16px">Walmart’s smaller contracts, via Pactum</div>' +
       '</div>' +
       '<div class="card next" style="position:absolute;left:980px;top:700px;width:820px;height:200px;padding:28px 36px">' +
         '<div class="t-caps faint">Next</div>' +
@@ -406,8 +407,12 @@
       '<div class="sub t-h2" style="position:absolute;left:120px;top:290px;width:1600px;font-weight:500;color:var(--text-2)">' +
         'The seller sets one price per shopper.' +
       '</div>' +
+      // left-aligned under the lead at the slide's own text margin, so the two opening
+      // lines share one edge instead of mixing a left lead with a centred SVG caption
+      '<div class="hdr t-body" style="position:absolute;left:120px;top:368px;color:var(--text-3)">' +
+        'Same product. Same minute.' +
+      '</div>' +
       '<svg class="pp" width="1520" height="480" viewBox="0 0 1520 480" style="position:absolute;left:200px;top:360px;overflow:visible">' +
-        txt(760, 34, 'Same product. Same minute.', { cls: 'hdr', anchor: 'middle', size: 36, w: 500, fill: C.text2 }) +
         g +
       '</svg>' +
       '<div class="card regs" style="position:absolute;left:120px;top:862px;width:1680px;height:110px;padding:20px 36px">' +
@@ -545,10 +550,10 @@
      at x130, numbers x232, labels x330, subs x330 (+48). Do not re-derive.
      ====================================================================== */
   var ROWS = [
-    { n: '01', w: 'PRICE',     c: 'var(--red)',    s: 'gradient boosting with a custom loss' },
-    { n: '02', w: 'ASSIST',    c: 'var(--blue)',   s: 'retrieval and tool calls behind the answer' },
-    { n: '03', w: 'INTERACT',  c: 'var(--purple)', s: 'diffusion, distilled to run live' },
-    { n: '04', w: 'NEGOTIATE', c: 'var(--green)',  s: 'both sides of the deal are software', sc: ' c-green' }
+    { n: '01', w: 'PRICE',     c: 'var(--red)',    s: 'learned what price would book' },
+    { n: '02', w: 'ASSIST',    c: 'var(--blue)',   s: 'looks things up before answering' },
+    { n: '03', w: 'INTERACT',  c: 'var(--purple)', s: 'makes a face fast enough to talk' },
+    { n: '04', w: 'NEGOTIATE', c: 'var(--green)',  s: 'both sides are software', sc: ' c-green' }
   ];
   var SUMMARY = {
     id: 'assembled',

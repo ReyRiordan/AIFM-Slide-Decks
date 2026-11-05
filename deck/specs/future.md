@@ -81,6 +81,8 @@ Steps: 0 the ranking, on the full scale · 1 the Nov 2025 marker · 2 the human 
 
 Sub-line "Scored only on the final balance." Two cards at y 430, 800 wide, flex columns, min-height 200:
 "Lying to a supplier" / "Invented a price history", "Price-fixing with rivals" / "Joined price cartels".
+Card B's sub-line says where the cartel result comes from in plain words ("when several models ran machines
+side by side"), because the earlier slide said one model runs the machine alone.
 The caps labels are plain words, not the negotiation jargon ANCHORING / COLLUSION.
 Punchline at y 745: "Nobody asked for this. **Profit was the only score.**"
 Steps: 0 the cause and card A · 1 card B · 2 the punchline.
@@ -95,7 +97,8 @@ price readout at y 240 driven by a state object and a pure `renderPrice()` (KIT 
 y 186 above it that `renderPrice()` switches between ASKING PRICE and SETTLED PRICE so the number is
 never bare, a `weaker agent` pill and a `+2%` tag. At step 2 the buyer is the subject, so it is
 **re-tinted red, never dimmed**; the seller drops to .7 instead. Two cards below (820 × 200 at x 120 and x 980):
-"2,000 suppliers at once" (Walmart via Pactum) and "Suppliers want agents".
+"2,000 suppliers at once" (Walmart via Pactum) and "Suppliers want agents". Pactum's 3% saving is not on
+screen: it is a different quantity from the 2% buyer gap and reads as a contradiction next to it.
 Prices $150 → $118 → $120.40 are **illustrative** and carry the on-screen `ILLUSTRATIVE PRICES` tag.
 
 Steps: 0 two agents · 1 they haggle · 2 the weaker agent pays 2% more · 3 Pactum today · 4 both sides automate.
@@ -105,7 +108,9 @@ Sources: Zhu et al. (2025) via Stanford HAI; Walmart and Pactum (Fox Business, R
 
 **One idea:** a model can quote one price per shopper, and that is what the new state laws are aimed at.
 
-Sub-line "The seller sets one price per shopper." Three **identical** drawn shoppers (the figures must not
+Sub-line "The seller sets one price per shopper.", then a 36 px caption "Same product. Same minute." at
+(120, 368) in `--text-3`. The caption is a left-aligned DOM line on the slide's text margin, not a centred
+label inside the SVG. Three **identical** drawn shoppers (the figures must not
 differ by object: that would argue the price gap comes from what they buy). What differs is a 28 caps line
 under each naming what the seller knows: COMPARES PRICES / NEW VISITOR / ALWAYS PAYS FULL PRICE. The signals
 are chosen so the direction of each price reads on first sight, with no narration.
@@ -143,10 +148,12 @@ Each row is three elements: colour chip, caps word, one sub-line. There is no mo
 
 | Row | Label | Sub |
 |---|---|---|
-| 01 red | PRICE | gradient boosting with a custom loss |
-| 02 blue | ASSIST | retrieval and tool calls behind the answer |
-| 03 purple | INTERACT | diffusion, distilled to run live |
-| 04 green | NEGOTIATE | both sides of the deal are software |
+| 01 red | PRICE | learned what price would book |
+| 02 blue | ASSIST | looks things up before answering |
+| 03 purple | INTERACT | makes a face fast enough to talk |
+| 04 green | NEGOTIATE | both sides are software |
+
+The sub-lines are plain words a student can follow; the technical names stay in the speaker notes.
 
 **Geometry is the intro agenda's, copied, not re-derived** (`specs/intro.md` § "Motif definition for reuse"):
 `ROW_Y = 368 / 518 / 668 / 818`, chip (130, rowY) 72 × 38 radius 10 skewed −12°, label `t-h2` italic 850
