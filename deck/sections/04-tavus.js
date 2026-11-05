@@ -61,12 +61,12 @@
         // ---- the merge payoff (hidden until step 3) ----
         // the arrow runs from the 200 and its caption into the one surviving tile
         '<svg class="marrow" style="position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;overflow:visible">' +
-          '<path class="mline" d="M300 530 C 300 630, 360 668, 430 668" fill="none" stroke="' + C.text3 + '" stroke-width="3"/>' +
-          '<path class="mhead" d="M430 668 L 410 656 L 410 680 Z" fill="' + C.text3 + '"/>' +
+          '<path class="mline" d="M300 530 C 300 572, 288 586, 272 608" fill="none" stroke="' + C.text3 + '" stroke-width="3"/>' +
+          '<path class="mhead" d="M268 618 L 256 596 L 282 598 Z" fill="' + C.text3 + '"/>' +
         '</svg>' +
-        '<div class="merged" style="position:absolute;left:460px;top:600px;width:240px;height:150px"></div>' +
-        '<div class="mlab t-h2" style="position:absolute;left:760px;top:616px">1 recording</div>' +
-        '<div class="mlab t-label" style="position:absolute;left:760px;top:686px;color:var(--text-2)">thousands of variants</div>' +
+        '<div class="merged" style="position:absolute;left:150px;top:620px;width:300px;height:190px"></div>' +
+        '<div class="mlab t-h2" style="position:absolute;left:530px;top:660px">1 recording</div>' +
+        '<div class="mlab t-label" style="position:absolute;left:530px;top:730px;color:var(--text-2)">→ 200 personalized videos</div>' +
 
         // ---- right column: the two founders, the payoff, the chip ----
         founder('fa', 'founder-raza.jpg', 'Hassaan Raza', 'CEO') +
@@ -143,22 +143,26 @@
     heading: 'Timeline',
     budgetSec: 45,
     html: function () {
-      var RY = 560, NODES = [300, 960, 1620], MCY = 782;
+      var RY = 440, NODES = [300, 900, 1150, 1620], MCY = 662;
       var MODELS = [
-        { x: 560, name: 'Phoenix', job: 'draws the face' },
-        { x: 960, name: 'Raven', job: 'watches and listens' },
-        { x: 1360, name: 'Sparrow', job: 'decides when to speak' }
+        { x: 500, name: 'Phoenix', job: 'draws the face' },
+        { x: 860, name: 'Raven', job: 'watches and listens' },
+        { x: 1220, name: 'Sparrow', job: 'decides when to speak' }
       ];
       var YEARS = [
         { x: 300, y: '2021', lab: 'recorded, then sent' },
-        { x: 960, y: '2024', lab: 'live, two-way' },
-        { x: 1620, y: '2026', lab: 'one model' }
+        { x: 900, y: '2024', lab: 'live, two-way' },
+        { x: 1150, y: '2025', lab: 'three models' },
+        { x: 1620, y: '2026', lab: 'research preview', open: true }
       ];
       var nodes = YEARS.map(function (n, i) {
+        var dot = n.open
+          ? '<circle class="dot" cx="' + n.x + '" cy="' + RY + '" r="15" fill="' + C.bg + '" stroke="' + C.magenta + '" stroke-width="4" stroke-dasharray="7 6"/>'
+          : '<circle class="dot" cx="' + n.x + '" cy="' + RY + '" r="16" fill="' + C.magenta + '"/>';
         return '<g class="nd nd' + i + '">' +
-          '<text class="yr" x="' + n.x + '" y="516" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.magentaT + '">' + n.y + '</text>' +
-          '<circle class="dot" cx="' + n.x + '" cy="' + RY + '" r="16" fill="' + C.magenta + '"/>' +
-          '<text class="lb" x="' + n.x + '" y="618" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text + '">' + n.lab + '</text>' +
+          '<text class="yr" x="' + n.x + '" y="396" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.magentaT + '">' + n.y + '</text>' +
+          dot +
+          '<text class="lb" x="' + n.x + '" y="498" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + (n.open ? C.text2 : C.text) + '">' + n.lab + '</text>' +
         '</g>';
       }).join('');
       var circles = MODELS.map(function (m, i) {
@@ -174,27 +178,31 @@
           '<line class="rail" x1="220" y1="' + RY + '" x2="1700" y2="' + RY + '" stroke="' + C.line + '" stroke-width="3"/>' +
           '<line class="seg1" x1="' + NODES[0] + '" y1="' + RY + '" x2="' + NODES[1] + '" y2="' + RY + '" stroke="' + C.magenta + '" stroke-width="5"/>' +
           '<line class="seg2" x1="' + NODES[1] + '" y1="' + RY + '" x2="' + NODES[2] + '" y2="' + RY + '" stroke="' + C.magenta + '" stroke-width="5"/>' +
+          '<line class="seg3" x1="' + NODES[2] + '" y1="' + RY + '" x2="' + NODES[3] + '" y2="' + RY + '" stroke="' + C.magenta + '" stroke-width="5"/>' +
           nodes +
-          // tether: the 2024 node owns the three model circles
+          // tether: the 2025 node owns the three model circles
           '<g class="tether" stroke="' + C.magenta + '" stroke-width="3" fill="none" opacity=".75">' +
-            '<path class="tdrop" d="M960 644 V 668"/>' +
-            '<path class="tbrk" d="M560 684 V 668 H 1360 V 684"/>' +
+            '<path class="tdrop" d="M1150 516 V 540"/>' +
+            '<path class="tbrk" d="M500 556 V 540 H 1220 V 556"/>' +
           '</g>' +
           circles +
+          '<text class="shipped" x="860" y="874" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.magentaT + '">what customers run today</text>' +
           '<g class="gr">' +
-            '<circle cx="1620" cy="' + MCY + '" r="132" fill="rgba(182,86,160,.34)" stroke="' + C.magenta + '" stroke-width="5"/>' +
-            '<text x="1620" y="' + (MCY + 18) + '" text-anchor="middle" font-family="Archivo" font-size="52" font-weight="800" fill="' + C.text + '">Griffin</text>' +
+            '<circle cx="1620" cy="' + MCY + '" r="96" fill="rgba(182,86,160,.12)" stroke="' + C.magenta + '" stroke-width="4" stroke-dasharray="11 9"/>' +
+            '<text x="1620" y="' + (MCY + 12) + '" text-anchor="middle" font-family="Archivo" font-size="36" font-weight="750" fill="' + C.text + '">Griffin</text>' +
           '</g>' +
-          '<text class="grcap" x="1620" y="958" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">the model in section 03</text>' +
+          '<text class="grcap" x="1620" y="' + (MCY + 136) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">not shipped yet</text>' +
+          '<text class="grcap2" x="1620" y="' + (MCY + 176) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">(the last section)</text>' +
         '</svg>' +
-        Kit.src('Tavus product timeline: Series A and developer API (Mar 2024), Conversational Video Interface (Aug 2024), Griffin research preview (Oct 1, 2026).');
+        Kit.src('Timeline: CVI launch Aug 2024, three models Mar 2025, Griffin preview Oct 2026. 2021 is Tavus’s own founding year; press says 2020.');
     },
 
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
 
-      gsap.set([q('.nd1'), q('.nd2'), qa('.mc'), q('.gr'), q('.grcap'), q('.tether')], { autoAlpha: 0 });
-      gsap.set([q('.seg1'), q('.seg2')], { drawSVG: '0%' });
+      gsap.set([q('.nd1'), q('.nd2'), q('.nd3'), qa('.mc'), q('.gr'), q('.grcap'), q('.grcap2'),
+        q('.shipped'), q('.tether')], { autoAlpha: 0 });
+      gsap.set([q('.seg1'), q('.seg2'), q('.seg3')], { drawSVG: '0%' });
 
       // ---- STEP 0: the axis of time ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -210,33 +218,35 @@
       tl.from(qa('.nd1 .yr, .nd1 .lb'), { y: 14, duration: .5, ease: Kit.ease.out, stagger: .08 }, '<');
       ctx.pause();
 
-      // ---- STEP 2: three specialist models (their only appearance in the deck) ----
-      tl.to(q('.tether'), { autoAlpha: 1, duration: .35 });
+      // ---- STEP 2: 2025, and the three specialist models it shipped ----
+      tl.to(q('.seg2'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' });
+      tl.fromTo(q('.nd2 .dot'), { scale: 0 }, { scale: 1, duration: .5, ease: Kit.ease.back }, '-=.25');
+      tl.to(q('.nd2'), { autoAlpha: 1, duration: .4 }, '<');
+      tl.from(qa('.nd2 .yr, .nd2 .lb'), { y: 14, duration: .5, ease: Kit.ease.out, stagger: .08 }, '<');
+      tl.to(q('.tether'), { autoAlpha: 1, duration: .35 }, '-=.15');
       tl.to(qa('.mc'), { autoAlpha: 1, duration: .45, stagger: .12 }, '<+.15');
       tl.fromTo(qa('.mc'), { scale: .6 }, { scale: 1, duration: .55, ease: Kit.ease.back, stagger: .12 }, '<');
       ctx.pause();
 
-      // ---- STEP 3: three become one, under the 2026 node ----
-      tl.to(q('.tether'), { autoAlpha: 0, duration: .4 });
-      tl.to(q('.mc0'), { x: 1060, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
-      tl.to(q('.mc1'), { x: 660, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
-      tl.to(q('.mc2'), { x: 260, scale: .7, autoAlpha: 0, duration: .9, ease: 'power3.inOut' }, '<');
-      tl.fromTo(q('.gr'), { autoAlpha: 0, scale: .55 }, { autoAlpha: 1, scale: 1, duration: .7, ease: Kit.ease.out }, '<+.45');
-      tl.to(q('.seg2'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, '<');
-      tl.to(q('.nd2'), { autoAlpha: 1, duration: .4 }, '<+.2');
-      tl.from(qa('.nd2 .yr, .nd2 .lb'), { y: 14, duration: .5, ease: Kit.ease.out, stagger: .08 }, '<');
-      tl.to(q('.grcap'), { autoAlpha: 1, duration: .5 }, '-=.2');
+      // ---- STEP 3: one model previewed, next to the three that still ship ----
+      tl.to(q('.seg3'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' });
+      tl.to(q('.nd3'), { autoAlpha: 1, duration: .4 }, '<+.25');
+      tl.from(qa('.nd3 .yr, .nd3 .lb'), { y: 14, duration: .5, ease: Kit.ease.out, stagger: .08 }, '<');
+      tl.fromTo(q('.gr'), { autoAlpha: 0, scale: .55 }, { autoAlpha: 1, scale: 1, duration: .7, ease: Kit.ease.out }, '-=.2');
+      tl.to([q('.grcap'), q('.grcap2')], { autoAlpha: 1, duration: .5, stagger: .12 }, '-=.25');
+      tl.to(q('.shipped'), { autoAlpha: 1, duration: .5 }, '<');
     },
 
     notes:
-      'Version one was asynchronous. You recorded one video, the model made thousands of copies with ' +
-      'the right name in each, and they went out through a CRM while you slept.' +
-      '[click] In twenty twenty-four they threw that away. Series A, a developer API, then live two-way ' +
-      'video agents. The salesperson stopped mailing you a video and started being on the call. ' +
-      'They dropped their first customers to do it.' +
-      '[click] That took three models. Phoenix draws the face, Raven watches and listens, and ' +
-      'Sparrow decides when to speak.' +
-      '[click] In October they collapsed all three into one. That one is Griffin, from the last section.'
+      'Version one was asynchronous. You recorded one video, the model copied it with the right ' +
+      'name in each, and a CRM sent them while you slept.' +
+      '[click] In twenty twenty-four they threw that away. A developer API, then live two-way ' +
+      'video agents. The salesperson stopped mailing a video and got on the call. They dropped ' +
+      'their first customers to do it.' +
+      '[click] By twenty twenty-five that took three models. Phoenix draws the face, Raven watches ' +
+      'and listens, Sparrow decides when to speak. Customers still run those three.' +
+      '[click] In October they previewed one model that does all three jobs: Griffin, from the last ' +
+      'section. Only a few testers have it.'
   };
 
   /* ======================================================================

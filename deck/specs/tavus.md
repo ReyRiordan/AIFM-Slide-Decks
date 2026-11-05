@@ -46,7 +46,7 @@ and the only way to keep doing it was to make a model do it.
 | founder photo B | photo + `Quinn Favret` / `COO` |
 | logo | Tavus wordmark, top right |
 | payoff number (right) | `+450%` / `more replies` |
-| after the merge (centre) | `1 recording` / `thousands of variants` |
+| after the merge (left) | `1 recording` / `→ 200 personalized videos` |
 | source footer | `The 200 videos and the reply figure come from the founders. Logo: Tavus. Photos: Y Combinator.` with `Kit.src(…, 'Self-reported')` |
 
 Body words on screen ≈ 11 excluding names and labels. No sentences.
@@ -60,11 +60,13 @@ Body words on screen ≈ 11 excluding names and labels. No sentences.
     36 × 22 px, radius 6, `transform: skewX(-12deg)`, gap 12 px → block is 948 × 328 px
     (ends y 888). Tiles are flat fills, no glass: `rgba(182,86,160,.55)`, every 7th tile
     `rgba(182,86,160,.8)` so the block reads as many individual objects, not a texture.
-  - **merged tile** (hidden until step 3): one of the 200 tiles scaled up — 240 × 150 px,
-    radius 40, flat `rgba(182,86,160,.8)`, `skewX(-12deg)`, at **x 460, y 600**; to its right at
-    **x 760, y 616**: `t-h2` `1 recording` and under it at y 686 `t-label` `--text-2`
-    `thousands of variants`. A 3 px `--text-3` arrow curves from under the `200` into the tile's
-    left edge, so the surviving tile reads as one of the two hundred.
+  - **merged tile** (hidden until step 3): one of the 200 tiles scaled up — 300 × 190 px,
+    radius 40, flat `rgba(182,86,160,.8)`, `skewX(-12deg)`, at **x 150, y 620**, inside the block the
+    grid just vacated, so the left column does not empty out; to its right at **x 530, y 660**:
+    `t-h2` `1 recording` and under it at y 730 `t-label` `--text-2` `→ 200 personalized videos`.
+    A 3 px `--text-3` arrow curves from under the `200` into the tile's top edge, so the surviving
+    tile reads as one of the two hundred. The second line names the same 200 the slide opened with;
+    "thousands of variants" was cut because the narration counts 200.
 - **Right column, x 1140 → 1800 (width 660).**
   - two founder photos side by side at **y 300**, 200 × 200 each, radius 20, 2 px `--line` border,
     at **x 1140** and **x 1380**. The source files are 200 × 200, so they render 1:1 on the
@@ -119,7 +121,7 @@ path is inlined in `04-tavus.js` so it can take `currentColor`). Everything else
 | 200 videos in one night; +450 % replies | Tavus report, *History → Origin*: "the founders recorded 200 personalized prospecting videos in one night and say response rates rose 450%. Automating that with AI became Tavus." | **Yes** — founders' claim ("say"). Footer flag required. |
 | Hassaan Raza, CEO, CS at UT Austin, PM at Apple and Google | *Founders and leadership* table: "Studied computer science at UT Austin. Engineering project manager at Apple and technical program manager at Google" | No (biographical) |
 | Quinn Favret, COO, left Michigan, Thiel Fellow 2023 | *Founders and leadership* table: "left the University of Michigan to build companies… Named a Thiel Fellow in 2023." | No |
-| 1 recording → thousands of variants | *Version one*: "let a user record one video and generate thousands of variants" | No (product description) |
+| 1 recording → 200 personalized videos | *History → Origin*: "the founders recorded 200 personalized prospecting videos in one night"; *Version one*: "let a user record one video and generate thousands of variants" | No (product description) |
 | Y Combinator S21 (speaker notes only) | Timeline: "Summer 2021 — Joins Y Combinator's S21 batch" | No |
 
 > Note for the builder: the report flags that sources disagree on the founding year (2020 vs 2021).
@@ -137,7 +139,8 @@ path is inlined in `04-tavus.js` so it can take `currentColor`). Everything else
 | `budgetSec` | `45` |
 
 **THE ONE IDEA:** Tavus's whole history is one move repeated — collapse the sales video into
-something live, then collapse the live pipeline into one model.
+something live, then try to collapse the live pipeline into one model. The last move is a preview,
+not a shipped product.
 
 ### On-screen content (exact words)
 
@@ -145,35 +148,46 @@ something live, then collapse the live pipeline into one model.
 |---|---|
 | rail node 1 | `2021` / `recorded, then sent` |
 | rail node 2 | `2024` / `live, two-way` |
-| rail node 3 | `2026` / `one model` |
+| rail node 3 | `2025` / `three models` |
+| rail node 4 | `2026` / `research preview` (dashed, open node) |
 | model circle 1 | `Phoenix` / `draws the face` |
 | model circle 2 | `Raven` / `watches and listens` |
 | model circle 3 | `Sparrow` / `decides when to speak` |
-| merged circle | `Griffin` |
-| merged caption | `the model in section 03` |
-| source footer | `Tavus product timeline: Series A and developer API (Mar 2024), Conversational Video Interface (Aug 2024), Griffin research preview (Oct 1, 2026).` |
+| model row caption | `what customers run today` |
+| preview circle | `Griffin` (dashed stroke) |
+| preview caption | `not shipped yet` / `(the last section)` |
+| source footer | `Timeline: CVI launch Aug 2024, three models Mar 2025, Griffin preview Oct 2026. 2021 is Tavus's own founding year; press says 2020.` |
 
-Body words ≈ 12.
+Label words ≈ 31. No sentences.
 
 ### Layout
 
 - **Logo**, 200 px wide, at **x 1600, y 90** (the same corner mark as `origin` and `snapshot`).
-- **Timeline rail**, horizontal, at **y 560**, from **x 220 to x 1700**, 3 px `--line` stroke,
-  drawn with `Kit.draw`. Three nodes: circles r 16 filled `--sec` at **x 300**, **x 960**, **x 1620**.
-  - Year above each node at y 516 — `t-caps` JetBrains Mono, `--sec-t`.
-  - Label below each node at y 618 — `t-label`, `--text`, centred on the node.
-  - Node 3's year/label start hidden; revealed at step 3.
-- **Tether** (step 2, magenta 3 px at .75 opacity): a drop from the 2024 node at **x 960,
-  y 644 → 668**, then a bracket `M560 684 V668 H1360 V684` over the three model circles. It says
-  the three models belong to the 2024 era and nothing else on the rail.
+- **Timeline rail**, horizontal, at **y 440**, from **x 220 to x 1700**, 3 px `--line` stroke,
+  drawn with `Kit.draw`. Four nodes at **x 300**, **x 900**, **x 1150**, **x 1620**. The first three
+  are circles r 16 filled `--sec` (shipped); the 2026 node is an **open dashed ring** (r 15, no fill,
+  4 px `--sec`, `stroke-dasharray 7 6`), because nothing shipped there yet.
+  - Year above each node at y 396 — `t-caps` JetBrains Mono, `--sec-t`.
+  - Label below each node at y 498 — `t-label`, centred on the node; `--text` for the three shipped
+    eras, `--text-2` for `research preview`.
+  - Nodes 2, 3 and 4 start hidden and arrive on steps 1, 2 and 3.
+- **Tether** (step 2, magenta 3 px at .75 opacity): a drop from the **2025** node at **x 1150,
+  y 516 → 540** (it starts below the `three models` label, clear of its descenders), then a bracket `M500 556 V540 H1220 V556` over the three model circles. The three
+  models hang off 2025, the year they shipped together, not off 2024.
 - **Model row**, SVG, under the bracket. Three circles **r 96**, stroke 4 px `--sec`,
-  fill `rgba(182,86,160,.14)`, centres at **(x 560, y 782)**, **(x 960, y 782)**, **(x 1360, y 782)**.
+  fill `rgba(182,86,160,.14)`, centres at **(x 500, y 662)**, **(x 860, y 662)**, **(x 1220, y 662)**.
   - Model name inside each circle, `Archivo` 36 px bold, `--text`, centred at cy + 12.
-  - One-word job under each circle at **cy + 136** (y 918), `t-label`, `--text-2`, centred.
-- **Merged circle:** under the **2026** node at **(1620, 782)**, **r 132**, fill
-  `rgba(182,86,160,.34)`, stroke 5 px `--sec`; label `Griffin` `Archivo` 52 px bold `--text`
-  at y 800; caption `the model in section 03` `t-label` `--text-2` centred at **y 958**.
-- Everything stays inside y 268–990 (bottom-most text descender y 966).
+  - One-word job under each circle at **cy + 136** (y 798), `t-label`, `--text-2`, centred.
+  - Group caption `what customers run today` centred at **(860, 874)** in `--magenta-t`: the three
+    circles stay on screen to the end, because they are the shipped stack.
+- **Preview circle:** under the **2026** node at **(1620, 662)**, **r 96**, fill
+  `rgba(182,86,160,.12)`, stroke 4 px `--sec` **dashed** (`11 9`); label `Griffin` `Archivo` 36 px
+  bold `--text` at y 674; captions `not shipped yet` `--text-2` at **y 798** and
+  `(the last section)` `--text-3` at **y 838**. It matches the shipped circles in size and type
+  so the preview never out-shouts the stack that ships. Dashed against solid is the whole point: Griffin
+  is a research preview, not the product.
+- Everything stays inside y 268–990 (bottom-most text descender y 880); the nearest neighbours are
+  `decides when to speak` (ends x 1366) and the Griffin circle (starts x 1524).
 
 ### Build steps (3 clicks)
 
@@ -184,32 +198,33 @@ Body words ≈ 12.
 1. **[click] The pivot.** Node 2 pops in and `2024 / live, two-way` rises; the rail segment
    between node 1 and node 2 recolours from `--line` to `--sec` (`.6 s`).
    *Why:* the recolouring segment shows the move as a *change of state*, not a second bullet.
-2. **[click] The three models.** The three circles scale in from .6 with a .12 stagger, labels
-   under them.
+2. **[click] 2025 and the three models.** The rail segment 2024 → 2025 recolours, node 3 pops in
+   with `2025 / three models`, then the tether and the three circles scale in from .6 with a .12
+   stagger, labels under them.
    *Why:* these three names appear **for the first time here** — the Griffin section deliberately
    never says Phoenix, Raven or Sparrow (see that spec's "Deliberately cut"), so this slide owns them.
-   One word of job per circle is the whole introduction they get; they exist only as the "before" of
-   the next motion.
-3. **[click] They become one.** The tether fades; all three circles tween rightwards to x 1620
-   and fade (`scale → .7`, .9 s, `power3.inOut`) while the merged `Griffin` circle scales up
-   under the 2026 node; node 3 + `2026 / one model` appear on the rail at the same beat;
-   caption fades in.
-   *Why:* the merge **is** the idea — three specialists becoming one model — and it also re-draws
-   the link between the company's product history and the model the audience met five minutes ago.
+   One word of job per circle is the whole introduction they get, and 2025 is the year all three
+   shipped together.
+3. **[click] One model, previewed.** The last rail segment recolours, the open 2026 node and
+   `research preview` arrive, and the dashed `Griffin` circle scales in beside the three — which
+   stay put. Its two captions and the `what customers run today` line under the three fade in last.
+   *Why:* the comparison **is** the idea. One model doing all three jobs sits next to the three it
+   would replace, drawn as a preview, so nobody leaves thinking Griffin is what customers run.
 
 ### Images
 **None.** This is an exact diagram, so by KIT §6 it must be code-drawn SVG.
 
-### Speaker notes (≈ 102 words ≈ 45 s)
+### Speaker notes (108 words ≈ 45 s)
 
-> Version one was asynchronous. You recorded one video, the model made thousands of copies with
-> the right name in each, and they went out through a CRM while you slept.
-> `[click]` In twenty twenty-four they threw that away. Series A, a developer API, then live two-way
-> video agents. The salesperson stopped mailing you a video and started being on the call.
-> They dropped their first customers to do it.
-> `[click]` That took three models. Phoenix draws the face, Raven watches and listens, and Sparrow decides
-> when to speak.
-> `[click]` In October they collapsed all three into one. That one is Griffin, from the last section.
+> Version one was asynchronous. You recorded one video, the model copied it with the right name in
+> each, and a CRM sent them while you slept.
+> `[click]` In twenty twenty-four they threw that away. A developer API, then live two-way video
+> agents. The salesperson stopped mailing a video and got on the call. They dropped their first
+> customers to do it.
+> `[click]` By twenty twenty-five that took three models. Phoenix draws the face, Raven watches and
+> listens, Sparrow decides when to speak. Customers still run those three.
+> `[click]` In October they previewed one model that does all three jobs: Griffin, from the last
+> section. Only a few testers have it.
 
 ### Sources
 | on screen | report line | self-reported? |
@@ -218,7 +233,10 @@ Body words ≈ 12.
 | 2024 · live, two-way | *The pivot*: "The March 2024 Series A came with a developer platform… Five months later it launched the Conversational Video Interface, live two-way video agents" | No |
 | "walked away from early customers" (notes only) | *The pivot*: "A 2026 profile says Tavus deliberately walked away from early customers of the old product" | No (third-party profile) |
 | Phoenix draws the face / Raven watches and listens / Sparrow decides when to speak | *The model family* table: Phoenix "Renders the face and body"; Raven "Perception"; Sparrow "Turn-taking: decides when to listen, wait or speak" | No |
-| 2026 · one model · Griffin | *The model family*: Griffin "One model that perceives, decides and generates speech and video at once", Griffin-Lite (Oct 2026); timeline "Oct 1, 2026" | No |
+| 2025 · three models | Timeline: "Mar 6, 2025 — Phoenix-3 (full-face), Raven-0 (perception) and Sparrow-0 (turn-taking) released together." | No |
+| what customers run today | *The model family*: "The current CVI stack is Phoenix-4.5, Raven-1 and Sparrow-2" | No |
+| 2026 · research preview · Griffin, preview, not shipped | Timeline: "Oct 1, 2026 — Griffin research preview… Not yet released to customers"; *The model family*: "Preview for select testers only" | No |
+| footer: 2021 vs 2020 founding year | *History → Origin*: "Sources disagree on the founding year: press reports say 2020, while Tavus's own seed post says 2021" | No |
 
 ---
 
