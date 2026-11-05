@@ -56,70 +56,10 @@
   }
 
   /* ======================================================================
-     DEFINITION — what automated selling means (0:20)
-     Steps: 1 the three seller-side jobs
-     ====================================================================== */
-  var DEFINITION = {
-    id: 'definition',
-    title: 'Automated selling',
-    heading: 'Automated selling',
-    budgetSec: 20,
-    html: function () {
-      var col = [C.red, C.blue, C.purple];
-      var tint = ['c-red', 'c-blue', 'c-purple'];
-      var mark = ['Price', 'Assist', 'Interact'];
-      var job = ['Sets the price', 'Helps you pick', 'Talks to you'];
-      var x = [120, 700, 1280];
-
-      var out =
-        '<p class="df-def t-h2" style="position:absolute;left:120px;top:304px;width:1560px;font-weight:600;color:var(--text)">' +
-          'Software that does <b style="color:var(--orange);font-weight:800">any part</b> of the seller\'s job.' +
-        '</p>' +
-        '<div class="df-cap t-caps" style="position:absolute;left:120px;top:502px;color:var(--text-3)">Three of those parts</div>';
-
-      for (var i = 0; i < 3; i++) {
-        // flex column: chip, job, marker. An extra wrapped line pushes the
-        // marker down instead of landing on top of it.
-        out += '<div class="df-card df-card' + i + '" style="left:' + x[i] + 'px">' +
-          '<div class="df-chip" style="background:' + col[i] + '"></div>' +
-          '<div class="df-job t-h2">' + job[i] + '</div>' +
-          '<div class="df-mark t-caps ' + tint[i] + '">' + mark[i] + '</div>' +
-        '</div>';
-      }
-      return out;
-    },
-
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      var cards = qa('.df-card');
-
-      gsap.set(cards, { autoAlpha: 0 });
-      gsap.set(q('.df-cap'), { autoAlpha: 0 });
-
-      // entrance: the heading, then the one sentence, parked near the optical
-      // centre so the slide is not three quarters black while Rey reads it
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      tl.fromTo(q('.df-def'), { autoAlpha: 0, y: 186 },
-        { autoAlpha: 1, y: 166, duration: .7, ease: Kit.ease.out }, .3);
-
-      // step 1: the sentence moves up and the three jobs take the space it leaves
-      ctx.pause();
-      tl.to(q('.df-def'), { y: 0, duration: .55, ease: 'power3.inOut' });
-      Kit.show(tl, q('.df-cap'), { y: 12, duration: .35, at: '-=.2' });
-      tl.fromTo(cards, { autoAlpha: 0, y: 40 },
-        { autoAlpha: 1, y: 0, duration: .5, ease: 'power3.out', stagger: .12 }, '-=.15');
-    },
-
-    notes:
-      'First, the term. Automated selling is software that takes over part of what a salesperson does. ' +
-      'Not the whole job, any part of it. ' +
-      '[click] A seller sets the price, helps you pick, and talks to you face to face. ' +
-      'Each of those three is a shipped product, and a section of this talk.'
-  };
-
-  /* ======================================================================
-     AGENDA — the salesperson assembles, one section per click (0:25)
-     Steps: 1 Price (body + price tag) · 2 Assist (speech bubble) · 3 Interact (head)
+     AGENDA — the definition, then the salesperson assembles, one section per click (0:45)
+     Entrance: heading "Automated selling", the definition line, the grey outline.
+     Steps: 1 the line leaves, heading becomes "Agenda", Price (body + price tag)
+            · 2 Assist (speech bubble) · 3 Interact (head)
      THE AGENDA MOTIF. The Future unit's `assembled` close reuses this
      geometry verbatim: rowY 368/518/668/818, chip (130,rowY) 72×38,
      number x232, label x330, sub-caption x330 (+48). If one moves, both move.
@@ -129,9 +69,10 @@
 
   var AGENDA = {
     id: 'agenda',
-    title: 'Agenda',
-    heading: 'Agenda',
-    budgetSec: 25,
+    title: 'Definition and agenda',
+    // two stacked headings: the definition's, then the agenda's (swapped on click 1)
+    heading: '<span class="ag-h ag-h0">Automated selling</span><span class="ag-h ag-h1">Agenda</span>',
+    budgetSec: 45,
     html: function () {
       var col = [C.red, C.blue, C.purple];
       var num = ['01', '02', '03', ''];
@@ -157,9 +98,14 @@
         'border-radius:50%;background:radial-gradient(circle,' + C.red + ' 0%,rgba(0,0,0,0) 68%)"></div>';
 
       var out =
-        '<div class="ag-art" style="position:absolute;inset:0">' + ghost + tagGlow + part + '</div>' +
+        // nudged right so the longer first heading ("Automated selling") clears the bubble
+        '<div class="ag-art" style="position:absolute;inset:0;transform:translateX(40px)">' + ghost + tagGlow + part + '</div>' +
         '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,rgba(30,27,28,.92) 32%,rgba(30,27,28,0) 54%)"></div>' +
-        '<div class="ag-fg" style="position:absolute;inset:0">';
+        '<div class="ag-fg" style="position:absolute;inset:0">' +
+        // the definition: one line of text, wrapped in the left column over the scrim
+        '<p class="ag-def t-h2" style="position:absolute;left:120px;top:470px;width:880px;font-weight:600;color:var(--text)">' +
+          'Software that does <b style="color:var(--orange);font-weight:800">any part</b> of the seller\'s job.' +
+        '</p>';
 
       for (var i = 0; i < 4; i++) {
         var muted = i === 3;
@@ -190,14 +136,23 @@
       gsap.set(ghosts, { autoAlpha: 0 });
       gsap.set(rows, { autoAlpha: 0 });
       gsap.set(q('.ag-tagglow'), { autoAlpha: 0 });
+      gsap.set(q('.ag-h1'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      // entrance: the empty outline of the whole figure
+      // entrance: the definition, beside the empty outline of the seller it describes
       tl.fromTo(ghosts, { autoAlpha: 0 }, { autoAlpha: .55, duration: .8, ease: 'power1.out', stagger: .12 }, .25);
+      Kit.show(tl, q('.ag-def'), { y: 20, duration: .7, at: .4 });
 
       for (var i = 0; i < 3; i++) {
         ctx.pause();
         var at = tl.duration();
+        if (i === 0) {
+          // the definition hands over to the agenda: line out, heading swaps
+          tl.to(q('.ag-def'), { autoAlpha: 0, y: -24, duration: .35, ease: 'power2.in' }, at);
+          tl.to(q('.ag-h0'), { autoAlpha: 0, duration: .3, ease: 'power1.out' }, at);
+          Kit.show(tl, q('.ag-h1'), { y: 16, duration: .45, at: at + .2 });
+          at += .35;
+        }
         var p = parts[i], c = col[i];
         // the part that arrived last hands its glow over to this one
         if (i > 0) tl.to(parts[i - 1], { filter: 'drop-shadow(0 0 0px ' + col[i - 1] + ')', duration: .6, ease: 'power2.inOut' }, at + .4);
@@ -221,7 +176,9 @@
     },
 
     notes:
-      'Here is the plan. The grey outline is the salesperson we build, one part per section. ' +
+      'First, the term. Automated selling is software that takes over part of what a salesperson does. ' +
+      'Not the whole job, any part of it. The grey outline is that salesperson. ' +
+      'Each part we add is a real product that ships today, and each one gets a section. ' +
       '[click] Price: Airbnb Smart Pricing sets the nightly rate. ' +
       '[click] Assist: Amazon Rufus, the shopping assistant in the Amazon app. ' +
       '[click] Interact: Tavus Griffin puts a face on a live video call. ' +
@@ -230,6 +187,6 @@
 
   Deck.section({
     id: 'intro', order: 0, num: '00', kicker: 'Intro', title: '',
-    slides: [TITLE, DEFINITION, AGENDA]
+    slides: [TITLE, AGENDA]
   });
 })();

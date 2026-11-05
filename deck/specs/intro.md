@@ -1,9 +1,9 @@
 # Spec — Intro unit (`sections/00-intro.js`)
 
-Budget: **1:00 (60 s)** across 3 slides. Section color: intro orange (`--orange` stays the focus accent).
+Budget: **1:00 (60 s)** across 2 slides. Section color: intro orange (`--orange` stays the focus accent).
 Owner files: `sections/00-intro.js`, `css/sections/intro.css`, `assets/img/intro/`, `assets/img/salesperson-assembled.jpg`, `specs/intro.md`.
 
-Running order: `title` → `definition` → `agenda`.
+Running order: `title` → `agenda` (the definition opens the agenda slide; there is no separate definition slide).
 
 The markers are **Price · Assist · Interact · Negotiate**. The intro shows only the first three, plus a muted
 "What's next" row. Section 4 is introduced later, at the Tavus bridge.
@@ -19,37 +19,17 @@ The markers are **Price · Assist · Interact · Negotiate**. The intro shows on
   red = Price, blue = Assist, purple = Interact. Green is added later for Negotiate.
 - The hero drifts very slowly in `show` mode only.
 
-## Slide 2 — `definition`
+## Slide 2 — `agenda` (definition, then agenda)
 
-- **id:** `definition` · **heading:** `Automated selling` · **budgetSec:** 20 · **pauses:** 1
-- **The one idea:** automated selling is software that does part of the seller's job, and this talk takes
-  three of those parts.
-
-On-screen text, in full:
-
-| Element | Text |
-|---|---|
-| definition line (`t-h2`, y 304) | `Software that does any part of the seller's job.` (`any part` in `--orange`) |
-| caption (`t-caps`, y 502) | `Three of those parts` |
-| card 1 (`t-h2` + `t-caps`) | `Sets the price` · `Price`, red chip |
-| card 2 | `Helps you pick` · `Assist`, blue chip |
-| card 3 | `Talks to you` · `Interact`, purple chip |
-
-Each job label is one line. The longest, `Helps you pick`, renders at 89 % of the 448 px text box, so a wider
-font fallback still fits.
-
-Cards: `--surface`, radius 24, **w 520 · min-height 320 · top y 580**, left x **120 / 700 / 1280** (`.df-card`
-in `css/sections/intro.css`). The card is a flex column with `padding: 40px 36px` and `justify-content:
-space-between`: chip (`.df-chip`, 72 × 38, `skewX(-12deg)`), job label (`.df-job`), marker caps (`.df-mark`) in
-that section's text tint. Nothing is absolutely positioned inside the card, so a wrapped job label pushes the
-marker down instead of landing on it. No numbers on this slide, so no source footer.
-
-Build: the entrance shows the header and the definition line, parked 166 px lower, at y 470, near the optical
-centre of an otherwise empty stage. Click 1 lifts the line to y 304 and reveals the caption and the three cards.
-
-## Slide 3 — `agenda`
-
-- **id:** `agenda` · **heading:** `Agenda` · **budgetSec:** 25 · **pauses:** 3
+- **id:** `agenda` · **heading:** `Automated selling`, then `Agenda` · **budgetSec:** 45 · **pauses:** 3
+- **Entrance:** the heading reads `Automated selling`. The definition line
+  `Software that does any part of the seller's job.` (`t-h2`, weight 600, `any part` in `--orange`) sits in the
+  left column at x 120, y 470, width 880 (two lines), beside the grey outline of the salesperson.
+- **Click 1:** the line lifts out (`y -24`, fade), the heading crossfades to `Agenda`, and the Price row and part
+  arrive as before. Clicks 2 and 3 are unchanged.
+- The two headings are stacked spans inside the engine's `h1` (`.ag-h0`, `.ag-h1`; `.ag-h1` is absolute at 0,0;
+  see `css/sections/intro.css`).
+- The whole `.ag-art` layer is shifted `translateX(40px)` so `Automated selling` clears the speech bubble.
 
 Rows (geometry is a contract, see below):
 

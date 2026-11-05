@@ -17,29 +17,6 @@
 /* agenda: the pool of red behind the price tag, lit on click 1 */
 .slide[data-sec="intro"] .ag-tagglow { will-change: transform, opacity; }
 
-/* definition: the three seller-side jobs.
-   Flex column, no fixed height: a wrapped title pushes the marker down. */
-.slide[data-sec="intro"] .df-card {
-  position: absolute;
-  top: 580px;
-  width: 520px;
-  min-height: 320px;
-  box-sizing: border-box;
-  padding: 40px 36px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
-  background: var(--surface);
-  border-radius: 24px;
-  will-change: transform, opacity;
-}
-.slide[data-sec="intro"] .df-chip {
-  flex: none;
-  width: 72px;
-  height: 38px;
-  border-radius: 10px;
-  transform: skewX(-12deg);
-}
-.slide[data-sec="intro"] .df-job { flex: 1 1 auto; }
-.slide[data-sec="intro"] .df-mark { flex: none; }
+/* agenda: two headings stacked in one h1 — "Automated selling", then "Agenda" */
+.slide[data-sec="intro"] .hd h1 { position: relative; }
+.slide[data-sec="intro"] .ag-h1 { position: absolute; left: 0; top: 0; white-space: nowrap; }
