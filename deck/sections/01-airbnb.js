@@ -1,6 +1,6 @@
 /* ==========================================================================
-   01 · Price — Airbnb Smart Pricing   (budget 400 s total)
-   Flow: problem 60 → tree 30 → boost 35 → gbt-use 35 → loss 120 → results 75 → takeaways 45
+   01 · Price — Airbnb Smart Pricing   (budget 425 s total)
+   Flow: problem 60 → tree 30 → boost 35 → gbt-use 35 → price-model 40 → loss 120 → results 60 → takeaways 45
    ========================================================================== */
 (function () {
   'use strict';
@@ -103,7 +103,7 @@
         '</div>' +
         '<div class="card c3">' +
           '<div style="display:flex;gap:28px">' +
-            '<div style="width:300px"><div class="t-caps faint">Model says</div><div class="t-num r-sugg" style="color:var(--orange-t);font-size:112px;margin-top:8px">$95</div></div>' +
+            '<div style="width:300px"><div class="t-caps faint">Price model</div><div class="t-num r-sugg" style="color:var(--orange-t);font-size:112px;margin-top:8px">$95</div></div>' +
             '<div><div class="t-caps faint">Penalty</div><div class="t-num r-pen" style="font-size:112px;margin-top:8px">5</div></div>' +
           '</div>' +
           '<div class="t-label r-why" style="margin-top:14px;min-height:34px;white-space:nowrap"></div>' +
@@ -246,20 +246,21 @@
     },
 
     notes:
-      'Airbnb never sees the right price for a night. It only ever sees what happened. ' +
+      'Now we grade the price model’s suggestion. Airbnb never sees the right price for a night. It only ever sees what happened. ' +
       'Take one night: it booked at a hundred dollars.' +
       '[click] What does that tell us? The right price was at least a hundred, because a guest paid it. Maybe a bit more. ' +
       'So instead of one correct answer, we get a zone: about a hundred to a hundred and ten.' +
       '[click] Now we can grade any suggestion. Inside the zone: no penalty. Outside, the penalty grows with distance. ' +
       'Too low on the left, too high on the right. A valley with a flat floor, flat because the data honestly can’t tell those prices apart.' +
-      '[click] Here is the model’s suggestion. Watch the penalty follow it. At ninety-five, the penalty is five: too low, a guest already paid a hundred. ' +
+      '[click] Here is the price model’s suggestion. At ninety-five, the penalty is five: too low, a guest already paid a hundred. ' +
       '(Optional: drag it into the zone and the penalty drops to zero.)' +
-      '[click] Now flip the story. Same night, same hundred dollars, but nobody booked. The zone slides down, to ninety through a hundred. ' +
+      '[click] Now flip the story. Same night, same price, but nobody booked. The zone slides down, to ninety through a hundred. ' +
       'And a suggestion of one-oh-five is now penalized, because a hundred already failed.' +
       '[click] Why do we need both kinds of nights? Booked nights push prices up. Unbooked nights push them down. ' +
       'Train on unbooked nights alone and the safest price is zero. Across millions of nights, the two pressures balance.' +
       '[click] And this is the only equation in the talk. It is just the picture in symbols: how far below the zone, plus how far above it. ' +
-      'At most one of those is ever non-zero. That is Airbnb’s custom loss. The zone widths I used are illustrative; Airbnb never published theirs.'
+      'At most one of those is ever non-zero. That is Airbnb’s custom loss. Training adjusts each listing’s two settings until its total ' +
+      'penalty is as small as possible. The zone widths I used are illustrative; Airbnb never published theirs.'
   };
 
   /* ======================================================================
@@ -620,7 +621,7 @@
         '<div class="chip gfix" style="position:absolute;left:120px;top:800px"><span class="dot"></span>' +
           '<span>A new tree is trained to follow the arrows</span></div>' +
         '<div class="card gu gu1" style="position:absolute;left:960px;top:285px;width:840px;height:160px">' +
-          '<div class="t-caps faint">How many models</div>' +
+          '<div class="t-caps faint">Booking models</div>' +
           '<div class="t-h2" style="margin-top:8px">One per market</div>' +
         '</div>' +
         '<div class="card gu gu2" style="position:absolute;left:960px;top:465px;width:840px;height:160px">' +
@@ -633,8 +634,8 @@
           '<div class="wi w2 t-mono">$180 <span class="faint">&rarr;</span> <b class="c-sky">41%</b></div>' +
         '</div>' +
         '<div class="chip gnxt" style="position:absolute;left:960px;top:906px"><span class="dot"></span>' +
-          '<span>Booking chance &rarr; the price model</span></div>' +
-        Kit.src('Each tree is fitted to the gradient of the loss (Google, Gradient boosting; Friedman, 2001). One model per market and price as an input feature: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). The arrow sizes and the two what-if prices are illustrative.');
+          '<span>Next: a second model sets the price</span></div>' +
+        Kit.src('Each tree is fitted to the gradient of the booking model’s own loss (Google, Gradient boosting; Friedman, 2001). One model per market and price as an input feature: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). The arrow sizes and the two what-if prices are illustrative.');
     },
 
     build: function (ctx) {
@@ -694,18 +695,179 @@
       '[click] Airbnb runs one model per market, because Tokyo and Tahoe behave differently. ' +
       'It outputs the chance a night books.' +
       '[click] Price is one of the inputs, so they can re-score the night at a hundred and fifty, or a ' +
-      'hundred and eighty. That chance is what the price model grades next.'
+      'hundred and eighty. That booking chance is not a price yet. A second model turns it into one.'
   };
 
   /* ======================================================================
-     RESULTS — prices down, revenue up (75 s)
+     PRICE-MODEL — the second model: booking chance → a price (40 s)
+     Steps: 0 the two-model pipeline · 1 the adjustment curve + two nights
+            2 the two settings, each one moved · 3 the loss tunes them
+     ====================================================================== */
+  var PM = { host: 100, sat: .8, tue: .3 };     // host's price ($) and the two nights' booking chances (illustrative)
+  var PX0 = 160, PX1 = 1000, PY0 = 420, PY1 = 70; // plot box, local svg units: x = chance 0→1, y = adjustment .8→1.2
+  function PX(q) { return PX0 + q * (PX1 - PX0); }
+  function PY(v) { return PY0 - (v - .8) * (PY0 - PY1) / .4; }
+
+  var PRICEMODEL = {
+    id: 'price-model',
+    title: 'The price model',
+    heading: 'The price model',
+    budgetSec: 40,
+    html: function () {
+      var yt = [.8, .9, 1, 1.1, 1.2].map(function (v) {
+        return '<text class="pyt" x="' + (PX0 - 24) + '" y="' + (PY(v) + 10) + '" text-anchor="end" font-family="JetBrains Mono" ' +
+          'font-size="28" font-weight="500" fill="' + (v === 1 ? C.text : C.text3) + '">×' + v.toFixed(2) + '</text>';
+      }).join('');
+      var xt = [0, .5, 1].map(function (q) {
+        return '<text class="pxt" x="' + PX(q) + '" y="' + (PY0 + 46) + '" text-anchor="middle" font-family="JetBrains Mono" ' +
+          'font-size="28" font-weight="500" fill="' + C.text3 + '">' + Math.round(q * 100) + '%</text>';
+      }).join('');
+      function night(cls, name) {
+        return '<g class="pn ' + cls + '">' +
+          '<line class="pg" y2="' + PY0 + '" stroke="' + C.text3 + '" stroke-width="2" stroke-dasharray="4 8"/>' +
+          '<circle class="pd" r="13" stroke="#1E1B1C" stroke-width="4"/>' +
+          '<text class="pl" font-family="Archivo" font-size="28" font-weight="700">' + name + '</text>' +
+        '</g>';
+      }
+      return '' +
+        // ---- pipeline strip: booking model → chance → PRICE MODEL → price → the loss ----
+        '<div class="pm-box pm-a" style="left:120px;width:330px">' +
+          '<div class="pm-t" style="color:var(--text-2)">Booking model</div><div class="t-label faint">the trees</div></div>' +
+        '<div class="pm-box pm-b" style="left:690px;width:520px">' +
+          '<div class="pm-t c-orange">Price model</div><div class="t-label dim">host’s price <span class="t-mono" style="color:var(--text)">$100</span> + area demand</div></div>' +
+        '<div class="pm-box pm-c" style="left:1410px;width:390px">' +
+          '<div class="pm-t" style="color:var(--text-2)">The loss</div><div class="t-label faint">grades it, next slide</div></div>' +
+        '<svg class="pmflow" width="1920" height="140" viewBox="0 0 1920 140" style="position:absolute;left:0;top:276px;overflow:visible;pointer-events:none">' +
+          '<defs><marker id="pmArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
+            '<path d="M0,0 L10,5 L0,10 z" fill="' + C.text3 + '"/></marker></defs>' +
+          '<line class="pa pa1" x1="466" y1="66" x2="674" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
+          '<text class="pal pal1" x="570" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.skyT + '">80%</text>' +
+          '<text class="pal pal1" x="570" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">chance</text>' +
+          '<line class="pa pa2" x1="1226" y1="66" x2="1394" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
+          '<text class="pal pal2 pp-out" x="1310" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.orangeT + '">$112</text>' +
+          '<text class="pal pal2" x="1310" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">suggested</text>' +
+        '</svg>' +
+
+        // ---- the adjustment curve ----
+        '<svg class="pmsvg" width="1060" height="520" viewBox="0 0 1060 520" style="position:absolute;left:120px;top:448px;overflow:visible">' +
+          '<defs><clipPath id="pmClip"><rect x="' + PX0 + '" y="' + (PY1 - 10) + '" width="' + (PX1 - PX0) + '" height="' + (PY0 - PY1 + 10) + '"/></clipPath></defs>' +
+          '<text class="pylab" x="0" y="26" font-family="Archivo" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.text3 + '">PRICE ADJUSTMENT</text>' +
+          '<line class="pax" x1="' + PX0 + '" y1="' + PY0 + '" x2="' + PX1 + '" y2="' + PY0 + '" stroke="#6E6560" stroke-width="3"/>' +
+          '<line class="pax" x1="' + PX0 + '" y1="' + PY0 + '" x2="' + PX0 + '" y2="' + (PY1 - 10) + '" stroke="#6E6560" stroke-width="3"/>' +
+          yt + xt +
+          '<text class="pxlab" x="' + ((PX0 + PX1) / 2) + '" y="' + (PY0 + 92) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">booking chance</text>' +
+          '<line class="p1" x1="' + PX0 + '" y1="' + PY(1) + '" x2="' + PX1 + '" y2="' + PY(1) + '" stroke="' + C.text3 + '" stroke-width="3" stroke-dasharray="10 10"/>' +
+          '<text class="p1t" x="' + (PX0 + 16) + '" y="' + (PY(1) - 16) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">host’s price, unchanged</text>' +
+          '<g clip-path="url(#pmClip)"><line class="pc" stroke="' + C.orange + '" stroke-width="8" stroke-linecap="round"/></g>' +
+          '<g class="px"><path stroke="' + C.orangeT + '" stroke-width="6" stroke-linecap="round" d="M-14,-14 L14,14 M14,-14 L-14,14"/></g>' +
+          night('pn-sat', 'Sat') + night('pn-tue', 'Tue') +
+        '</svg>' +
+
+        // ---- right column: two nights, then the two settings ----
+        '<div class="card pmn" style="position:absolute;left:1250px;top:448px;width:550px">' +
+          '<div class="t-caps faint">Two nights at $100</div>' +
+          '<div class="pr"><span class="t-label">Busy Sat · <span class="t-mono">80%</span></span><span class="pv"><span class="t-label t-mono rm-sat">×1.12</span> <span class="t-label faint">→</span> <b class="t-mono rp-sat">$112</b></span></div>' +
+          '<div class="pr"><span class="t-label">Quiet Tue · <span class="t-mono">30%</span></span><span class="pv"><span class="t-label t-mono rm-tue">×0.92</span> <span class="t-label faint">→</span> <b class="t-mono rp-tue">$92</b></span></div>' +
+        '</div>' +
+        '<div class="ps ps1" style="top:690px"><i></i><div class="t-caps faint">Setting 1</div><div class="t-label">where it crosses ×1.00</div></div>' +
+        '<div class="ps ps2" style="top:792px"><i></i><div class="t-caps faint">Setting 2</div><div class="t-label">how steep it is</div></div>' +
+        '<div class="chip pmnx" style="position:absolute;left:1250px;top:900px"><span class="dot"></span>' +
+          '<span>The loss tunes both, per listing</span></div>' +
+        Kit.src('Host’s price × a learned adjustment, two settings per listing: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Curve and numbers are illustrative.');
+    },
+
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      var st = { n: .5, s: .4, c: 0, d: 0 };   // n = where it crosses ×1.00, s = steepness, c = curve draw-in, d = dots shown
+      var line = q('.pc'), cross = q('.px');
+      var NIGHTS2 = [
+        { g: q('.pn-sat'), q: PM.sat, col: C.redT,  m: q('.rm-sat'), p: q('.rp-sat'), lab: 'end' },
+        { g: q('.pn-tue'), q: PM.tue, col: C.skyT,  m: q('.rm-tue'), p: q('.rp-tue'), lab: 'start' }
+      ];
+      var out = q('.pp-out');
+
+      function adj(x) { return 1 + st.s * (x - st.n); }
+      function render() {
+        var x1 = st.c;
+        line.setAttribute('x1', PX(0)); line.setAttribute('y1', PY(adj(0)));
+        line.setAttribute('x2', PX(x1)); line.setAttribute('y2', PY(adj(x1)));
+        line.style.opacity = st.c > .001 ? 1 : 0;
+        cross.setAttribute('transform', 'translate(' + PX(st.n) + ',' + PY(1) + ')');
+        cross.style.opacity = st.c >= st.n ? 1 : 0;
+        NIGHTS2.forEach(function (n) {
+          var v = adj(n.q), x = PX(n.q), y = PY(v);
+          var circ = n.g.querySelector('.pd'), guide = n.g.querySelector('.pg'), lab = n.g.querySelector('.pl');
+          var col = v >= 1 ? C.redT : C.skyT;
+          circ.setAttribute('cx', x); circ.setAttribute('cy', y); circ.setAttribute('fill', col);
+          guide.setAttribute('x1', x); guide.setAttribute('x2', x); guide.setAttribute('y1', y + 16);
+          lab.setAttribute('x', n.lab === 'end' ? x - 26 : x + 26); lab.setAttribute('y', y + (n.lab === 'end' ? -18 : 44));
+          lab.setAttribute('text-anchor', n.lab); lab.setAttribute('fill', col);
+          n.g.style.opacity = st.d;
+          var price = Math.round(PM.host * v);
+          n.m.textContent = '×' + v.toFixed(2);
+          n.p.textContent = '$' + price; n.p.style.color = col;
+          if (n.q === PM.sat) out.textContent = '$' + price;
+        });
+      }
+      render();
+
+      gsap.set([q('.pmn'), q('.ps1'), q('.ps2'), q('.pmnx')], { autoAlpha: 0 });
+      gsap.set(qa('.pmsvg > :not(defs):not(.pn)'), { autoAlpha: 0 });   // the nights' opacity belongs to render()
+      gsap.set(qa('.ps i'), { autoAlpha: 0 });
+
+      // ---- entrance: the two-model pipeline, left to right ----
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.rise(tl, q('.pm-a'), { at: .25, duration: .5 });
+      Kit.draw(tl, q('.pa1'), { at: .55, duration: .4 });
+      tl.set(q('.pa1'), { attr: { 'marker-end': 'url(#pmArr)' } });
+      tl.from(qa('.pal1'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
+      Kit.rise(tl, q('.pm-b'), { duration: .5, at: '-=.1' });
+      Kit.draw(tl, q('.pa2'), { duration: .4, at: '-=.15' });
+      tl.set(q('.pa2'), { attr: { 'marker-end': 'url(#pmArr)' } });
+      tl.from(qa('.pal2'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
+      Kit.rise(tl, q('.pm-c'), { duration: .5, at: '-=.1' });
+      ctx.pause();
+
+      // ---- click 1: the curve, then the two nights land on it ----
+      tl.to(qa('.pmsvg > :not(defs):not(.pn)'), { autoAlpha: 1, duration: .4, stagger: .02 });
+      tl.to(st, { c: 1, duration: 1.0, ease: 'power2.inOut', onUpdate: render }, '-=.1');
+      tl.to(st, { d: 1, duration: .4, onUpdate: render });
+      Kit.show(tl, q('.pmn'), { at: '<' });
+      ctx.pause();
+
+      // ---- click 2: the two settings, each one moved and put back ----
+      Kit.show(tl, q('.ps1'), { duration: .4 });
+      tl.to(q('.ps1 i'), { autoAlpha: 1, duration: .25 });
+      tl.to(st, { n: .62, duration: .9, ease: 'power2.inOut', onUpdate: render });
+      tl.to(st, { n: .5, duration: .9, ease: 'power2.inOut', onUpdate: render }, '+=.4');
+      Kit.show(tl, q('.ps2'), { duration: .4 });
+      tl.to(q('.ps2 i'), { autoAlpha: 1, duration: .25 });
+      tl.to(st, { s: .6, duration: .9, ease: 'power2.inOut', onUpdate: render });
+      tl.to(st, { s: .4, duration: .9, ease: 'power2.inOut', onUpdate: render }, '+=.4');
+      ctx.pause();
+
+      // ---- click 3: the hand-off to the loss ----
+      Kit.show(tl, q('.pmnx'), { duration: .45 });
+    },
+
+    notes:
+      'Two models, not one. The trees are the booking model. Their chance feeds a second, smaller model: the price model. ' +
+      'It takes the host’s own price and scales it up or down, using that chance and demand in the area.' +
+      '[click] A busy Saturday at eighty percent: times one point one two, so a hundred becomes a hundred and twelve. ' +
+      'A quiet Tuesday at thirty percent: ninety-two.' +
+      '[click] The curve has two settings: where it crosses the host’s price, and how steep it is.' +
+      '[click] Each listing learns its own two settings. The loss on the next slide is how.'
+  };
+
+  /* ======================================================================
+     RESULTS — prices down, revenue up (60 s)
      Steps: 0 the two numbers · 1 the causal chain · 2 who measured it
      ====================================================================== */
   var RESULTS = {
     id: 'results',
     title: 'Results',
     heading: 'Results',
-    budgetSec: 75,
+    budgetSec: 60,
     html: function () {
       function num(cls, left, caps, glyph, col, sub) {
         return '<div class="card rcard ' + cls + '" style="left:' + left + 'px">' +
@@ -776,11 +938,9 @@
       'Their nightly rate fell five point seven percent. Their daily revenue rose eight point six percent.' +
       '[click] Those two arrows point in opposite directions, and that is the whole story. A lot of hosts were overpricing. ' +
       'A lower price filled more nights, and the extra nights more than paid for the discount.' +
-      '[click] One thing worth noticing. That is not Airbnb’s own number. Airbnb’s own claim is that hosts who priced within ' +
-      'five percent of the tip were four times more likely to book — self-reported, and a correlation: hosts who follow tips are ' +
-      'different from hosts who ignore them. The study on the right used the rollout as a quasi-natural experiment, which is why it is ' +
-      'the number I quote. And keep one caveat: this is revenue, not profit. The model never sees what a night actually costs the ' +
-      'host in cleaning and hassle.'
+      '[click] That is not Airbnb’s own number. Airbnb claims hosts who priced within five percent of the tip were four times ' +
+      'more likely to book. That is self-reported, and only a correlation. The study used the rollout as a quasi-experiment, so it is ' +
+      'the number I quote. One caveat: this is revenue, not profit. The model never sees what a night costs the host in cleaning and hassle.'
   };
 
   /* ======================================================================
@@ -874,7 +1034,7 @@
   Deck.section({
     id: 'airbnb', order: 1, num: '01', kicker: 'Price', title: 'Airbnb Smart Pricing',
     slides: [
-      PROBLEM, TREE, BOOST, GBTUSE, LOSS, RESULTS, TAKEAWAYS
+      PROBLEM, TREE, BOOST, GBTUSE, PRICEMODEL, LOSS, RESULTS, TAKEAWAYS
     ]
   });
 })();

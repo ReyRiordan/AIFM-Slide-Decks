@@ -1,9 +1,9 @@
 # Spec — Section 01 · Price · Airbnb Smart Pricing
 
 **Owner file:** `sections/01-airbnb.js` (+ `css/sections/airbnb.css`, `assets/img/airbnb/`)
-**Budget:** **400 s** = 60 + 30 + 35 + 35 + **120** + 75 + 45
+**Budget:** **425 s** = 60 + 30 + 35 + 35 + 40 + **120** + 60 + 45 (the price-model pass added 40 s, took 15 s from `results`, and accepted the remaining 25 s of overrun)
 **Section color:** red (`--sec` / `--sec-t`). Focus accent: orange.
-**Slide order:** `PROBLEM, TREE, BOOST, GBTUSE, LOSS, RESULTS, TAKEAWAYS`
+**Slide order:** `PROBLEM, TREE, BOOST, GBTUSE, PRICEMODEL, LOSS, RESULTS, TAKEAWAYS`
 **Kicker:** `Price`. Section title: `Airbnb Smart Pricing`.
 
 Headings follow the fix-pass heading map in
@@ -16,8 +16,9 @@ sentence case, no metaphors, puns or teaser questions.
 | `tree` | Decision trees | 30 | 2 |
 | `boost` | Boosting | 35 | 3 |
 | `gbt-use` | Gradient boosting at Airbnb | 35 | 3 |
+| `price-model` | The price model | 40 | 3 |
 | `loss` | The loss function | 120 | 6 |
-| `results` | Results | 75 | 2 |
+| `results` | Results | 60 | 2 |
 | `takeaways` | Takeaways | 45 | 2 |
 
 The teaching arc, one line each:
@@ -25,11 +26,14 @@ The teaching arc, one line each:
 1. **problem** — the right price is never revealed; the only feedback is the host's price and one bit.
 2. **tree** — a tree is a short list of yes/no questions; one night routes down it to a booking chance.
 3. **boost** — many small trees added together, each trained on what the running total still gets wrong.
-4. **gbt-use** — "gradient" is the direction and size of the error; Airbnb runs one model per market,
-   price is an input, and the booking chance feeds the price model.
-5. **loss** — each outcome becomes a no-penalty price range; the loss penalises distance outside it.
-6. **results** — nightly rate −5.7%, daily revenue +8.6%, independently measured.
-7. **takeaways** — boosted trees on tables, design the loss, the objective is a choice.
+4. **gbt-use** — "gradient" is the direction and size of the error; Airbnb runs one booking model per
+   market, price is an input, and a second model will turn the booking chance into a price.
+5. **price-model** — there are two models. The price model scales the host's price by an adjustment
+   driven by booking chance (and area demand); it has two settings per listing, and the loss tunes them.
+6. **loss** — each outcome becomes a no-penalty price range; the loss penalises the price model's
+   suggestion for its distance outside it.
+7. **results** — nightly rate −5.7%, daily revenue +8.6%, independently measured.
+8. **takeaways** — boosted trees on tables, design the loss, the objective is a choice.
 
 ---
 
@@ -94,8 +98,10 @@ Layout: label `THE ERROR ON EACH NIGHT` at y 280; SVG (840×420) at x 120, y 340
 local y 210 and five arrows at local x 300 / 410 / 520 / 630 / 740, numbered 1-5 at local y 340;
 caption `Each arrow is one night: which way, and how far` at local y 415; chip `A new tree is trained
 to follow the arrows` at y 800.
-Right column at x 960, width 840: `One per market`, `The chance a night books`, `Price is one of the
-inputs` ($150 → 62%, $180 → 41%), then the chip `Booking chance → the price model` at y 906.
+Right column at x 960, width 840: `Booking models` / `One per market`, `The chance a night books`, `Price is one of the
+inputs` ($150 → 62%, $180 → 41%), then the chip `Next: a second model sets the price` at y 906.
+The footer says each tree follows the gradient of *the booking model's own loss*, so students don't confuse it
+with the custom loss two slides later.
 
 State: `st.g`, the arrow length as a fraction of the full error. `render()` redraws each shaft and head. The head is a fixed 26 px, and an arrow is never drawn shorter
 than its own head, so small errors stay readable.
@@ -108,24 +114,59 @@ No formula on this slide. The one equation in the talk is the loss, on the next 
 Source: Google, Gradient boosting; Friedman, 2001; Ye et al., KDD 2018 (via Colyer, 2018) for one model
 per market and price as an input feature. Arrow sizes and the two what-if prices are illustrative.
 
-## 5 · `loss` — 120 s
+## 5 · `price-model` — 40 s
+
+**The one idea:** there are two models. The trees give a booking chance; a second, small model turns it
+into a price by scaling the host's own price, and it has just two settings per listing for the loss to tune.
+
+Why it exists: students asked how trees that predict booking chance connect to a loss that grades a price.
+This reverses the fix-pass cut of "Two models and a dial".
+
+Layout:
+- Pipeline strip, boxes at y 282 (h 120): `Booking model` / `the trees` (x 120, w 330, dim) → `80%` `chance` →
+  `Price model` / `host's price $100 + area demand` (x 690, w 520, orange outline) → `$112` `suggested` →
+  `The loss` / `grades it, next slide` (x 1410, w 390, dashed). Arrows and their labels are one SVG at y 276.
+- Curve SVG (1060×520) at x 120, y 448: caps `PRICE ADJUSTMENT`; y-axis ×0.80–×1.20, x-axis `booking chance`
+  0–100%; dashed ×1.00 line labelled `host's price, unchanged` (label sits top-left, where the line never goes);
+  the orange line, an ✕ where it crosses ×1.00, and two nights (`Sat` at 80%, `Tue` at 30%) with guides to the axis.
+- Right column x 1250, w 550: card `Two nights at $100` (`Busy Sat · 80%  ×1.12 → $112`,
+  `Quiet Tue · 30%  ×0.92 → $92`), then `Setting 1 · where it crosses ×1.00` (y 690) and
+  `Setting 2 · how steep it is` (y 792), then the chip `The loss tunes both, per listing` (y 900).
+
+State: `st = { n: .5, s: .4, c: 0, d: 0 }` (crossing point, steepness, line draw-in, nights' opacity).
+`adjustment(q) = 1 + s·(q − n)`. `render()` redraws the line, the ✕, both nights, the card readouts and the
+pipeline's `$112`. Nights are red when raised (≥ ×1.00) and sky when lowered.
+
+Build: entrance (pipeline, left to right) → curve + two nights + card → Setting 1 (n .5 → .62 → .5:
+$112/$92 → $107/$87 and back), then Setting 2 (s .4 → .6 → .4: → $118/$88 and back) → hand-off chip.
+
+No formula on screen. `×1.12 → $112` is worked arithmetic, a pseudo-diagram under KIT §2.5.
+
+Source: Airbnb report "Deep dive 3" (Ye et al., KDD 2018, via Colyer, 2018): suggestion = calendar price × V;
+inputs booking probability and demand score; θ₁ (how fast prices grow or shrink) and θ₂ (where the calendar price
+is left unchanged) learned per listing. Curve shape, chances and multipliers are illustrative; the real model
+uses a demand-adjusted booking chance and an asymmetric exponential curve.
+
+## 6 · `loss` — 120 s
 
 The visual is unchanged from the approved build: the price axis, the no-penalty band, the valley, the
 draggable suggestion, the booked → not-booked flip, the both-sides overlay, and the equation card.
 The fix pass changed only the heading (`The loss function`) and three labels (`What happened`,
-`Prices the night supports`, `The loss, in symbols`).
+`Prices the night supports`, `The loss, in symbols`). The price-model pass renamed the readout
+`Model says` → `Price model`, opened the notes with "Now we grade the price model's suggestion", and added
+one closing sentence: training adjusts each listing's two settings until its total penalty is smallest.
 
 Source: Ye et al., KDD 2018 (via Colyer, 2018). Zone widths (×0.9, ×1.1) are illustrative.
 
-## 6 · `results` — 75 s
+## 7 · `results` — 60 s
 
 Two numbers (−5.7% nightly price, +8.6% daily revenue), the causal chain, and the self-reported versus
-independent contrast. Unchanged apart from the heading.
+independent contrast. On screen unchanged apart from the heading; the notes were trimmed from 75 s to 60 s.
 
 Source: Zhang, Mehta, Singh & Srinivasan, Marketing Science (2021). Airbnb's 4× claim is company-reported
 and correlational, and carries the `Self-reported` flag.
 
-## 7 · `takeaways` — 45 s
+## 8 · `takeaways` — 45 s
 
 Canonical section closer: image, veil, three numbered rows, marker strip. The strip reads
 **PRICE · ASSIST · INTERACT · NEGOTIATE**, with `PRICE` filled and `ASSIST` tinted on the last click.
@@ -159,10 +200,10 @@ intro agenda. No ML vocabulary at all. This section defines "model", "tree", "bo
 
 | Cut | Why |
 |---|---|
-| `pipeline` ("Two models and a dial") and the old `trees` slide | Fix-pass decision; replaced by tree / boost / gbt-use. The A/B-test failure survives as one spoken sentence in `problem`. |
+| `pipeline` ("Two models and a dial") and the old `trees` slide | Fix-pass decision; replaced by tree / boost / gbt-use. The A/B-test failure survives as one spoken sentence in `problem`. The two-model idea came back as `price-model` (see §5). |
 | The fairness twist (71.3% gap reduction among adopters) | A 3-minute topic. It cannot be done honestly in 30 seconds. |
 | Offline metrics: price decrease recall, booking regret | A fourth evaluation idea would bury the loss. |
-| The strategy model's internals: P × V, θ₁, θ₂, asymmetric exponential form | A second equation is banned by the kit. |
+| The strategy model's symbols: P × V, θ₁, θ₂, φ, the asymmetric exponential form | A second equation is banned by the kit. `price-model` shows the behaviour instead: a curve with two plain-language settings. |
 | Revenue ≠ profit as a slide | One spoken sentence at the end of `results`. |
 | Price Tips versus Smart Pricing, the 2012–2026 timeline, Aerosolve, micro-neighbourhoods | Product history, not technique. |
 | Cold start and the listing → market → global fallback chain | Good pattern, no room. |
@@ -171,9 +212,9 @@ intro agenda. No ML vocabulary at all. This section defines "model", "tree", "bo
 
 ## Build checklist
 
-- [x] `budgetSec` values are `60, 30, 35, 35, 120, 75, 45` (sum 400).
-- [x] Slide array order is `PROBLEM, TREE, BOOST, GBTUSE, LOSS, RESULTS, TAKEAWAYS`.
-- [x] Every `ctx.pause()` has a matching `[click]`: 3 / 2 / 3 / 3 / 6 / 2 / 2.
+- [x] `budgetSec` values are `60, 30, 35, 35, 40, 120, 60, 45` (sum 425).
+- [x] Slide array order is `PROBLEM, TREE, BOOST, GBTUSE, PRICEMODEL, LOSS, RESULTS, TAKEAWAYS`.
+- [x] Every `ctx.pause()` has a matching `[click]`: 3 / 2 / 3 / 3 / 3 / 6 / 2 / 2.
 - [x] All CSS scoped under `.slide[data-sec="airbnb"]`.
 - [x] Hidden-by-default elements revealed with `Kit.show` / `tl.to`, never `tl.from` / `Kit.rise`.
 - [x] Every state-driven visual uses a state object plus a pure `render()` with `onUpdate: render`.

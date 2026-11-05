@@ -98,3 +98,31 @@
 
 /* provenance badges sit inside the content zone here, so they must clear the 28px floor */
 .slide[data-sec="airbnb"] .ev .flag { font-size: 28px; }
+
+/* ---------- price-model ---------- */
+.slide[data-sec="airbnb"] .pm-box {
+  position: absolute; top: 282px; height: 120px; padding: 18px 28px;
+  border-radius: 20px; background: var(--surface); border: 3px solid var(--line);
+  display: flex; flex-direction: column; justify-content: center; gap: 4px;
+}
+.slide[data-sec="airbnb"] .pm-a,
+.slide[data-sec="airbnb"] .pm-c { background: var(--bg-2); }
+.slide[data-sec="airbnb"] .pm-c { border-style: dashed; }
+.slide[data-sec="airbnb"] .pm-b { border-color: var(--orange); }
+.slide[data-sec="airbnb"] .pm-t { font-size: var(--fs-body); font-weight: 750; line-height: 1.15; white-space: nowrap; }
+.slide[data-sec="airbnb"] .pm-box .t-label { white-space: nowrap; }
+
+.slide[data-sec="airbnb"] .pmn { padding: 26px 32px; }
+.slide[data-sec="airbnb"] .pmn .pr { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; }
+.slide[data-sec="airbnb"] .pmn .pv { display: inline-flex; align-items: baseline; gap: 10px; }
+.slide[data-sec="airbnb"] .pmn .pv b { font-size: var(--fs-body); font-weight: 700; }
+
+.slide[data-sec="airbnb"] .ps {
+  position: absolute; left: 1250px; width: 550px; padding: 6px 0 6px 32px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.slide[data-sec="airbnb"] .ps i {
+  position: absolute; left: 0; top: 4px; bottom: 4px; width: 8px; border-radius: 3px;
+  background: var(--orange); transform: skewX(var(--skew));
+}
+.slide[data-sec="airbnb"] .pmnx { height: 64px; font-size: var(--fs-label); font-weight: 650; }
