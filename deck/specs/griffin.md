@@ -131,7 +131,7 @@ Size `1536x1024`. **Why it earns its place:** the section is about a face that i
 - Measurement label: **2.8 – 3.5 s before it answers**
 - Human pin: **a person answers at ≈ 0.9 s**
 - Bracket label between them: **dead air**
-- Two chips (click 3): `Only ~40% of pauses hand over the turn` · `It could not gesture or move its body`
+- Two chips (click 3): `Only ~40% of pauses mean “your turn”` · `It could not gesture or move its body`
 - Footer: `Kit.src('Cascade 2.8–3.5 s vs humans ≈0.9 s: NVIDIA VideoFDB, republished by Tavus. Pause statistic: Tavus, Sparrow-2 (>1M silences).', 'Self-reported (Tavus analysis)')`
 
 **Layout — SVG at left 120, top 296, 1680×500 (viewBox `0 0 1680 500`)**
@@ -320,7 +320,7 @@ Keep `portrait-src.png` out of the shipped assets (or leave it; it is small). Al
 
 ## Slide 7 · `distill` — distillation and Self-Forcing
 
-- **id** `distill` · **title** `Distillation` · **heading** `Distillation` · **budgetSec 60** · 4 clicks
+- **id** `distill` · **title** `Distillation` · **heading** `Distillation` · **budgetSec 60** · 5 clicks
 - **ONE IDEA:** You don't rebuild the big model — you train a small one to copy its results in a few steps, one frame at a time, and then make it practise without the answer key.
 
 **On-screen content**
@@ -485,3 +485,54 @@ Keep `portrait-src.png` out of the shipped assets (or leave it; it is small). Al
 5. Hidden-by-default elements use `Kit.show` / `tl.to(…, {autoAlpha:1})`, never `tl.from` / `Kit.rise` (KIT §4 gotcha). Slides 5, 7 and 8 all have state-driven visuals — use the LOSS pattern: one state object, one pure `render()`, tween with `onUpdate: render`.
 6. QA with `--session bts-griffin`, screenshot **every** step of every slide (23 states + 9 print states), `Read` each, fix, repeat. `agent-browser --session bts-griffin errors` must be empty.
 7. Confirm notes word counts (fix pass): roughly **43 / 63 + 44 s of clip / 115 / 85 / 123 / 73 / 143 / 85 / 73**. The `demo` slide is intentionally far under 135 wpm because the clip runs for 44 s; do not "fix" it. Every other slide is within about ±8% of 135 wpm × `budgetSec`.
+
+
+---
+
+## Fix pass (Nov 2026) — what changed, and why the spec above is superseded where they disagree
+
+Reviewed by a student reviewer and a design reviewer; the notes below record the deltas. The code in
+`sections/03-griffin.js` and `css/sections/griffin.css` is the source of truth.
+
+- **takeaway** — canonical closer. The `.sb` sub-line is gone from all three rows; rows re-pitch to
+  `285 + i * 190`; the marker strip stays at left 120 / top 890; the footer is one line. Identical in
+  `01-airbnb.js` and `02-rufus.js`.
+- **cascade** — the time axis rescales to 460 px/s, so the five stage boxes now fill the frame out to
+  x 1606 instead of stopping at x 1203. Box x/width: 180/230, 410/230, 640/460, 1100/230, 1330/276.
+  Click 4 floats the orange band **above** the axis (x 180, y 44, 920×80) with a bracket pointing down
+  at Raven / Sparrow / LLM, so it can no longer be read as a duration; the `2.8 – 3.5 s` caption and the
+  dead-air bracket leave the screen on that step, `.cs-time` and both chips dim to 0.55, and the three
+  stage names stay readable under the bracket. Chips move up to top 820. Footer is one line.
+- **overview** — `you see it` labels the return arc; `it keeps watching you while it talks` now labels the
+  two input arrows, which is the leg it describes. The output frame uses `portrait-talk.jpg`, a second
+  moment of the same identity, so "every pixel generated" has visible evidence. The one-photo thumbnail
+  shrinks to 110×146. The unlabelled speech→video hook is deleted; the fact stays in the notes.
+- **diffusion** — the reverse pass keeps every slot at full opacity and cross-fades each slot to its
+  cleaner neighbour (`.df-g` overlay images), so the strip resolves instead of dimming; captions flip to
+  `− noise`. The two point arrows become a bus under the rail with a tick arrow under **every** frame,
+  fed from both chips. The frame row moves up to top 300 to make room.
+- **stream** — the arcs point **into** `now` (the model reads its neighbours to draw it). Past frames and
+  the `now` frame carry the real portrait; the loop frame resolves from `noise-3` to `noise-1` as the loop
+  completes. Unavailable future frames are grey, not red: grey `?`, dimmed dashed arcs and one grey cross.
+- **distill** — the eight-chunk strip inside the Student card is deleted; `one frame at a time` moves onto
+  the bottom row, which is now the single frames picture, hidden until click 2 and filled with the
+  portrait. Drift is shown by the picture (offset, blur, desaturation) with the red tint as reinforcement
+  only; `its own mistakes pile up` sits over the drifting end with a tick down to the first drifting frame.
+  Click 3 now holds the answer key beside the clean row and click 4 removes it — **5 clicks**.
+- **results** — mono numerals keep their grid, but the unit (`s`, `%`) is set in Archivo at 0.58 em and the
+  decimal point is tightened, so `0.43 s` and `2.4%` stop reading as separate tokens.
+- **demo** — the purple "Watch on YouTube" button becomes a quiet outline chip docked under the Watch-for
+  card; the poster is re-cut to the call area with no burnt-in subtitle.
+- **every slide** — one rendered footer line. Method caveats moved into the speaker notes.
+
+## Fix pass round 2 (Nov 2026)
+- **Type scale, every slide** — every string is now on 28/36/52/76/168 (mono 132, footer 22). Snapped:
+  cascade stage names, `a person answers here` and `dead air` 30 → 28; overview `you see it` 30 → 28,
+  `you` 34 → 36, `Speech generator` / `Video generator` 32 → 36; stream `?` 44 → 36; distill `answer key`
+  30 → 28 (the inline `font-size` is gone, it is a plain `t-label`).
+- **overview** — the two generator cards widen from 300 to 350 (x 975) so `Speech generator` at 36 px
+  fills 87% of its card instead of 100%; the two CCM→generator arrows end at x 967 and the
+  video→output arrow starts at x 1333.
+- **results** — only two numbers carry the accent: **48%** (the claim) and **1.9 s** (the honest
+  comparison against a person's 0.9 s). `0.43 s` drops to `var(--text-2)` — it is supporting detail,
+  not a claim.

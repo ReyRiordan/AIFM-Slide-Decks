@@ -30,17 +30,19 @@
 }
 .slide[data-sec="griffin"] .dm-btn {
   position: absolute; display: flex; align-items: center; justify-content: center;
-  background: var(--purple); color: var(--text); border-radius: 18px;
-  font-family: var(--font); font-size: var(--fs-h2); font-weight: 700; font-stretch: 108%;
-  text-decoration: none; transition: filter .18s ease; white-space: nowrap;
+  background: transparent; color: var(--purple-t);
+  border: 2px solid var(--purple-t); border-radius: 30px;
+  font-family: var(--font); font-weight: 600;
+  text-decoration: none; transition: background .18s ease; white-space: nowrap;
 }
+.slide[data-sec="griffin"] .dm-btn span { margin-left: 10px; }
 .slide[data-sec="griffin"] .dm-btn:hover,
-.slide[data-sec="griffin"] .dm-btn:focus-visible { filter: brightness(1.12); outline: 3px solid var(--purple-t); outline-offset: 4px; }
+.slide[data-sec="griffin"] .dm-btn:focus-visible { background: rgba(154, 65, 152, .22); outline: none; }
 .slide[data-sec="griffin"] .dm-q { line-height: 1.12; display: flex; align-items: center; }
 
 /* ---------- 3 · cascade ---------- */
 .slide[data-sec="griffin"] .cs-chip {
-  position: absolute; top: 846px; height: 100px; width: 816px;
+  position: absolute; top: 820px; height: 100px; width: 816px;
   background: var(--surface); border-radius: 16px; padding: 0 30px;
   display: flex; align-items: center; gap: 22px;
 }
@@ -51,16 +53,18 @@
 
 /* ---------- 5 · diffusion ---------- */
 .slide[data-sec="griffin"] .df-slot {
-  position: absolute; top: 330px; width: 240px; height: 320px;
+  position: absolute; top: 300px; width: 240px; height: 320px;
   border: 2px dashed var(--line); border-radius: 10px;
 }
-.slide[data-sec="griffin"] .df-f {
-  position: absolute; top: 330px; width: 240px; height: 320px;
+.slide[data-sec="griffin"] .df-f,
+.slide[data-sec="griffin"] .df-g {
+  position: absolute; top: 300px; width: 240px; height: 320px;
   border-radius: 10px; object-fit: cover; display: block;
 }
+.slide[data-sec="griffin"] .df-g { opacity: 0; }
 .slide[data-sec="griffin"] .df-chip .ar { margin: 0 12px; }
 .slide[data-sec="griffin"] .df-chip {
-  position: absolute; top: 812px; height: 76px; border-radius: 38px;
+  position: absolute; top: 840px; height: 76px; border-radius: 38px;
   background: var(--surface); display: flex; align-items: center; justify-content: center;
   color: var(--text); white-space: nowrap;
 }
@@ -83,32 +87,33 @@
 
 /* ---------- 7 · distill ---------- */
 .slide[data-sec="griffin"] .ds-card {
-  position: absolute; top: 300px; width: 620px; height: 380px; border-radius: 20px;
+  position: absolute; top: 300px; width: 620px; height: 320px; border-radius: 20px;
 }
 .slide[data-sec="griffin"] .ds-card.a { left: 120px; background: var(--surface); }
 .slide[data-sec="griffin"] .ds-card.b { left: 1180px; background: transparent; border: 3px dashed var(--line); }
 .slide[data-sec="griffin"] .ds-card .k { position: absolute; left: 34px; top: 30px; }
 .slide[data-sec="griffin"] .ds-card .s { position: absolute; left: 34px; top: 86px; color: var(--text-2); }
 .slide[data-sec="griffin"] .ds-card .n { position: absolute; left: 34px; top: 130px; }
-.slide[data-sec="griffin"] .ds-card .cap { position: absolute; left: 34px; top: 334px; }
 .slide[data-sec="griffin"] .ds-bar {
-  position: absolute; left: 154px; top: 588px; width: 520px; height: 34px;
+  position: absolute; left: 154px; top: 650px; width: 520px; height: 34px;
   border-radius: 8px; background: var(--text-3);
 }
-.slide[data-sec="griffin"] .ds-chunks { position: absolute; left: 1214px; top: 588px; display: flex; gap: 8px; }
-.slide[data-sec="griffin"] .ds-chunks span { display: block; width: 58px; height: 34px; border-radius: 8px; background: var(--purple); }
+.slide[data-sec="griffin"] .ds-tcap { position: absolute; left: 706px; top: 642px; color: var(--text-2); }
+.slide[data-sec="griffin"] .ds-cap { position: absolute; left: 180px; top: 700px; }
 .slide[data-sec="griffin"] .ds-fr {
   position: absolute; top: 750px; width: 100px; height: 134px; border-radius: 10px;
   border: 2px solid var(--line); overflow: hidden;
 }
-.slide[data-sec="griffin"] .ds-fr .fill { position: absolute; inset: 0; background: var(--bg-2); }
-.slide[data-sec="griffin"] .ds-fr .scan { position: absolute; left: 18px; top: 72px; width: 64px; height: 3px; border-radius: 2px; background: var(--purple-t); }
+.slide[data-sec="griffin"] .ds-fr .fill {
+  position: absolute; inset: 0;
+  background: #2A2426 url(../../assets/img/griffin/portrait.jpg) center 22% / cover no-repeat;
+}
 .slide[data-sec="griffin"] .ds-fr .err { position: absolute; inset: 0; background: var(--red); opacity: 0; }
 .slide[data-sec="griffin"] .ds-key {
   position: absolute; left: 1540px; top: 750px; width: 260px; height: 134px; border-radius: 14px;
   border: 2px dashed var(--orange); padding: 18px 20px;
 }
-.slide[data-sec="griffin"] .ds-lab { position: absolute; left: 180px; top: 700px; width: 1200px; color: var(--text-2); }
+.slide[data-sec="griffin"] .ds-lab { position: absolute; left: 840px; top: 700px; width: 650px; color: var(--text-2); }
 
 /* ---------- 8 · results ---------- */
 .slide[data-sec="griffin"] .rs-lab { position: absolute; top: 330px; color: var(--text-3); }
@@ -119,6 +124,17 @@
   border-radius: 18px; padding: 28px;
 }
 .slide[data-sec="griffin"] .rs-card .v { font-size: 96px; color: var(--purple-t); }
+/* only the number Rey argues (1.9 s, against a person's 0.9 s) keeps the accent;
+   the pixel latency is supporting detail, so it stays grey. */
+.slide[data-sec="griffin"] .rs-card.k1 .v { color: var(--text-2); }
+/* mono numerals, proportional unit and a tightened decimal point */
+.slide[data-sec="griffin"] .rs-num .u,
+.slide[data-sec="griffin"] .rs-card .v .u {
+  font-family: var(--font); font-size: .58em; font-weight: 700;
+  letter-spacing: normal; margin-left: .06em;
+}
+.slide[data-sec="griffin"] .rs-num .dp,
+.slide[data-sec="griffin"] .rs-card .v .dp { margin: 0 -.17em; }
 .slide[data-sec="griffin"] .rs-card .c { margin-top: 14px; color: var(--text-2); }
 
 /* ---------- 9 · takeaway · CANONICAL SECTION CLOSER ----------
@@ -145,7 +161,6 @@
 .slide[data-sec="griffin"] .tk-row .ln {
   position: absolute; left: 160px; top: 38px; width: 1060px; font-weight: 800; line-height: 1.1;
 }
-.slide[data-sec="griffin"] .tk-row .sb { position: absolute; left: 160px; top: 156px; width: 1060px; color: var(--text-2); }
 
 .slide[data-sec="griffin"] .thru { position: absolute; left: 120px; top: 890px; z-index: 2; display: flex; align-items: center; }
 .slide[data-sec="griffin"] .thru .sep { color: var(--line); margin: 0 20px; }
