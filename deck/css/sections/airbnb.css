@@ -21,7 +21,7 @@
 .slide[data-sec="airbnb"] .nt-x { color: var(--text-3); opacity: .55; }
 
 .slide[data-sec="airbnb"] .wall {
-  position: absolute; left: 1120px; width: 680px; height: 120px;
+  position: absolute; left: 1060px; width: 740px; height: 120px;
   display: flex; align-items: center; gap: 26px; padding: 0 32px;
 }
 .slide[data-sec="airbnb"] .wall i {
@@ -43,8 +43,6 @@
 }
 
 /* ---------- gbt-use ---------- */
-.slide[data-sec="airbnb"] .gu { padding: 22px 32px; }
-.slide[data-sec="airbnb"] .gu .wi { font-size: 44px; font-weight: 600; margin-top: 14px; color: var(--text); }
 .slide[data-sec="airbnb"] .gfix { height: 64px; font-size: var(--fs-label); font-weight: 650; }
 
 /* ---------- results ---------- */
@@ -106,6 +104,14 @@
 .slide[data-sec="airbnb"] .ev .flag { font-size: 28px; }
 
 /* ---------- price-model ---------- */
+/* step 0: what the booking model hands over — one card row, one internal grid */
+.slide[data-sec="airbnb"] .dep {
+  position: absolute; top: 400px; width: 540px; min-height: 360px; padding: 40px;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
+}
+.slide[data-sec="airbnb"] .dep .dt { line-height: 1.1; }
+.slide[data-sec="airbnb"] .dep .db { color: var(--text-2); }
+
 .slide[data-sec="airbnb"] .pm-box {
   position: absolute; top: 282px; height: 120px; padding: 18px 28px;
   border-radius: 20px; background: var(--surface); border: 3px solid var(--line);
@@ -117,6 +123,12 @@
 .slide[data-sec="airbnb"] .pm-b { border-color: var(--orange); }
 .slide[data-sec="airbnb"] .pm-t { font-size: var(--fs-body); font-weight: 750; line-height: 1.15; white-space: nowrap; }
 .slide[data-sec="airbnb"] .pm-box .t-label { white-space: nowrap; }
+
+/* the three deployment facts, collapsed to one line under the pipeline */
+.slide[data-sec="airbnb"] .pmfacts {
+  position: absolute; left: 120px; top: 418px; width: 1680px;
+  color: var(--text-2); white-space: nowrap;
+}
 
 .slide[data-sec="airbnb"] .pmn { padding: 26px 32px; }
 .slide[data-sec="airbnb"] .pmn .pr { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; }

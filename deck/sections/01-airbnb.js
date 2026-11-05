@@ -1,6 +1,6 @@
 /* ==========================================================================
    01 · Price — Airbnb Smart Pricing   (budget 425 s total)
-   Flow: problem 60 → tree 30 → boost 35 → gbt-use 35 → price-model 40 → loss 120 → results 60 → takeaways 45
+   Flow: problem 60 → tree 30 → boost 35 → gbt-use 20 → price-model 55 → loss 120 → results 60 → takeaways 45
    ========================================================================== */
 (function () {
   'use strict';
@@ -39,9 +39,13 @@
         // y-axis label
         '<text class="ylab" x="' + (X0 - 30) + '" y="' + (TOP - 34) + '" font-family="Archivo" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.text3 + '">PENALTY ↑</text>' +
         '<line class="yax" x1="' + (X0 - 30) + '" y1="' + (TOP - 14) + '" x2="' + (X0 - 30) + '" y2="' + BASE + '" stroke="#4A4345" stroke-width="3"/>' +
-        // zone band + ghost
-        '<rect class="band" y="' + (TOP - 14) + '" height="' + (BASE - TOP + 14) + '" rx="10" fill="' + C.teal + '" fill-opacity=".22"/>' +
-        '<text class="bandlab" y="' + (TOP + 30) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.tealT + '">no penalty</text>' +
+        // zone: a low band on the axis, with faint edges running up through the plot
+        '<rect class="band" y="' + (BASE - 90) + '" height="90" rx="10" fill="' + C.teal + '" fill-opacity=".22"/>' +
+        '<line class="bdL" y1="' + (TOP - 14) + '" y2="' + BASE + '" stroke="' + C.tealT + '" stroke-width="2" stroke-dasharray="8 10" opacity=".4"/>' +
+        '<line class="bdU" y1="' + (TOP - 14) + '" y2="' + BASE + '" stroke="' + C.tealT + '" stroke-width="2" stroke-dasharray="8 10" opacity=".4"/>' +
+        '<text class="bandlab" y="' + (BASE - 30) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.tealT + '">no penalty</text>' +
+        '<text class="edgeL" y="' + (BASE - 116) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.tealT + '">L</text>' +
+        '<text class="edgeU" y="' + (BASE - 116) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.tealT + '">U</text>' +
         // valley
         '<g class="valley" filter="url(#lvGlow)">' +
           '<path class="wl" fill="none" stroke="' + C.skyT + '" stroke-width="9" stroke-linecap="round"/>' +
@@ -98,7 +102,7 @@
           '</div>' +
           '<div style="position:relative;height:34px;margin-top:6px">' +
             '<div class="t-label dim c2a" style="position:absolute;left:0;top:0;white-space:nowrap">at least $100, maybe a little more</div>' +
-            '<div class="t-label dim c2b" style="position:absolute;left:0;top:0;white-space:nowrap">below $100, which was too much</div>' +
+            '<div class="t-label dim c2b" style="position:absolute;left:0;top:0;white-space:nowrap">at most $100, and $100 already failed</div>' +
           '</div>' +
         '</div>' +
         '<div class="card c3">' +
@@ -118,10 +122,10 @@
       // THE equation (step 6) — replaces the right column as a stacked definition
       '<div class="card eqcard" style="position:absolute;left:1214px;top:268px;width:586px;display:flex;flex-direction:column;gap:18px;padding:36px 32px">' +
         '<div class="t-caps faint">The loss, in symbols</div>' +
+        '<div class="t-label dim eqkey"><span class="t-mono c-teal">L</span> and <span class="t-mono c-teal">U</span> are the zone’s two edges</div>' +
         '<div class="eq">penalty =</div>' +
         '<div class="eqt"><div class="eq" style="color:var(--sky-t)">&nbsp;&nbsp;max(0, L − price)</div><div class="t-label c-sky" style="margin:6px 0 0 64px">how far below the zone</div></div>' +
         '<div class="eqt"><div class="eq" style="color:var(--red-t)">+ max(0, price − U)</div><div class="t-label c-red" style="margin:6px 0 0 64px">how far above the zone</div></div>' +
-        '<div class="t-label dim eqkey" style="margin-top:8px"><span class="t-mono c-teal">[L, U]</span> = the no-penalty zone</div>' +
       '</div>' +
 
       // keep this line short: the right-hand card reaches down to y≈1040, so a
@@ -134,6 +138,7 @@
       var svg = q('svg.lv');
       var st = { f: 85, t: 0, fl: 0, g: 0, s: 0 };   // f = suggestion $, t = booked→not booked, fl/g = floor & walls grow, s = suggestion visible
       var wl = q('.wl'), fl = q('.fl'), wr = q('.wr'), band = q('.band'), bandlab = q('.bandlab');
+      var bdL = q('.bdL'), bdU = q('.bdU'), edgeL = q('.edgeL'), edgeU = q('.edgeU');
       var sLine = q('.s-line'), sBar = q('.s-bar'), sDot = q('.s-dot'), sKnob = q('.s-knob'), sVal = q('.s-val'), hit = q('.hit');
       var rSugg = q('.r-sugg'), rPen = q('.r-pen'), rWhy = q('.r-why'), hint = q('.draghint');
 
@@ -143,6 +148,9 @@
         // band
         band.setAttribute('x', X(L)); band.setAttribute('width', Math.max(0, X(U) - X(L)));
         bandlab.setAttribute('x', (X(L) + X(U)) / 2);
+        bdL.setAttribute('x1', X(L)); bdL.setAttribute('x2', X(L));
+        bdU.setAttribute('x1', X(U)); bdU.setAttribute('x2', X(U));
+        edgeL.setAttribute('x', X(L)); edgeU.setAttribute('x', X(U));
         // valley: floor grows from the zone centre, walls grow outward
         var mid = (L + U) / 2, h = (U - L) / 2 * st.fl;
         fl.setAttribute('d', 'M' + X(mid - h) + ',' + BASE + ' L' + X(mid + h) + ',' + BASE);
@@ -196,7 +204,8 @@
 
       // ---- initial hidden states ----
       // elements revealed by to() tweens start hidden; elements revealed by Kit.show/fromTo hide themselves
-      gsap.set([hint, q('.both'), q('.lab-lo'), q('.lab-hi'), band, q('.evt-b'), q('.c1b'), qa('.c2b')], { autoAlpha: 0 });
+      gsap.set([hint, q('.both'), q('.lab-lo'), q('.lab-hi'), band, bdL, bdU, edgeL, edgeU,
+                q('.evt-b'), q('.c1b'), qa('.c2b')], { autoAlpha: 0 });
 
       // ---- STEP 0: one booked night ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -209,6 +218,7 @@
       // ---- STEP 1: the zone ----
       tl.set([band, bandlab], { autoAlpha: 1 });
       tl.fromTo(band, { attr: { width: 0 } }, { attr: { width: X(110) - X(100) }, duration: .8, ease: Kit.ease.out });
+      tl.to([bdL, bdU], { autoAlpha: .4, duration: .4 }, '-=.35');
       Kit.show(tl, bandlab, { at: '-=.3', y: 10, duration: .4 });
       Kit.show(tl, q('.c2'), { at: '<' });
       ctx.pause();
@@ -238,7 +248,7 @@
       ctx.pause();
 
       // ---- STEP 5: why both sides ----
-      tl.to([q('.valley'), q('.band'), q('.bandlab'), q('.sugg'), q('.lab-lo'), q('.lab-hi'),
+      tl.to([q('.valley'), q('.band'), q('.bandlab'), bdL, bdU, q('.sugg'), q('.lab-lo'), q('.lab-hi'),
              q('.c1'), q('.c2'), q('.c3')], { opacity: .22, duration: .4 });
       tl.to(q('.both'), { autoAlpha: 1, duration: .01 });
       Kit.draw(tl, [q('.arr-up'), q('.arr-dn')], { duration: .7, stagger: .25 });
@@ -252,6 +262,8 @@
       tl.to([q('.c1'), q('.c2'), q('.c3')], { autoAlpha: 0, x: 40, duration: .35, stagger: .06, ease: 'power2.in' }, '<');
       Kit.show(tl, q('.eqcard'), { y: 0, duration: .01 });
       Kit.show(tl, qa('.eqcard > *'), { y: 26, stagger: .14, at: '<' });
+      tl.to([bdL, bdU], { autoAlpha: 1, duration: .4 }, '<');
+      Kit.show(tl, [edgeL, edgeU], { y: 10, stagger: .12, duration: .4, at: '<' });
       tl.fromTo(q('.wl'), { attr: { 'stroke-width': 9 } }, { attr: { 'stroke-width': 14 }, duration: .3, yoyo: true, repeat: 1 }, '-=.4');
       tl.fromTo(q('.wr'), { attr: { 'stroke-width': 9 } }, { attr: { 'stroke-width': 14 }, duration: .3, yoyo: true, repeat: 1 }, '>');
     },
@@ -269,7 +281,8 @@
       'And a suggestion of one-oh-five is now penalized, because a hundred already failed.' +
       '[click] Why do we need both kinds of nights? Booked nights push prices up. Unbooked nights push them down. ' +
       'Train on unbooked nights alone and the safest price is zero. Across millions of nights, the two pressures balance.' +
-      '[click] And this is the only equation in the talk. It is just the picture in symbols: how far below the zone, plus how far above it. ' +
+      '[click] And this is the only equation in the talk. L and U are the two edges of the zone, marked on the chart. ' +
+      'The equation is just the picture in symbols: how far below the zone, plus how far above it. ' +
       'At most one of those is ever non-zero. That is Airbnb’s custom loss. Training adjusts each listing’s two settings until its total ' +
       'penalty is as small as possible. The zone widths I used are illustrative; Airbnb never published theirs.'
   };
@@ -285,7 +298,7 @@
     { d: 'Fri 19', p: '$160', ok: false },
     { d: 'Sat 20', p: '$110', ok: true }
   ];
-  var WALLS = ['Every listing is one of a kind', 'Demand changes every day', 'The host sets the final price'];
+  var WALLS = ['Every listing is one of a kind', 'Demand changes every day', 'Airbnb can only suggest, never test'];
 
   var PROBLEM = {
     id: 'problem',
@@ -318,7 +331,7 @@
         tiles +
         '<div class="t-label ncap" style="position:absolute;left:120px;top:852px;width:920px;color:var(--text-2)">' +
           'Booked or empty. Never the right price.</div>' +
-        '<div class="t-caps faint walllab" style="position:absolute;left:1120px;top:290px">Why hotel pricing fails here</div>' +
+        '<div class="t-caps faint walllab" style="position:absolute;left:1060px;top:290px">Why hotel pricing fails here</div>' +
         walls +
         Kit.src('Why textbook revenue management breaks down here: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Dates and prices shown are illustrative.');
     },
@@ -357,7 +370,8 @@
       'Start with the simplest question in the talk. A host has a room, and it is free tonight. What should it cost?' +
       '[click] A hotel answers that with a demand curve: two hundred near-identical rooms, and years of data on how ' +
       'bookings move with price. Airbnb has three problems with that. Every listing is one of a kind. Demand changes ' +
-      'daily, and some events have no history at all. And Airbnb can only suggest, because the host sets the final price. ' +
+      'daily, and some events have no history at all. And Airbnb can only suggest. The host sets the final price, so Airbnb ' +
+      'can never run a price experiment and watch what the market does. ' +
       'Airbnb did try the textbook route, and its own A/B tests showed it did not raise host revenue.' +
       '[click] So what does Airbnb get back? For every night, the price the host chose.' +
       '[click] And one bit. Booked, or empty. Nobody ever says what that night was really worth. ' +
@@ -412,14 +426,14 @@
           '<path class="tr tr2" d="M720,' + (R[1] + 36) + ' L880,' + (R[2] - 36) + '" fill="none" stroke="' + C.orange + '" stroke-width="7" stroke-linecap="round"/>' +
           '<path class="tr tr3" d="M880,' + (R[2] + 36) + ' L1010,' + (R[3] - 36) + '" fill="none" stroke="' + C.orange + '" stroke-width="7" stroke-linecap="round"/>' +
           box('q0', 430, R[0], 360, 'Within 7 days?') +
-          box('lf35', 120, R[1], 180, '35%', 1) +
+          box('lf35', 120, R[1], 180, '−9%', 1) +
           box('q1', 720, R[1], 260, 'Saturday?') +
-          box('lf55', 490, R[2], 180, '55%', 1) +
+          box('lf55', 490, R[2], 180, '+2%', 1) +
           box('q2', 880, R[2], 440, 'Price above the median?') +
-          box('lf80', 740, R[3], 180, '80%', 1) +
-          box('lf50', 1010, R[3], 180, '50%', 1) +
+          box('lf80', 740, R[3], 180, '+11%', 1) +
+          box('lf50', 1010, R[3], 180, '+6%', 1) +
         '</svg>' +
-        '<div class="t-label dim tleg" style="position:absolute;left:120px;top:922px">Each leaf gives a booking chance.</div>' +
+        '<div class="t-label dim tleg" style="position:absolute;left:120px;top:922px">Each leaf gives a small nudge to the booking chance.</div>' +
         '<div class="rc" style="position:absolute;left:1240px;top:290px;width:560px;display:flex;flex-direction:column;gap:26px">' +
           '<div class="card exn">' +
             '<div class="t-caps faint">One night</div>' +
@@ -427,11 +441,11 @@
             '<div class="t-label dim" style="margin-top:8px">in 4 days &middot; $180 &middot; median $150</div>' +
           '</div>' +
           '<div class="card ans">' +
-            '<div class="t-caps faint">This tree says</div>' +
+            '<div class="t-caps faint">This tree nudges</div>' +
             '<div class="t-num av c-teal" style="font-size:112px;margin-top:10px">&mdash;</div>' +
           '</div>' +
         '</div>' +
-        '<div class="t-label dim rough" style="position:absolute;left:1240px;top:860px;width:560px">One tree is a rough guess.</div>' +
+        '<div class="t-label dim rough" style="position:absolute;left:1240px;top:780px;width:560px">One tree is a rough guess.</div>' +
         Kit.src('Airbnb scores booking chance with gradient boosting (Ye et al., <em>KDD 2018</em>, via Colyer, 2018). Questions and leaf values are illustrative.');
     },
 
@@ -456,7 +470,7 @@
           r.setAttribute('stroke', on ? C.orange : (k === 3 ? C.tealT : C.line));
           r.setAttribute('stroke-width', on ? 5 : 2.5);
         }
-        av.textContent = st.p >= 2.99 ? '50%' : '—';
+        av.textContent = st.p >= 2.99 ? '+6%' : '—';
       }
       render();
 
@@ -486,9 +500,9 @@
     },
 
     notes:
-      'A decision tree is a short list of yes/no questions about the night. Every path ends in a leaf that holds ' +
-      'the chance the night books. On the right: one night, a Saturday four days out, priced above the area median.' +
-      '[click] Walk it down the tree. Within seven days, yes. Saturday, yes. Above the median, yes. Fifty percent.' +
+      'A decision tree is a short list of yes/no questions about the night. Every path ends in a leaf, and the leaf ' +
+      'holds a small nudge. On the right: a Saturday four days out, priced above the area median.' +
+      '[click] Walk it down. Within seven days, yes. Saturday, yes. Above the median, yes. This tree nudges it up six points.' +
       '[click] One tree is a rough guess. Airbnb uses hundreds of them. The tree shape here follows Google’s ' +
       'Decision Forests course; the questions and the leaf values are mine.'
   };
@@ -505,6 +519,7 @@
     { lab: 'Night 5 · empty',  target: 0,   r: .64 }
   ];
   var BX0 = 300, BX1 = 1060, BROW = [60, 165, 270, 375, 480];
+  var FLOOR = .24;                        // gaps settle at 12 points, not at zero
   function BX(v) { return BX0 + v * (BX1 - BX0) / 100; }
 
   var BOOST = {
@@ -542,7 +557,7 @@
           '</div>' +
         '</div>' +
         '<div class="t-label dim bnote" style="position:absolute;left:1300px;top:780px;width:500px">Each new tree is trained on the orange gaps.</div>' +
-        '<div class="t-label dim bsum" style="position:absolute;left:1300px;top:870px;width:500px">Hundreds of rough guesses add up to an accurate one.</div>' +
+        '<div class="t-label dim bsum" style="position:absolute;left:1300px;top:870px;width:500px">The gaps shrink. They never close.</div>' +
         Kit.src('Boosting procedure: Google, <em>Introduction to Gradient Boosted Decision Trees</em>. The five nights and the shrinking gaps are illustrative.');
     },
 
@@ -555,7 +570,8 @@
 
       function pred(i) {
         var n = BN[i];
-        return n.target + (50 - n.target) * Math.pow(n.r, st.k);
+        // the shrink has a floor: hundreds of trees close most of the gap, never all of it
+        return n.target + (50 - n.target) * (FLOOR + (1 - FLOOR) * Math.pow(n.r, st.k));
       }
       function render() {
         for (var i = 0; i < pbs.length; i++) {
@@ -597,25 +613,27 @@
 
     notes:
       'Boosted means many small trees added together. Five nights. Teal is what happened, booked or empty. ' +
-      'Blue is the model’s guess, the same for every night at the start. Orange is how wrong it still is.' +
+      'Blue is the model’s guess, flat at the start. Orange is how wrong it is.' +
       '[click] The first tree is trained on those orange gaps, not on the outcomes. Add it, and every gap shrinks.' +
       '[click] The second tree is trained on what is left.' +
-      '[click] Do that two hundred times. Every tree is a rough guess. Hundreds of them add up to an accurate one.'
+      '[click] Do that two hundred times. Each tree is a rough guess; hundreds together get close. ' +
+      'The gaps shrink, and they never close. Closing them would just be memorizing these five nights.'
   };
 
   /* ======================================================================
-     GBT-USE — what "gradient" means, and how Airbnb uses the model (35 s)
-     Steps: 0 the arrows · 1 a tree follows them · 2 one model per market
-            3 price as an input, feeding the price model
+     GBT-USE — what "gradient" means (20 s)
+     Steps: 0 the arrows · 1 a tree follows them
+     The deployment facts (one model per market, the booking chance, price as
+     an input) moved to the front of price-model, where the pipeline needs them.
      ====================================================================== */
-  var GA = [170, -78, 104, 195, -52];          // error direction and size, per night (illustrative)
-  var GZERO = 210, GCOL = [300, 410, 520, 630, 740];
+  var GA = [306, -140, 187, 351, -94];         // error direction and size, per night (illustrative)
+  var GZERO = 380, GCOL = [420, 700, 980, 1260, 1540];
 
   var GBTUSE = {
     id: 'gbt-use',
     title: 'Gradient boosting at Airbnb',
     heading: 'Gradient boosting at Airbnb',
-    budgetSec: 35,
+    budgetSec: 20,
     html: function () {
       var arrows = GA.map(function (v, i) {
         var x = GCOL[i];
@@ -626,35 +644,23 @@
         '</g>';
       }).join('');
       var nums = GA.map(function (v, i) {
-        return '<text class="gnum" x="' + GCOL[i] + '" y="' + (GZERO + 130) + '" text-anchor="middle" ' +
+        return '<text class="gnum" x="' + GCOL[i] + '" y="' + (GZERO + 190) + '" text-anchor="middle" ' +
           'font-family="JetBrains Mono" font-size="28" font-weight="500" fill="' + C.text3 + '">' + (i + 1) + '</text>';
       }).join('');
       return '' +
         '<div class="t-caps faint glab" style="position:absolute;left:120px;top:280px">How to fix each night</div>' +
-        '<svg class="gsvg" width="840" height="420" viewBox="0 0 840 420" style="position:absolute;left:120px;top:340px;overflow:visible">' +
-          '<line class="zl" x1="230" y1="' + GZERO + '" x2="800" y2="' + GZERO + '" stroke="' + C.line + '" stroke-width="3"/>' +
+        '<svg class="gsvg" width="1500" height="520" viewBox="0 0 1500 520" style="position:absolute;left:120px;top:392px;overflow:visible">' +
+          '<line class="zl" x1="300" y1="' + GZERO + '" x2="1620" y2="' + GZERO + '" stroke="' + C.line + '" stroke-width="3"/>' +
           '<text class="zt" x="0" y="' + (GZERO + 10) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">0 = exactly right</text>' +
           '<text class="zt" x="0" y="' + (GZERO - 44) + '" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.skyT + '">&#8593; guess higher</text>' +
           '<text class="zt" x="0" y="' + (GZERO + 64) + '" font-family="Archivo" font-size="28" font-weight="700" fill="' + C.redT + '">&#8595; guess lower</text>' +
           arrows + nums +
-          '<text class="gcap" x="0" y="' + (GZERO + 205) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">Each arrow is one night: which way, and how far</text>' +
         '</svg>' +
-        '<div class="chip gfix" style="position:absolute;left:120px;top:800px"><span class="dot"></span>' +
-          '<span>A new tree is trained to follow the arrows</span></div>' +
-        '<div class="card gu gu1" style="position:absolute;left:960px;top:285px;width:840px;height:160px">' +
-          '<div class="t-caps faint">Booking models</div>' +
-          '<div class="t-h2" style="margin-top:8px">One per market</div>' +
-        '</div>' +
-        '<div class="card gu gu2" style="position:absolute;left:960px;top:465px;width:840px;height:160px">' +
-          '<div class="t-caps faint">What it outputs</div>' +
-          '<div class="t-h2" style="margin-top:8px">The chance a night books</div>' +
-        '</div>' +
-        '<div class="card gu gu3" style="position:absolute;left:960px;top:645px;width:840px;height:230px">' +
-          '<div class="t-caps faint">Price is one of the inputs</div>' +
-          '<div class="wi w1 t-mono">$150 <span class="faint">&rarr;</span> <b class="c-sky">62%</b></div>' +
-          '<div class="wi w2 t-mono">$180 <span class="faint">&rarr;</span> <b class="c-sky">41%</b></div>' +
-        '</div>' +
-        Kit.src('Gradient boosting: Friedman, 2001. One model per market, price as an input: Ye et al., <em>KDD 2018</em>. Arrow sizes and what-if prices are illustrative.');
+        '<div class="t-body gcap" style="position:absolute;left:120px;top:326px;width:1100px;color:var(--text-2)">' +
+          'Each arrow is one night: which way, and how far</div>' +
+        '<div class="chip gfix" style="position:absolute;left:1240px;top:290px"><span class="dot"></span>' +
+          '<span>A new tree follows the arrows</span></div>' +
+        Kit.src('Boosting as gradient descent in function space: Friedman, 2001. Arrow sizes are illustrative.');
     },
 
     build: function (ctx) {
@@ -680,7 +686,7 @@
       }
       render();
 
-      gsap.set([q('.gfix'), q('.gu1'), q('.gu2'), q('.gu3')], { autoAlpha: 0 });
+      gsap.set(q('.gfix'), { autoAlpha: 0 });
 
       // ---- entrance: one arrow per night, different directions and lengths ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -695,42 +701,31 @@
       // ---- click 1: a tree that follows the arrows shortens them ----
       Kit.show(tl, q('.gfix'), { duration: .45 });
       tl.to(st, { g: .6, duration: .9, ease: 'power2.inOut', onUpdate: render }, '-=.15');
-      ctx.pause();
-
-      // ---- click 2: how Airbnb runs it ----
-      Kit.show(tl, q('.gu1'), { duration: .5 });
-      Kit.show(tl, q('.gu2'), { duration: .5, at: '-=.3' });
-      ctx.pause();
-
-      // ---- click 3: price goes in, booking chance comes out ----
-      Kit.show(tl, q('.gu3'), { duration: .5 });
-      Kit.show(tl, qa('.gu3 .wi'), { y: 16, stagger: .18, duration: .4, at: '-=.2' });
     },
 
     notes:
-      'Why gradient? Each night’s error has a direction and a size. Up means guess higher, down means lower.' +
-      '[click] Each new tree is trained to follow those arrows, so every round moves downhill on the error.' +
-      '[click] Airbnb runs one model per market, because Tokyo and Tahoe behave differently. ' +
-      'It outputs the chance a night books.' +
-      '[click] Price is one of the inputs, so they can re-score the night at a hundred and fifty, or a ' +
-      'hundred and eighty. That booking chance is not a price yet. A second model turns it into one.'
+      'Why gradient? Each night’s error has a direction and a size. Up means the model should guess higher, ' +
+      'down means lower.' +
+      '[click] Each new tree is trained to follow those arrows, so every round moves downhill on the error. ' +
+      'That is the whole idea: gradient descent, one tree at a time.'
   };
 
   /* ======================================================================
-     PRICE-MODEL — the second model: booking chance → a price (40 s)
-     Steps: 0 the two-model pipeline · 1 the adjustment curve + two nights
-            2 the two settings, each one moved · 3 the loss tunes them
+     PRICE-MODEL — how the booking model is used, then booking chance → a price (55 s)
+     Steps: 0 what the booking model gives us · 1 the two-model pipeline
+            2 the adjustment curve + two nights · 3 the two settings · 4 the loss tunes them
      ====================================================================== */
   var PM = { host: 100, sat: .8, tue: .3 };     // host's price ($) and the two nights' booking chances (illustrative)
-  var PX0 = 160, PX1 = 1000, PY0 = 420, PY1 = 70; // plot box, local svg units: x = chance 0→1, y = adjustment .8→1.2
+  var PX0 = 160, PX1 = 1000, PY0 = 420, PY1 = 70; // plot box, local svg units: x = chance 0→1, y = adjustment .75→1.25
+  var PVLO = .75, PVHI = 1.25;
   function PX(q) { return PX0 + q * (PX1 - PX0); }
-  function PY(v) { return PY0 - (v - .8) * (PY0 - PY1) / .4; }
+  function PY(v) { return PY0 - (v - PVLO) * (PY0 - PY1) / (PVHI - PVLO); }
 
   var PRICEMODEL = {
     id: 'price-model',
     title: 'The price model',
     heading: 'The price model',
-    budgetSec: 40,
+    budgetSec: 55,
     html: function () {
       var yt = [.8, .9, 1, 1.1, 1.2].map(function (v) {
         return '<text class="pyt" x="' + (PX0 - 24) + '" y="' + (PY(v) + 10) + '" text-anchor="end" font-family="JetBrains Mono" ' +
@@ -747,7 +742,20 @@
           '<text class="pl" font-family="Archivo" font-size="28" font-weight="700">' + name + '</text>' +
         '</g>';
       }
+      function dep(cls, left, caps, title, body) {
+        return '<div class="card dep ' + cls + '" style="left:' + left + 'px">' +
+          '<div class="t-caps faint">' + caps + '</div>' +
+          '<div class="t-h2 dt">' + title + '</div>' +
+          '<div class="t-label dim db">' + body + '</div>' +
+        '</div>';
+      }
       return '' +
+        // ---- step 0: what the booking model gives the price model ----
+        '<div class="t-caps faint deplab" style="position:absolute;left:120px;top:280px">What the booking model gives us</div>' +
+        dep('d1', 120, 'Where it runs', 'One model<br>per market', 'Tokyo and Tahoe differ') +
+        dep('d2', 690, 'What it outputs', 'The chance<br>a night books', 'for one listing, one night') +
+        dep('d3', 1260, 'What goes in', 'Price is<br>an input', '<span class="t-mono">$150</span> → 62% · <span class="t-mono">$180</span> → 41%') +
+
         // ---- pipeline strip: booking model → chance → PRICE MODEL → price → the loss ----
         '<div class="pm-box pm-a" style="left:120px;width:330px">' +
           '<div class="pm-t" style="color:var(--text-2)">Booking model</div><div class="t-label faint">the trees</div></div>' +
@@ -765,9 +773,11 @@
           '<text class="pal pal2 pp-out" x="1310" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.orangeT + '">$112</text>' +
           '<text class="pal pal2" x="1310" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">suggested</text>' +
         '</svg>' +
+        // the three deployment facts, kept on screen as one line once the cards go
+        '<div class="t-label pmfacts">One model per market · The chance a night books · Price is an input</div>' +
 
         // ---- the adjustment curve ----
-        '<svg class="pmsvg" width="1060" height="520" viewBox="0 0 1060 520" style="position:absolute;left:120px;top:448px;overflow:visible">' +
+        '<svg class="pmsvg" width="1060" height="520" viewBox="0 0 1060 520" style="position:absolute;left:120px;top:464px;overflow:visible">' +
           '<defs><clipPath id="pmClip"><rect x="' + PX0 + '" y="' + (PY1 - 10) + '" width="' + (PX1 - PX0) + '" height="' + (PY0 - PY1 + 10) + '"/></clipPath></defs>' +
           '<text class="pylab" x="0" y="26" font-family="Archivo" font-size="28" font-weight="700" letter-spacing="3" fill="' + C.text3 + '">PRICE ADJUSTMENT</text>' +
           '<line class="pax" x1="' + PX0 + '" y1="' + PY0 + '" x2="' + PX1 + '" y2="' + PY0 + '" stroke="#6E6560" stroke-width="3"/>' +
@@ -776,7 +786,7 @@
           '<text class="pxlab" x="' + ((PX0 + PX1) / 2) + '" y="' + (PY0 + 92) + '" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">booking chance</text>' +
           '<line class="p1" x1="' + PX0 + '" y1="' + PY(1) + '" x2="' + PX1 + '" y2="' + PY(1) + '" stroke="' + C.text3 + '" stroke-width="3" stroke-dasharray="10 10"/>' +
           '<text class="p1t" x="' + (PX0 + 16) + '" y="' + (PY(1) - 16) + '" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text2 + '">host’s price, unchanged</text>' +
-          '<g clip-path="url(#pmClip)"><line class="pc" stroke="' + C.orange + '" stroke-width="8" stroke-linecap="round"/></g>' +
+          '<g clip-path="url(#pmClip)"><path class="pc" fill="none" stroke="' + C.orange + '" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>' +
           '<g class="px"><path stroke="' + C.orangeT + '" stroke-width="6" stroke-linecap="round" d="M-14,-14 L14,14 M14,-14 L-14,14"/></g>' +
           night('pn-sat', 'Sat') + night('pn-tue', 'Tue') +
         '</svg>' +
@@ -788,10 +798,10 @@
           '<div class="pr"><span class="t-label">Quiet Tue · <span class="t-mono">30%</span></span><span class="pv"><span class="t-label t-mono rm-tue">×0.92</span> <span class="t-label faint">→</span> <b class="t-mono rp-tue">$92</b></span></div>' +
         '</div>' +
         '<div class="ps ps1" style="top:690px"><i></i><div class="t-caps faint">Setting 1</div><div class="t-label">where it crosses ×1.00</div></div>' +
-        '<div class="ps ps2" style="top:792px"><i></i><div class="t-caps faint">Setting 2</div><div class="t-label">how steep it is</div></div>' +
+        '<div class="ps ps2" style="top:792px"><i></i><div class="t-caps faint">Setting 2</div><div class="t-label">how steep — up and down differ</div></div>' +
         '<div class="chip pmnx" style="position:absolute;left:1250px;top:900px"><span class="dot"></span>' +
           '<span>The loss tunes both, per listing</span></div>' +
-        Kit.src('Host’s price × a learned adjustment, two settings per listing: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Curve and numbers are illustrative.');
+        Kit.src('One model per market, price as an input, host’s price × a learned adjustment: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). Numbers are illustrative.');
     },
 
     build: function (ctx) {
@@ -804,11 +814,19 @@
       ];
       var out = q('.pp-out');
 
-      function adj(x) { return 1 + st.s * (x - st.n); }
+      // asymmetric: a rise and a cut of the same size are not mirror images, so the
+      // two sides of the crossing point get their own exponent and their own reach
+      function adj(x) {
+        if (x >= st.n) return 1 + .397 * st.s * Math.pow((x - st.n) / (1 - st.n), .55);
+        return 1 - .478 * st.s * Math.pow((st.n - x) / st.n, .95);
+      }
       function render() {
-        var x1 = st.c;
-        line.setAttribute('x1', PX(0)); line.setAttribute('y1', PY(adj(0)));
-        line.setAttribute('x2', PX(x1)); line.setAttribute('y2', PY(adj(x1)));
+        var pts = [], i;
+        for (i = 0; i <= 60; i++) {
+          var x = i / 60 * st.c;
+          pts.push((i ? 'L' : 'M') + PX(x) + ',' + PY(adj(x)));
+        }
+        line.setAttribute('d', pts.join(' '));
         line.style.opacity = st.c > .001 ? 1 : 0;
         cross.setAttribute('transform', 'translate(' + PX(st.n) + ',' + PY(1) + ')');
         cross.style.opacity = st.c >= st.n ? 1 : 0;
@@ -829,52 +847,67 @@
       }
       render();
 
-      gsap.set([q('.pmn'), q('.ps1'), q('.ps2'), q('.pmnx')], { autoAlpha: 0 });
+      gsap.set([q('.pmn'), q('.ps1'), q('.ps2'), q('.pmnx'), q('.pmfacts')], { autoAlpha: 0 });
       gsap.set(qa('.pmsvg > :not(defs):not(.pn)'), { autoAlpha: 0 });   // the nights' opacity belongs to render()
       gsap.set(qa('.ps i'), { autoAlpha: 0 });
+      // the arrows carry an end marker, which would still paint while the line is
+      // dash-hidden, so they stay fully hidden until the pipeline step
+      gsap.set([q('.pm-a'), q('.pm-b'), q('.pm-c'), q('.pa1'), q('.pa2')], { autoAlpha: 0 });
 
-      // ---- entrance: the two-model pipeline, left to right ----
+      // ---- entrance: what the booking model hands over ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.rise(tl, q('.pm-a'), { at: .25, duration: .5 });
-      Kit.draw(tl, q('.pa1'), { at: .55, duration: .4 });
-      tl.set(q('.pa1'), { attr: { 'marker-end': 'url(#pmArr)' } });
-      tl.from(qa('.pal1'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
-      Kit.rise(tl, q('.pm-b'), { duration: .5, at: '-=.1' });
-      Kit.draw(tl, q('.pa2'), { duration: .4, at: '-=.15' });
-      tl.set(q('.pa2'), { attr: { 'marker-end': 'url(#pmArr)' } });
-      tl.from(qa('.pal2'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
-      Kit.rise(tl, q('.pm-c'), { duration: .5, at: '-=.1' });
+      Kit.fade(tl, q('.deplab'), { at: .25, duration: .4 });
+      Kit.rise(tl, qa('.dep'), { at: .4, stagger: .12, duration: .55 });
       ctx.pause();
 
-      // ---- click 1: the curve, then the two nights land on it ----
+      // ---- click 1: the two-model pipeline, left to right ----
+      tl.to([q('.deplab'), qa('.dep')], { autoAlpha: 0, y: -24, duration: .4, stagger: .05, ease: 'power2.in' });
+      Kit.show(tl, q('.pm-a'), { duration: .5, at: '-=.15' });
+      tl.set(q('.pa1'), { autoAlpha: 1 }, '-=.15');
+      Kit.draw(tl, q('.pa1'), { duration: .4, at: '<' });
+      tl.set(q('.pa1'), { attr: { 'marker-end': 'url(#pmArr)' } });
+      tl.from(qa('.pal1'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
+      Kit.show(tl, q('.pm-b'), { duration: .5, at: '-=.1' });
+      tl.set(q('.pa2'), { autoAlpha: 1 }, '-=.15');
+      Kit.draw(tl, q('.pa2'), { duration: .4, at: '<' });
+      tl.set(q('.pa2'), { attr: { 'marker-end': 'url(#pmArr)' } });
+      tl.from(qa('.pal2'), { autoAlpha: 0, y: 8, duration: .3 }, '-=.15');
+      Kit.show(tl, q('.pm-c'), { duration: .5, at: '-=.1' });
+      Kit.show(tl, q('.pmfacts'), { duration: .45, at: '-=.2' });
+      ctx.pause();
+
+      // ---- click 2: the curve, then the two nights land on it ----
       tl.to(qa('.pmsvg > :not(defs):not(.pn)'), { autoAlpha: 1, duration: .4, stagger: .02 });
       tl.to(st, { c: 1, duration: 1.0, ease: 'power2.inOut', onUpdate: render }, '-=.1');
       tl.to(st, { d: 1, duration: .4, onUpdate: render });
       Kit.show(tl, q('.pmn'), { at: '<' });
       ctx.pause();
 
-      // ---- click 2: the two settings, each one moved and put back ----
+      // ---- click 3: the two settings, each one moved and put back ----
       Kit.show(tl, q('.ps1'), { duration: .4 });
       tl.to(q('.ps1 i'), { autoAlpha: 1, duration: .25 });
       tl.to(st, { n: .62, duration: .9, ease: 'power2.inOut', onUpdate: render });
       tl.to(st, { n: .5, duration: .9, ease: 'power2.inOut', onUpdate: render }, '+=.4');
       Kit.show(tl, q('.ps2'), { duration: .4 });
       tl.to(q('.ps2 i'), { autoAlpha: 1, duration: .25 });
-      tl.to(st, { s: .6, duration: .9, ease: 'power2.inOut', onUpdate: render });
+      tl.to(st, { s: .52, duration: .9, ease: 'power2.inOut', onUpdate: render });
       tl.to(st, { s: .4, duration: .9, ease: 'power2.inOut', onUpdate: render }, '+=.4');
       ctx.pause();
 
-      // ---- click 3: the hand-off to the loss ----
+      // ---- click 4: the hand-off to the loss ----
       Kit.show(tl, q('.pmnx'), { duration: .45 });
     },
 
     notes:
-      'Two models, not one. The trees are the booking model. Their chance feeds a second, smaller model: the price model. ' +
-      'It takes the host’s own price and scales it up or down, using that chance and demand in the area.' +
+      'What do the trees hand over? One booking model per market, because Tokyo and Tahoe behave differently. ' +
+      'Each one gives the chance a single night books. And price is an input, so they can re-score the same ' +
+      'night at a hundred and eighty and watch that chance drop.' +
+      '[click] A chance is not a price. So the price model takes over: it scales the host’s own price up or down.' +
       '[click] A busy Saturday at eighty percent: times one point one two, so a hundred becomes a hundred and twelve. ' +
-      'A quiet Tuesday at thirty percent: ninety-two.' +
-      '[click] The curve has two settings: where it crosses the host’s price, and how steep it is.' +
-      '[click] Each listing learns its own two settings. The loss on the next slide is how.'
+      'A quiet Tuesday at thirty percent: ninety-two. And that eighty percent was read at the host’s own hundred dollars.' +
+      '[click] Two settings: where the curve crosses the host’s price, and how steep it is. Up and down are not ' +
+      'mirror images, so each direction is learned separately.' +
+      '[click] Each listing learns its own two. The loss on the next slide is how.'
   };
 
   /* ======================================================================
