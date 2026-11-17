@@ -44,9 +44,7 @@
       }
     },
     notes:
-      'Hi everyone, I\'m Rey, presenting for our group. Our topic is AI for automated selling. ' +
-      'Three real products: one sets a price, one helps a shopper pick, one talks to you on video. ' +
-      'No machine-learning background needed.'
+      'Hi everyone, I\'m Rey, presenting for our group. Our topic is AI for automated selling.'
   };
 
   /* ---------- shared chip shape (definition cards + agenda rows) ---------- */
@@ -171,13 +169,12 @@
     },
 
     notes:
-      'First, the term. Automated selling is AI that takes over part of what a salesperson does. ' +
-      'Not the whole job, any part of it. The grey outline is that salesperson. ' +
-      'Each part we add is a real product that ships today, and each one gets a section. ' +
-      '[click] Price: Airbnb Smart Pricing sets the nightly rate. ' +
-      '[click] Assist: Amazon Rufus, the shopping assistant in the Amazon app. ' +
-      '[click] Interact: Tavus Griffin puts a face on a live video call. ' +
-      'The last row is where this goes next, and I come back to it.'
+      'Let\'s start with the definition as usual. We are interpreting the phrase "AI in automated selling" here as AI that helps with ' +
+      'any part of a seller\'s job. You can imagine that there are a lot of different kinds of tasks bundled into this notion of ' +
+      '"selling", and our 3 applications for the agenda today each hit on a different part.' +
+      '[click] \n\nFirst we\'ll look at how to choose the right prices automatically with Airbnb Smart Pricing.' +
+      '[click] \n\nThen we\'ll look at assisting the shopper directly with Amazon Rufus.' +
+      '[click] \n\nAnd finally we\'ll look at live human-like interaction with Tavus Griffin.'
   };
 
   Deck.section({

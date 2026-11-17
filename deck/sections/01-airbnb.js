@@ -1,6 +1,6 @@
 /* ==========================================================================
-   01 · Price — Airbnb Smart Pricing   (budget 425 s total)
-   Flow: problem 60 → tree 30 → boost 35 → gbt-use 20 → price-model 55 → loss 120 → results 60 → takeaways 45
+   01 · Price — Airbnb Smart Pricing   (budget 480 s total)
+   Flow: problem 60 → approach 35 → tree 40 → boost 35 → gbt-use 25 → price-model 65 → loss 120 → results 60 → takeaways 40
    ========================================================================== */
 (function () {
   'use strict';
@@ -269,22 +269,22 @@
     },
 
     notes:
-      'Now we grade the price model’s suggestion. Airbnb never sees the right price for a night. It only ever sees what happened. ' +
-      'Take one night: it booked at a hundred dollars.' +
-      '[click] What does that tell us? The right price was at least a hundred, because a guest paid it. Maybe a bit more. ' +
-      'So instead of one correct answer, we get a zone: about a hundred to a hundred and ten.' +
-      '[click] Now we can grade any suggestion. Inside the zone: no penalty. Outside, the penalty grows with distance. ' +
-      'Too low on the left, too high on the right. A valley with a flat floor, flat because the data honestly can’t tell those prices apart.' +
-      '[click] Here is the price model’s suggestion. At ninety-five, the penalty is five dollars: too low, a guest already paid a hundred. ' +
-      '(Optional: drag it into the zone and the penalty drops to zero.)' +
-      '[click] Now flip the story. Same night, same price, but nobody booked. The zone slides down, to ninety through a hundred. ' +
-      'And a suggestion of one-oh-five is now penalized, because a hundred already failed.' +
-      '[click] Why do we need both kinds of nights? Booked nights push prices up. Unbooked nights push them down. ' +
-      'Train on unbooked nights alone and the safest price is zero. Across millions of nights, the two pressures balance.' +
-      '[click] And this is the only equation in the talk. L and U are the two edges of the zone, marked on the chart. ' +
-      'The equation is just the picture in symbols: how far below the zone, plus how far above it. ' +
-      'At most one of those is ever non-zero. That is Airbnb’s custom loss. Training adjusts each listing’s two settings until its total ' +
-      'penalty is as small as possible. The zone widths I used are illustrative; Airbnb never published theirs.'
+      'The answer is a custom loss based on observations. An example observation here is that a certain listing booked at the price of ' +
+      '$100.' +
+      '[click] This tells us that the optimal price was at least $100, maybe a bit more. So instead of one correct answer, we get a ' +
+      'margin from 100 to perhaps 110.' +
+      '[click] Now we can judge the pricing model\'s suggestion for the listing. If it\'s inside the zone, aka between 100 and 110, then ' +
+      'no penalty. If it\'s outside, we assign a penalty based on the distance. Too low on the left, too high on the right. This is our ' +
+      'penalty aka loss curve for the listing.' +
+      '[click] We can compare this with the price model’s suggestion. At $95, the penalty is 5 - we know for sure we could have made ' +
+      'more money, because someone actually paid 100. And we can drag the suggestion here to see how the penalty changes.' +
+      '[click] Now let\'s say the listing wasn\'t booked at $100, nobody bought it. Then the right price was somewhere under 100, so our ' +
+      'no penalty zone shifts down and 105 gets a penalty because we know it\'s wrong.' +
+      '[click] We train on both kinds of events, such that booked nights push the prices up and unbooked push them down. ' +
+      '[click] And here is the formal loss function that\'s actually not so scary. L and U are the two ends of the no penalty zone, and ' +
+      'at most one of these two terms is nonzero at a time. It\'s exactly what we just discussed in math form, where the penalty is how ' +
+      'far below or above the zone the suggestion was. The idea is to train across millions of data points such that the price ' +
+      'suggestion models\' two settings for each listing are adjusted to be as accurate as possible.'
   };
 
   /* ======================================================================
@@ -367,15 +367,15 @@
     },
 
     notes:
-      'Start with the simplest question in the talk. A host has a room, and it is free tonight. What should it cost?' +
-      '[click] A hotel answers that with a demand curve: two hundred near-identical rooms, and years of data on how ' +
-      'bookings move with price. Airbnb has three problems with that. Every listing is one of a kind. Demand changes ' +
-      'daily, and some events have no history at all. And Airbnb can only suggest. The host sets the final price, so Airbnb ' +
-      'can never run a price experiment and watch what the market does. ' +
-      'Airbnb did try the textbook route, and its own A/B tests showed it did not raise host revenue.' +
-      '[click] So what does Airbnb get back? For every night, the price the host chose.' +
-      '[click] And one bit. Booked, or empty. Nobody ever says what that night was really worth. ' +
-      'Everything in the next five minutes exists because that number is missing.'
+      'We start with a problem that seems relatively simple in the context of Airbnb. A host has a free room, and we want to know how ' +
+      'much it should cost to reserve for a particular night.' +
+      '[click] \n\nThe traditional hotel solution is using a demand curve, which works because they have hundreds of near-identical ' +
+      'rooms and years of data on how bookings move with price. This doesn\'t work here in Airbnb. Every listing is one of a kind. ' +
+      'Demand changes daily, and some have no history at all. And lastly Airbnb can only suggest. The host sets the final price, so ' +
+      'Airbnb can never run a price experiment and watch what the market does. ' +
+      '[click] \n\nSo what does Airbnb get back? For every night, the price the host chose.' +
+      '[click] \n\nAnd whether it was booked or not. So the idea here is that we have to build some sort of price prediction under these ' +
+      'tough constraints.'
   };
 
   /* ======================================================================
@@ -392,7 +392,7 @@
     id: 'tree',
     title: 'Decision trees',
     heading: 'Decision trees',
-    budgetSec: 30,
+    budgetSec: 40,
     html: function () {
       var R = TR.rows, h = TR.nodeH;
       function box(cls, cx, cy, w, label, leaf) {
@@ -500,11 +500,12 @@
     },
 
     notes:
-      'A decision tree is a short list of yes/no questions about the night. Every path ends in a leaf, and the leaf ' +
-      'holds a small nudge. On the right: a Saturday four days out, priced above the area median.' +
-      '[click] Walk it down. Within seven days, yes. Saturday, yes. Above the median, yes. This tree nudges it up six points.' +
-      '[click] One tree is a rough guess. Airbnb uses hundreds of them. The tree shape here follows Google’s ' +
-      'Decision Forests course; the questions and the leaf values are mine.'
+      'For the booking model, we use decision trees. Airbnb’s data is a big table: one row per night, with columns like the day, how ' +
+      'far away it is, and the price. For tables, the standard building block is a decision tree, a short list of yes/no questions. In ' +
+      'our example here we have a listing for Saturday four days out, priced above the area median.' +
+      '[click] Walk it down. Within seven days, yes. Saturday, yes. Above the median, yes. This tree nudges the booking chance up six ' +
+      'points.' +
+      '[click] But this is just one tree, Airbnb uses hundreds of these for the booking model.'
   };
 
   /* ======================================================================
@@ -612,12 +613,17 @@
     },
 
     notes:
-      'Boosted means many small trees added together. Five nights. Teal is what happened, booked or empty. ' +
-      'Blue is the model’s guess, flat at the start. Orange is how wrong it is.' +
-      '[click] The first tree is trained on those orange gaps, not on the outcomes. Add it, and every gap shrinks.' +
-      '[click] The second tree is trained on what is left.' +
-      '[click] Do that two hundred times. Each tree is a rough guess; hundreds together get close. ' +
-      'The gaps shrink, and they never close. Closing them would just be memorizing these five nights.'
+      'The rough intuition here is that one big decision tree generalizes poorly and its predictions are not smooth. So instead we ' +
+      'train a tree on the error aka gradient in order to reduce our prediction loss, train another tree on what\'s left of the error, ' +
+      'and repeat this for many many trees until we get a good model which is a combination of a bunch of decision trees. This ' +
+      'technique is called gradient boosting, where we are boosting the model\'s performance by training additional trees to reduce the ' +
+      'prediction error as much as possible based on the gradient. We can see this in action here in the context of Airbnb: blue is ' +
+      'the starting 50% booking chance prediction, teal is the actual outcome of booked or not, and orange is the error in our ' +
+      'prediction.' +
+      '[click] So we train the first tree on those orange gaps, and adding it shrinks the error.' +
+      '[click] And then we train the second tree on the remainder.' +
+      '[click] And you just repeat this hundreds of times until you shrink the gap to some satisfactory extent. Note that we\'re never ' +
+      'going to get full accuracy, that would be overfitting anyway.'
   };
 
   /* ======================================================================
@@ -633,7 +639,7 @@
     id: 'gbt-use',
     title: 'Gradient boosting at Airbnb',
     heading: 'Gradient boosting at Airbnb',
-    budgetSec: 20,
+    budgetSec: 25,
     html: function () {
       var arrows = GA.map(function (v, i) {
         var x = GCOL[i];
@@ -704,10 +710,10 @@
     },
 
     notes:
-      'Why gradient? Each night’s error has a direction and a size. Up means the model should guess higher, ' +
-      'down means lower.' +
-      '[click] Each new tree is trained to follow those arrows, so every round moves downhill on the error. ' +
-      'That is the whole idea: gradient descent, one tree at a time.'
+      'Some more intuition on why it\'s called gradient boosting. Another way to think about it is that each listing\'s error has a ' +
+      'direction and size. Up means the model should guess higher, down means lower.' +
+      '[click] These arrows are the gradients, and each new tree is trained to follow those arrows, so every new tree moves the ' +
+      'guesses downhill on the error. Alright so with gradient boosting we now have a solid booking model, but that\'s just step one.'
   };
 
   /* ======================================================================
@@ -725,7 +731,7 @@
     id: 'price-model',
     title: 'The price model',
     heading: 'The price model',
-    budgetSec: 55,
+    budgetSec: 65,
     html: function () {
       var yt = [.8, .9, 1, 1.1, 1.2].map(function (v) {
         return '<text class="pyt" x="' + (PX0 - 24) + '" y="' + (PY(v) + 10) + '" text-anchor="end" font-family="JetBrains Mono" ' +
@@ -759,19 +765,19 @@
         // ---- pipeline strip: booking model → chance → PRICE MODEL → price → the loss ----
         '<div class="pm-box pm-a" style="left:120px;width:330px">' +
           '<div class="pm-t" style="color:var(--text-2)">Booking model</div><div class="t-label faint">the trees</div></div>' +
-        '<div class="pm-box pm-b" style="left:690px;width:520px">' +
-          '<div class="pm-t c-orange">Price model</div><div class="t-label dim">host’s price <span class="t-mono" style="color:var(--text)">$100</span> + area demand</div></div>' +
+        '<div class="pm-box pm-b" style="left:670px;width:560px">' +
+          '<div class="pm-t c-orange">Price model</div><div class="t-label dim">host’s <span class="t-mono" style="color:var(--text)">$100</span> + similar-listing demand</div></div>' +
         '<div class="pm-box pm-c" style="left:1410px;width:390px">' +
           '<div class="pm-t" style="color:var(--text-2)">The loss</div><div class="t-label faint">grades it, next slide</div></div>' +
         '<svg class="pmflow" width="1920" height="140" viewBox="0 0 1920 140" style="position:absolute;left:0;top:276px;overflow:visible;pointer-events:none">' +
           '<defs><marker id="pmArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
             '<path d="M0,0 L10,5 L0,10 z" fill="' + C.text3 + '"/></marker></defs>' +
-          '<line class="pa pa1" x1="466" y1="66" x2="674" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
-          '<text class="pal pal1" x="570" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.skyT + '">80%</text>' +
-          '<text class="pal pal1" x="570" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">chance</text>' +
-          '<line class="pa pa2" x1="1226" y1="66" x2="1394" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
-          '<text class="pal pal2 pp-out" x="1310" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.orangeT + '">$112</text>' +
-          '<text class="pal pal2" x="1310" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">suggested</text>' +
+          '<line class="pa pa1" x1="466" y1="66" x2="654" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
+          '<text class="pal pal1" x="560" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.skyT + '">80%</text>' +
+          '<text class="pal pal1" x="560" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">chance</text>' +
+          '<line class="pa pa2" x1="1246" y1="66" x2="1394" y2="66" stroke="' + C.text3 + '" stroke-width="4"/>' +
+          '<text class="pal pal2 pp-out" x="1320" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="' + C.orangeT + '">$112</text>' +
+          '<text class="pal pal2" x="1320" y="112" text-anchor="middle" font-family="Archivo" font-size="28" font-weight="600" fill="' + C.text3 + '">suggested</text>' +
         '</svg>' +
         // the three deployment facts, kept on screen as one line once the cards go
         '<div class="t-label pmfacts">One model per market · The chance a night books · Price is an input</div>' +
@@ -899,15 +905,18 @@
     },
 
     notes:
-      'What do the trees hand over? One booking model per market, because Tokyo and Tahoe behave differently. ' +
-      'Each one gives the chance a single night books. And price is an input, so they can re-score the same ' +
-      'night at a hundred and eighty and watch that chance drop.' +
-      '[click] A chance is not a price. So the price model takes over: it scales the host’s own price up or down.' +
-      '[click] A busy Saturday at eighty percent: times one point one two, so a hundred becomes a hundred and twelve. ' +
-      'A quiet Tuesday at thirty percent: ninety-two. And that eighty percent was read at the host’s own hundred dollars.' +
-      '[click] Two settings: where the curve crosses the host’s price, and how steep it is. Up and down are not ' +
-      'mirror images, so each direction is learned separately.' +
-      '[click] Each listing learns its own two. The loss on the next slide is how.'
+      'We create one booking model per market or area, since you can imagine Tokyo and Tahoe behave differently. And price is an input ' +
+      'for the booking models, so we can look at the booking probability amongst difference prices for a given listing.' +
+      '[click] So with this available you might ask why we don\'t just choose the price that maximizes expected revenue based on our ' +
+      'booking model? Airbnb did actually try this, but it lost in A/B tests to this alternative here where a price model just nudges ' +
+      'the host\'s own price using the booking probability and some additional demand data.' +
+      '[click] You can roughly model this nudge as a curve between booking chance and price multiplier. You can see here for example ' +
+      'that a busy Saturday with a high booking chance should nudge the price up, and the opposite for a non busy Tuesday with a low ' +
+      'booking chance.' +
+      '[click] The two settings we care about is where on the booking chance the host\'s original price lies, and how steep the nudging ' +
+      'curve is.' +
+      '[click] We need an accurate such curve per listing. But how do we learn this when we don\'t know what the actual optimal price ' +
+      'is? Raise your hand if you have an idea for this because you got a patent for it like 20 years ago.'
   };
 
   /* ======================================================================
@@ -982,42 +991,40 @@
     },
 
     notes:
-      'So does it work? An independent study in Marketing Science in 2021 followed hosts who switched Smart Pricing on. ' +
-      'Their nightly rate fell five point seven percent. Their daily revenue rose eight point six percent.' +
-      '[click] Those two arrows point in opposite directions, and that is the whole story. A lot of hosts were overpricing. ' +
-      'A lower price filled more nights, and the extra nights more than paid for the discount.' +
-      '[click] That is not Airbnb’s own number. Airbnb claims hosts who priced within five percent of the tip were four times ' +
-      'more likely to book. That is self-reported, and only a correlation. The study used the rollout as a quasi-experiment, so it is ' +
-      'the number I quote. One caveat: this is revenue, not profit. The model never sees what a night costs the host in cleaning and hassle.'
+      'Here are the results of this Smart Pricing system from an independent study. We see that the nightly listing price fell around ' +
+      '6% but the daily revenue for hosts went up over 8%. ' +
+      '[click] We can interpret these results as the hosts just overpricing, by lowering the prices they were able to get more ' +
+      'bookings and thus more money.' +
+      '[click] Airbnb also claims that hosts who priced within 5% of their suggestion were 4x more likely to book, but that\'s ' +
+      'self-reported and correlatory. '
   };
 
   /* ======================================================================
-     TAKEAWAYS — what carries past Airbnb (45 s)
-     Steps: 0 row 01 · 1 row 02 · 2 row 03 + the hand-off
-     CANONICAL CLOSER: this layout (tk-img / tk-veil / three tk-rows / thru)
+     TAKEAWAYS — what carries past Airbnb (40 s)
+     Steps: 0 row 01 · 1 row 02 + the hand-off
+     CANONICAL CLOSER: this layout (tk-img / tk-veil / tk-rows / thru); Airbnb now has two rows
      is shared pixel-for-pixel by rufus/takeaways and griffin/takeaway.
      Only the text, the image and the section colour differ. Do not drift.
      ====================================================================== */
   var TKROWS = [
     ['01', 'Boosted trees', 'Data in rows and columns?<br>Start with boosted trees.'],
-    ['02', 'Custom loss', 'No right answer to copy?<br>Grade what you can see.'],
-    ['03', 'Objectives', 'A model exploits any gap<br>in its own score.']
+    ['02', 'Custom loss', 'No right answer to copy?<br>Grade what you can see.']
   ];
   var THRU = [
     { t: 'Price', cls: 'tk-price' },
     { t: 'Assist', cls: 'tk-assist' },
     { t: 'Interact', cls: '' },
-    { t: 'Negotiate', cls: '' }
+    { t: 'Negotiate+', cls: '' }
   ];
 
   var TAKEAWAYS = {
     id: 'takeaways',
     title: 'Takeaways',
     heading: 'Takeaways',
-    budgetSec: 45,
+    budgetSec: 40,
     html: function () {
       var rows = TKROWS.map(function (r, i) {
-        return '<div class="tk-row r' + i + '" style="top:' + (285 + i * 190) + 'px">' +
+        return '<div class="tk-row r' + i + '" style="top:' + (355 + i * 190) + 'px">' +
           '<div class="n t-mono">' + r[0] + '</div>' +
           '<div class="rule"></div>' +
           '<div class="tg t-caps">' + r[1] + '</div>' +
@@ -1033,7 +1040,7 @@
         '<div class="tk-veil"></div>' +
         rows +
         '<div class="thru">' + strip + '</div>' +
-        Kit.src('Grinsztajn et al., 2022 (arXiv 2207.08815); Airbnb takes a cut of each booking (Huang, 2021).');
+        Kit.src('Grinsztajn et al., 2022 (arXiv 2207.08815).');
     },
 
     build: function (ctx) {
@@ -1043,8 +1050,8 @@
       // strip: PRICE unfilled at entrance, everything after it tertiary
       gsap.set(qa('.thru .tx'), { color: C.text3 });
       gsap.set(slab, { backgroundColor: C.red, skewX: -12, scaleX: 0, transformOrigin: 'left center' });
-      // rows 2 and 3 are hidden by default, so they are revealed with Kit.show (never from())
-      gsap.set([qa('.r1 > *'), qa('.r2 > *')], { autoAlpha: 0 });
+      // row 2 is hidden by default, so it is revealed with Kit.show (never from())
+      gsap.set(qa('.r1 > *'), { autoAlpha: 0 });
 
       // ---- entrance: image, veil, header, row 01, strip ----
       tl.from([q('.tk-img'), q('.tk-veil')], { autoAlpha: 0, duration: .9, ease: 'power2.out' }, 0);
@@ -1053,31 +1060,80 @@
       Kit.fade(tl, q('.thru'), { at: .7, duration: .5 });
       ctx.pause();
 
-      // ---- click 1: the second lesson ----
+      // ---- click 1: the second lesson, and the throughline moves on ----
       Kit.show(tl, qa('.r1 > *'), { stagger: .07, duration: .5 });
-      ctx.pause();
-
-      // ---- click 2: the third lesson, and the throughline moves on ----
-      Kit.show(tl, qa('.r2 > *'), { stagger: .07, duration: .5 });
       tl.to(slab, { scaleX: 1, duration: .5, ease: Kit.ease.out }, '<+.1');
       tl.to(q('.tk-price .tx'), { color: '#FFFFFF', duration: .4 }, '<+.2');
       tl.to(q('.tk-assist .tx'), { color: C.blueT, duration: .5 }, '<+.1');
     },
 
     notes:
-      'Three things to carry past Airbnb. One: if your data sits in rows and columns, start with boosted ' +
-      'trees, not a neural network. They are strong on tables, fast to train and easy to inspect.' +
-      '[click] Two: when there is no right answer to copy, grade what you can see. Booked or empty became ' +
-      'a price range instead of a target, and that move works anywhere the label is missing.' +
-      '[click] Three: a model exploits any gap in its own score. Grade only unbooked nights and zero dollars ' +
-      'wins. Remember whose score it is. Airbnb optimizes revenue, and it takes a cut of revenue. ' +
-      'That is pricing. Next: Assist.'
+      'Finally the key takeaways. #1, if your data sits in rows and columns, start with boosted trees, not a neural network. They are ' +
+      'strong on tables, fast to train and easy to inspect, and you just saw how they\'re actually effective in real-world production ' +
+      'use cases.' +
+      '[click] #2, if there is no easy right answer to do classic supervised learning on, you have to grade your predictions based on ' +
+      'what you can actually observe. This technique of turning a binary result into a range can be used in cases where the direct ' +
+      'label you want doesn\'t exist.'
+  };
+
+  /* ======================================================================
+     APPROACH — the roadmap between the problem and the techniques (30 s)
+     Steps: 0 step 1 · 1 step 2 · 2 step 3. Every later technique slide carries
+     Kit.crumbs(STEPS, k) so the audience always knows which step it is in.
+     ====================================================================== */
+  var STEPS = ['Booking chance', 'Price', 'Grading'];
+  var APPROACH_CARDS = [
+    { q: 'How likely is this night to book?', tech: 'Boosted trees', fix: 'Learns from every listing in the city' },
+    { q: 'Turn that chance into a price', tech: 'Price model', fix: 'Starts from the host’s own price' },
+    { q: 'Score a price with no right answer', tech: 'Custom loss', fix: 'Needs no right price to copy' }
+  ];
+  var APPROACH = {
+    id: 'approach',
+    title: 'How Smart Pricing works',
+    heading: 'How Smart Pricing works',
+    budgetSec: 35,
+    html: function () {
+      return APPROACH_CARDS.map(function (c, i) {
+        var x = 120 + i * 580;
+        return '' +
+          (i ? '<div class="ap-arr ap-arr' + i + ' t-h2" style="left:' + (x - 60) + 'px">→</div>' : '') +
+          '<div class="card ap-card ap' + i + '" style="left:' + x + 'px">' +
+            '<div class="t-caps faint">Step ' + (i + 1) + '</div>' +
+            '<div class="t-h2 ap-t">' + STEPS[i] + '</div>' +
+            '<div class="t-body ap-q">' + c.q + '</div>' +
+            '<div class="chip ap-tech"><span class="dot"></span>' + c.tech + '</div>' +
+          '</div>' +
+          '<div class="ap-fix ap-fix' + i + '" style="left:' + x + 'px"><i></i><span class="t-label">' + c.fix + '</span></div>';
+      }).join('') +
+      Kit.src('Booking model, then a price model trained with a custom loss: Ye et al., <em>KDD 2018</em> (via Colyer, 2018). ' +
+        'A third personalisation layer is left out.');
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.ap1, .ap2, .ap-fix1, .ap-fix2, .ap-arr'), { autoAlpha: 0 });
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
+      Kit.rise(tl, qa('.ap0, .ap-fix0'), { at: .25, stagger: .12 });
+      for (var i = 1; i < 3; i++) {
+        ctx.pause();
+        Kit.show(tl, q('.ap-arr' + i), { y: 0, duration: .35 });
+        tl.fromTo(q('.ap-arr' + i), { x: -20 }, { x: 0, duration: .35, ease: Kit.ease.out }, '<');
+        Kit.show(tl, qa('.ap' + i + ', .ap-fix' + i), { stagger: .12, at: '-=.15' });
+      }
+    },
+    notes:
+      'Airbnb\'s solution splits this into two models. First we have a booking model that predicts the probability that a listing books ' +
+      'at a given price? We learn from every listing in a city or region at once to cover for the lack of history for listings.' +
+      '[click] Next we have a price model that turns that probability into a price suggestion, starting from the host’s own price.' +
+      '[click] Lastly we train the price model with a custom loss in this context where we have no ground truth to compare against.'
   };
 
   Deck.section({
     id: 'airbnb', order: 1, num: '01', kicker: 'Price', title: 'Airbnb Smart Pricing',
     slides: [
-      PROBLEM, TREE, BOOST, GBTUSE, PRICEMODEL, LOSS, RESULTS, TAKEAWAYS
+      PROBLEM, APPROACH,
+      Kit.withCrumbs(TREE, STEPS, 0), Kit.withCrumbs(BOOST, STEPS, 0), Kit.withCrumbs(GBTUSE, STEPS, 0),
+      Kit.withCrumbs(PRICEMODEL, STEPS, 1), Kit.withCrumbs(LOSS, STEPS, 2),
+      RESULTS, TAKEAWAYS
     ]
   });
 })();

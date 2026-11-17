@@ -1,7 +1,7 @@
 /* ==========================================================================
    04 · The company — Tavus   (budget 2:45 = 165 s)
    Flow: origin + founders (40) → timeline (45) → company snapshot (50)
-         → bridge into section 04, Negotiate (30)
+         → bridge into section 04, Negotiate+ (30)
    Spec: specs/tavus.md   ·   Contract: KIT.md
    Real Tavus imagery (logo wordmark, founder photos) is the sanctioned
    exception to KIT §2.6; every asset is credited in its Kit.src footer.
@@ -26,7 +26,7 @@
 
   /* ======================================================================
      1 · ORIGIN — where the company came from         (40 s, 3 clicks)
-     Steps: 0 the 200 · 1 founders · 2 +450% · 3 automate it
+     Steps: 0 the 200 · 1 +450% · 2 founders · 3 automate it
      ====================================================================== */
   var COLS = 20, ROWS = 10, TW = 36, TH = 22, GAP = 12;
   var STEPX = TW + GAP, STEPY = TH + GAP;
@@ -68,11 +68,11 @@
         '<div class="mlab t-h2" style="position:absolute;left:530px;top:660px">1 recording</div>' +
         '<div class="mlab t-label" style="position:absolute;left:530px;top:730px;color:var(--text-2)">→ 200 personalized videos</div>' +
 
-        // ---- right column: the two founders, the payoff, the chip ----
+        // ---- right column: the payoff on top, the two founders under it ----
         founder('fa', 'founder-raza.jpg', 'Hassaan Raza', 'CEO') +
         founder('fb', 'founder-favret.jpg', 'Quinn Favret', 'COO') +
-        '<div class="t-num pay450" style="position:absolute;left:1140px;top:630px;color:var(--orange-t)">+0%</div>' +
-        '<div class="t-label payl" style="position:absolute;left:1140px;top:778px;color:var(--text-2)">more replies</div>' +
+        '<div class="t-num pay450" style="position:absolute;left:1140px;top:300px;color:var(--orange-t)">+0%</div>' +
+        '<div class="t-label payl" style="position:absolute;left:1140px;top:462px;color:var(--text-2)">more replies</div>' +
 
         Kit.src('The 200 videos and the reply figure come from the founders. Logo: Tavus. Photos: Y Combinator.', 'Self-reported');
     },
@@ -93,15 +93,15 @@
       Kit.rise(tl, q('.cap200'), { at: .5, y: 18 });
       ctx.pause();
 
-      // ---- STEP 1: the two founders ----
-      tl.fromTo([q('.fa'), q('.fb')], { autoAlpha: 0, x: 360 },
-        { autoAlpha: 1, x: 0, duration: .8, ease: Kit.ease.out, stagger: .12 });
-      ctx.pause();
-
-      // ---- STEP 2: the payoff ----
+      // ---- STEP 1: the payoff of the 200 ----
       tl.to(q('.pay450'), { autoAlpha: 1, duration: .2 });
       Kit.count(tl, q('.pay450'), { to: 450, prefix: '+', suffix: '%', duration: 1.2, at: '<' });
       Kit.show(tl, q('.payl'), { y: 14, at: '-=.3' });
+      ctx.pause();
+
+      // ---- STEP 2: the two founders who ran it ----
+      tl.fromTo([q('.fa'), q('.fb')], { autoAlpha: 0, x: 360 },
+        { autoAlpha: 1, x: 0, duration: .8, ease: Kit.ease.out, stagger: .12 });
       ctx.pause();
 
       // ---- STEP 3: automate it — 200 hand-made things become one recording ----
@@ -119,14 +119,13 @@
     },
 
     notes:
-      'Tavus is an AI research lab in San Francisco. It started with one sales experiment. The two ' +
-      'founders ran a product studio, and in one night they recorded two hundred sales videos by ' +
-      'hand, one per name.' +
-      '[click] Raza ran engineering projects at Apple and programs at Google. Favret left the ' +
-      'University of Michigan to start companies. He is a Thiel Fellow.' +
-      '[click] Replies went up four hundred and fifty percent. That is their own number.' +
-      '[click] So: record once, and let a model make the other hundred and ninety-nine. ' +
-      'That is Tavus. Y Combinator, twenty twenty-one.'
+      'Let\'s look more at our company Tavus, which created Griffin. Tavus is an AI research lab in San Francisco. It all started when ' +
+      'the founders were running a product studio, and they tried recording 200 sales videos in one night as an experiment.' +
+      '[click] Replies went up 450% according to them, which convinced them that personalized video was a really good sales strategy.' +
+      '[click] As for the founders, Raza did engineering at Apple and Google, and Favret is a Thiel fellow that left UMichto start ' +
+      'companies.' +
+      '[click] But basically based on this experiment and their background, the core idea of Tavus became to record one video and then ' +
+      'synthesize the other 199. This direction is what got them into Y-Combinator in 2021.'
   };
 
   /* ======================================================================
@@ -238,15 +237,14 @@
     },
 
     notes:
-      'Version one was asynchronous. You recorded one video, the model copied it with the right ' +
-      'name in each, and a CRM sent them while you slept.' +
-      '[click] In twenty twenty-four they threw that away. A developer API, then live two-way ' +
-      'video agents. The salesperson stopped mailing a video and got on the call. They dropped ' +
-      'their first customers to do it.' +
-      '[click] By twenty twenty-five that took three models. Phoenix draws the face, Raven watches ' +
-      'and listens, Sparrow decides when to speak. Customers still run those three.' +
-      '[click] In October they previewed one model that does all three jobs: Griffin, from the last ' +
-      'section. Only a few testers have it.'
+      'Let\'s look at the evolution of their product over time. V1 was asynchronous, you recorded one video, the model copied it with ' +
+      'the right name in each, and then the videos would get sent out automatically.' +
+      '[click] In 2024 they threw away that async idea and their initial customers to do live two-way video agents, where the ' +
+      'salesperson would directly do a live call with the customer.' +
+      '[click] By 2025 they had improved their system but it was still the old sequential pipeline I went over, with the Phoenix, ' +
+      'Raven, and Sparrow models. Note that a lot of their customers still run this system.' +
+      '[click] And finally in October of this year they previewed the Griffin model, which is what we saw the demo for. This isn\'t ' +
+      'actually rolled out fully yet, it\'s still in testing.'
   };
 
   /* ======================================================================
@@ -320,26 +318,24 @@
     },
 
     notes:
-      'Sixty-four million dollars raised. Sequoia led the seed round, Scale led the Series A, and ' +
-      'CRV led the Series B. A hundred and fifty thousand developers and businesses use the models. ' +
-      'That count is Tavus’s own, and nobody says how many of them pay.' +
-      '[click] The clearest sales result here is not Tavus’s, it is a customer’s. Qualified, a sales ' +
-      'software company, built an AI sales rep on this and reports twice the conversations and six ' +
-      'times the meetings booked. Read it like any vendor case study: no control group, and the ' +
-      'vendor is the one publishing it.' +
-      '[click] And they have company. Anam is cheaper, HeyGen already has the customers, and the ' +
-      'list keeps growing.'
+      'In terms of how the financials are looking, they\'ve done a series A and series B, and raised $64m. They report 150k users, and ' +
+      'it\'s unclear how many of them are paying customers.' +
+      '[click] The most concrete success we can point to here is that Qualified, a sales software company, built an AI sales rep on ' +
+      'this and reports 2x the conversations and 6x the meetings booked. Obviously this is not a rigorous study with a control group, ' +
+      'but it\'s at least something.' +
+      '[click] Perhaps most important is that they have a lot of competition like Anam, HeyGEn, and Synthesia. This is positive for ' +
+      'this domain of live AI sales agents overall, but less positive for Tavus.'
   };
 
   /* ======================================================================
-     4 · BRIDGE — into section 04, Negotiate          (30 s, 2 clicks)
+     4 · BRIDGE — into section 04, Negotiate+          (30 s, 1 click)
      Full-bleed statement slide. The throughline strip is the deck's canonical
      one (geometry in specs/airbnb.md § takeaways); the fourth marker,
-     NEGOTIATE, arrives here for the first time.
+     NEGOTIATE+, arrives here for the first time.
      ====================================================================== */
   var BRIDGE = {
     id: 'bridge',
-    title: 'Bridge into Negotiate',
+    title: 'Bridge into Negotiate+',
     budgetSec: 30,
     html: function () {
       function tok(word, color, cls) {
@@ -350,12 +346,12 @@
         '<div class="pk-bg" style="position:absolute;inset:0;background:url(assets/img/tavus/peacock.jpg) right 8% center / cover no-repeat"></div>' +
         '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,#1E1B1C 36%,rgba(30,27,28,.72) 52%,rgba(30,27,28,0) 70%)"></div>' +
 
-        '<div class="t-h1 bl1" style="position:absolute;left:120px;top:400px;width:1020px">The AI salesperson<br>is built.</div>' +
-        '<div class="t-h1 bl2" style="position:absolute;left:120px;top:660px;width:1020px;color:var(--orange-t)">Agents that sell.<br>Agents that buy.</div>' +
+        // three lines so the longest word stays clear of the peacock's neck
+        '<div class="t-h1 bl1" style="position:absolute;left:120px;top:340px;width:760px">The AI<br>salesperson<br>is built.</div>' +
 
-        '<div class="strip" style="position:absolute;left:120px;top:890px;display:flex;align-items:center">' +
+        '<div class="strip" style="position:absolute;left:120px;top:820px;display:flex;align-items:center">' +
           tok('PRICE', 'var(--red)') + sep + tok('ASSIST', 'var(--blue)') + sep + tok('INTERACT', 'var(--purple)') + sep +
-          tok('NEGOTIATE', 'var(--green)', 'next') +
+          tok('NEGOTIATE+', 'var(--green)', 'next') +
         '</div>' +
 
         Kit.src('The founders say Tavus is Turkish for peacock.');
@@ -367,7 +363,7 @@
       var done = strip.slice(0, 5);                  // PRICE · ASSIST · INTERACT (+ separators)
       var nextSep = strip[5], nextTok = q('.strip .next');
 
-      gsap.set([q('.bl1'), q('.bl2')].concat(strip), { autoAlpha: 0 });
+      gsap.set([q('.bl1')].concat(strip), { autoAlpha: 0 });
 
       // ---- STEP 0: the peacock and the name ----
       tl.from(q('.pk-bg'), { autoAlpha: 0, scale: 1.06, duration: 2.0, ease: 'power2.out', transformOrigin: '72% 50%' }, 0);
@@ -377,13 +373,8 @@
       }
       ctx.pause();
 
-      // ---- STEP 1: the payoff line ----
+      // ---- STEP 1: the payoff line, then the markers and the one still ahead ----
       Kit.show(tl, q('.bl1'), { y: 30, duration: .9 });
-      ctx.pause();
-
-      // ---- STEP 2: the next section, then the markers ----
-      tl.to(q('.bl1'), { color: C.text2, duration: .5 });
-      Kit.show(tl, q('.bl2'), { y: 30, duration: .8, at: '<+.1' });
       tl.fromTo(done, { autoAlpha: 0, y: 18, scale: .8 },
         { autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: Kit.ease.back, stagger: .09 }, '+=.25');
       tl.to(nextSep, { autoAlpha: 1, duration: .3 }, '+=.3');
@@ -394,11 +385,10 @@
     },
 
     notes:
-      'One last thing about the name. Tavus is Turkish for peacock, a bird built for display.' +
-      '[click] So the AI salesperson is built. It prices, it answers a shopper, and it looks you in ' +
-      'the eye. What is left is negotiation.' +
-      '[click] And negotiation needs two sides. Sellers run agents that sell with no person involved, ' +
-      'and buyers run agents that buy. First question: can an agent run a business on its own?'
+      'As a final little note, the company name Tavus means peacock in Turkish, which is why we have a nice looking peacock on this ' +
+      'slide.' +
+      '[click] Anyway, we\'ve built the AI salesperson that can price, assist, and interact. Let\'s look at our future markets for what ' +
+      'might be next, which is negotiation and beyond.'
   };
 
   Deck.section({

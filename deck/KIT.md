@@ -1,7 +1,7 @@
 # KIT — builder contract for "Built to Sell"
 
 > **Fix pass (Nov 2026) overrides everything below where they conflict.** The decisions, heading map and budgets are in
-> `/Users/reyriordan/.claude/plans/let-s-do-a-comprehensive-async-shell.md`. Read it first. In short: markers are **Price · Assist · Interact · Negotiate**;
+> `/Users/reyriordan/.claude/plans/let-s-do-a-comprehensive-async-shell.md`. Read it first. In short: markers are **Price · Assist · Interact · Negotiate+**;
 > every heading is a plain topic label (sentence case, ≤ ~6 words, no metaphors, puns or teaser questions); all on-screen text and notes
 > follow `.claude/skills/technical-writing` and `.claude/skills/anti-slop`; headings on TITLE and LOSS change too (their visuals stay).
 
@@ -12,8 +12,8 @@ Screenshots of every build step are in `design/approval/`.
 ## 1. The talk
 - A 27-minute lecture, given by Rey alone, to students with **no ML background**. The main goal is to **teach real ML techniques through real products**.
 - Automated selling = AI that does any part of the seller's job.
-- Throughline: an AI salesperson, assembled piece by piece: **Price → Assist → Interact**, then **Negotiate**.
-  Airbnb (Price) → Rufus (Assist) → Griffin (Interact) → Tavus (the company behind Griffin) → Future (Negotiate: agent selling capability, the negotiation arms race, payment infrastructure such as HTTP 402).
+- Throughline: an AI salesperson, assembled piece by piece: **Price → Assist → Interact**, then **Negotiate+**.
+  Airbnb (Price) → Rufus (Assist) → Griffin (Interact) → Tavus (the company behind Griffin) → Future (Negotiate+: agent selling capability, the negotiation arms race, payment infrastructure such as HTTP 402).
   The intro previews only the first three parts plus a muted "What's next" row; section 4 is introduced at the Tavus bridge.
 - The full plan, with every section's beats and time budgets: `/Users/reyriordan/.claude/plans/i-want-to-create-async-hearth.md`. **Follow your section's beats and budget.**
 - Source reports are at the repo root (`../*.md`). Use only facts from them. Most of each report gets cut.
@@ -55,6 +55,9 @@ slide = { id, title, heading?, theme?: 'dark'|'light', budgetSec, html: string|(
 ## 5. Kit helpers (`js/components/kit.js`)
 `Kit.rise`, `Kit.show`, `Kit.fade`, `Kit.slideIn`, `Kit.swap(a,b)`, `Kit.count(tl, el, {to, prefix, suffix, decimals, commas})`, `Kit.draw` (SVG strokes),
 `Kit.panels([{x,y,w,h,color}])` (slanted inspo panels), `Kit.src(text, flag)`, `Kit.esc`, `Kit.color.*` (palette plus text-safe tints).
+`Kit.crumbs(steps, cur)` / `Kit.withCrumbs(def, steps, cur)`: the "where we are" marker, top-right on the section-tag row. Each section with a
+roadmap slide (Airbnb `approach`, Rufus `overview`, Griffin `overview`) wraps its technique slides with it, so every technique is tied back to the
+step it serves. Keep the step names identical to the roadmap's card titles.
 GSAP plugins loaded: DrawSVG, MorphSVG, MotionPath, SplitText, CustomEase, Draggable.
 
 ## 6. Visual system

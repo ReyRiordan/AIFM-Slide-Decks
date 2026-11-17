@@ -1,7 +1,7 @@
 /* ==========================================================================
-   02 · Assist — Amazon Rufus / Alexa for Shopping   (budget 6:30 = 390 s)
-   Flow: opener 12 · problem 34 · overview 34 · demo 26 · rag 80 · react 36 ·
-         dispose 30 · thumbs 32 · trap 24 · results 46 · takeaways 36  = 390
+   02 · Assist — Amazon Rufus / Alexa for Shopping   (budget 6:06 = 366 s)
+   Flow: opener 12 · problem 34 · overview 40 · demo 26 · rag 80 · react 36 ·
+         dispose 30 · thumbs 32 · results 46 · takeaways 30  = 366
    Spec: specs/rufus.md  ·  Contract: KIT.md  ·  Fix pass: the approved plan
    ========================================================================== */
 (function () {
@@ -44,12 +44,12 @@
   /* The canonical throughline strip — identical markup/CSS to airbnb/takeaways
      and griffin/takeaway. Rufus state: PRICE done (red slab) · ASSIST current
      (blue slab wipes in on the last click) · INTERACT next (--purple-t)
-     · NEGOTIATE not reached (--text-3). */
+     · NEGOTIATE+ not reached (--text-3). */
   var THRU = [
     { t: 'Price', cls: 'tk-price' },
     { t: 'Assist', cls: 'tk-assist' },
     { t: 'Interact', cls: 'tk-interact' },
-    { t: 'Negotiate', cls: '' }
+    { t: 'Negotiate+', cls: '' }
   ];
   function stripHtml() {
     return '<div class="thru">' + THRU.map(function (k, i) {
@@ -94,8 +94,9 @@
       }
     },
     notes:
-      'Part two. Our salesperson can price. Now it has to assist: answer the shopper’s questions, ' +
-      'recommend, remind, and buy. Amazon’s assistant is the biggest one anybody has documented.'
+      'Okay now our AI salesperson can price our products properly. Next we\'ll talk about how we can get it to be a helpful and ' +
+      'dynamic shop assistant, using the biggest documented example of Amazon Rufus. Note that Rufus is now integrated into Amazon ' +
+      'Alexa, but I will still call it Rufus here.'
   };
 
   /* ======================================================================
@@ -164,12 +165,11 @@
       Kit.show(tl, q('.pcl'), { y: 20 });
     },
     notes:
-      'Type “cold-weather golf” into a search box. ' +
-      '[click] Nothing comes back. No product carries that title, so a keyword matcher has nothing to match. ' +
-      '[click] A shop assistant would know what you meant: base layers, a jacket, gloves. ' +
-      'Those are three searches you would have to know to run. ' +
-      '[click] That is the gap. Search finds a product you can already name. It cannot tell you what to buy. ' +
-      'This is Amazon’s own framing, and the reason Rufus exists.'
+      'Alright, so why do we need a whole AI shopping assistant? The example Amazon gives is someone searching up “cold-weather golf”.' +
+      '[click] Simple keyword search is probably not going to give you optimal results because that\'s not a specific product or thing.' +
+      '[click] A shop assistant would know what you meant: base layers, a jacket, gloves. And search those instead.' +
+      '[click] So this is the gap according to Amazon, I will say the gap is narrow in this framing but you can see how maybe there ' +
+      'are some benefits to having an interactive entity available to support shoppers.'
   };
 
   /* ======================================================================
@@ -179,7 +179,7 @@
      ====================================================================== */
   var OVERVIEW = {
     id: 'overview', title: 'How Rufus works',
-    heading: 'How Rufus works', budgetSec: 34,
+    heading: 'How Rufus works', budgetSec: 40,
     html: function () {
       // card 1 · the three evidence sources it can read (previews the RAG slide)
       var chips = [
@@ -232,11 +232,12 @@
       Kit.show(tl, q('.ofoc'), { y: 12, duration: .4, at: '<' });
     },
     notes:
-      'Three parts do the work. First, it looks things up. Customer reviews, the product listing, ' +
-      'the questions other shoppers have asked. ' +
-      '[click] Second, it calls tools. It writes a request like getDelivery, and ordinary software runs it. ' +
-      '[click] Third, every answer carries a thumbs-up and a thumbs-down, and those ratings feed back into training. ' +
-      '[click] We start with looking things up, because that idea is everywhere now.'
+      'So what does a good shop assistant need? There are three parts of Rufus that we will be going over. First, it needs access to ' +
+      'accurate and up to date facts beyond its training data, including customer reviews, the product listing, and questions other ' +
+      'shoppers asked.' +
+      '[click] Second, it has to interact with live systems, like delivery dates, so it calls tools. ' +
+      '[click] Third, it has to get better over time, so it learns from shopper thumbs up or down feedback on its interactions.' +
+      '[click] Let\'s start with the first part.'
   };
 
   /* ======================================================================
@@ -247,6 +248,11 @@
   var DEMO_SRC = 'assets/capture/rufus-demo.mp4';
   var DV_BOX = { x: 120, y: 290, maxW: 820, maxH: 690, gap: 56 };   // the clip is fitted inside this box
   var DV_FALLBACK = { w: 558, h: 663 };                             // used until the metadata arrives
+  var DV_WATCH = [
+    { t: 'It searches before it writes', sub: 'Part 1: it looks things up' },
+    { t: 'Real products, grouped by layer', sub: 'Base layers · vests · gloves' },
+    { t: 'No product is called “cold-weather golf”', sub: 'The gap keyword search could not close' }
+  ];
   var DEMO = {
     id: 'demo', title: 'Demo',
     heading: 'Demo', budgetSec: 26,
@@ -262,17 +268,17 @@
         '</div>' +
       '</div>' +
 
-      '<div class="dv-ask" ' + at(800, 300, 'width:1000px') + '>' +
+      '<div class="dv-ask" ' + at(800, 296, 'width:1000px') + '>' +
         '<div class="t-caps" style="color:var(--text-2)">I asked</div>' +
-        '<div class="t-mono" style="margin-top:14px;font-size:36px;line-height:1.3;color:var(--orange-t)">“What do I need for<br>cold-weather golf?”</div>' +
+        '<div class="t-mono" style="margin-top:14px;font-size:36px;line-height:1.3;color:var(--orange-t)">“What do I need for cold-weather golf?”</div>' +
       '</div>' +
 
-      '<div class="dv-watch" ' + at(800, 492, 'width:1000px') + '>' +
+      '<div class="dv-watch" ' + at(800, 446, 'width:1000px') + '>' +
         '<div class="t-caps" style="color:var(--text-2)">Watch for</div>' +
-        ['searches first', 'real products', 'no matching title'].map(function (t, i) {
-          return '<div class="dv-w dv-w' + i + '" style="margin-top:34px;display:flex;gap:22px;align-items:baseline">' +
-            '<span class="t-mono" style="font-size:36px;color:var(--text-3)">' + (i + 1) + '</span>' +
-            '<span class="t-body c-blue">' + t + '</span></div>';
+        DV_WATCH.map(function (w, i) {
+          return '<div class="dv-w dv-w' + i + ' card">' +
+            '<span class="dv-n t-mono">' + (i + 1) + '</span>' +
+            '<div><div class="t-body">' + w.t + '</div><div class="t-label dv-sub">' + w.sub + '</div></div></div>';
         }).join('') +
       '</div>' +
       Kit.src('Screen capture from Rey’s own Amazon account (Alexa for Shopping panel, Nov 2026); account details cropped out.');
@@ -336,10 +342,9 @@
       Kit.show(tl, qa('.dv-w'), { y: 16, stagger: .15, duration: .45 });
     },
     notes:
-      'Here is the real thing, in my own account. ' +
-      '[click] Same question. Watch the start: it searches before it writes anything. ' +
-      'Then a short answer and real products, grouped by layer. Base layers, vests, gloves. ' +
-      'No product title says “cold-weather golf”. That search step is the next slide.'
+      'Here Rufus/Alexa in action for the example we just went over of cold weather golf.' +
+      '[click] Note how it searches before it writes anything, and then you get real products, grouped by layer: base layers, vests, ' +
+      'gloves. We see how the problem was solved, and that initial search is what we care about now.'
   };
 
   /* ======================================================================
@@ -519,19 +524,18 @@
     },
     notes:
       // LOAD-BEARING: the phrase "one word at a time" below is called back by Griffin's distillation slide. Do not cut it.
-      'Is this cordless drill easy to hold? The model was trained months ago. Everything it knows froze then, ' +
-      'and the store does not hold still. ' +
-      '[click] So it does three things, in this order. Step one, retrieve. It has three places to look, ' +
-      'and only one of them answers this. Easy to hold is about feel, ' +
-      'so it fetches customer reviews, not the listing and not other shoppers. ' +
-      '[click] Step two, add to prompt. The fetched words are pasted in next to your question. ' +
-      'The model reads them instead of recalling them. ' +
-      '[click] Step three, generate. The frozen model writes the answer from the evidence in front of it, one word at a time. ' +
-      'That is retrieval-augmented generation. Frozen weights, fresh evidence. ' +
-      '[click] Change the question. Is this jacket machine washable? That is a fact off the listing. ' +
-      'Same three steps, different source. ' +
-      '[click] Does the drill come with a battery? Other shoppers already answered that one, in the community questions. ' +
-      'Amazon says choosing the source is the hard part, and the system has to learn it.'
+      'So why would a model need to look things up? The main answer is that its weights are frozen with some knowledge cutoff, so it ' +
+      'doesn\'t have access to very specific and recent facts like hey is this cordless drill easy to hold. The solution is to use RAG, ' +
+      'which we\'ve already gone over in many past presentations.' +
+      '[click] So in this application of RAG there would be three sources that Rufus has access to, reviews, listing, and community ' +
+      'Q&A, and based on this question Rufus would decide to retrieve from the reviews, RAG would retrieve certain relevant reviews as ' +
+      'context (bulky for small hands), and Rufus would use that to answer.' +
+      '[click] RAG would retrieve certain relevant reviews as context (bulky for small hands), ' +
+      '[click] and Rufus would use that to answer.' +
+      '[click] The interesting thing here is how agentic the RAG is, where if the question is different like "is this jacket machine ' +
+      'washable", Rufus is the one that decides to retrieve from the listing.' +
+      '[click] And so the model gets to choose the retrieval source itself, and this accurate decision making of source selection ' +
+      'based on the user query is learned behavior.'
   };
 
   /* ======================================================================
@@ -627,12 +631,16 @@
       Kit.show(tl, q('.sq-cap'), { y: 16, duration: .5, at: '+=.1' });
     },
     notes:
-      'Some questions have no document to fetch. Read this one top to bottom. ' +
-      '[click] The shopper asks whether the parcel arrives by Friday. Nothing written down says that yet. ' +
-      '[click] So instead of prose, the model writes a request: a function name and two arguments. ' +
-      '[click] Store software runs that function against the real delivery system and hands back one value. Thursday. ' +
-      '[click] Now the model writes the sentence. That is the split: the model writes the request, ordinary software runs it. ' +
-      'Amazon says Rufus works this way.'
+      'Next up is tool calling for things that can\'t be simply retrieved from a document.' +
+      '[click] For example, if the shopper asks whether the package will arrive by Friday, this is new information that isn\'t written ' +
+      'down anywhere yet.' +
+      '[click] So instead the model writes a request in the form of a function call to obtain this information from the Amazon server ' +
+      'directly.' +
+      '[click] And then the store software actually runs that function against the real delivery system and returns the output of ' +
+      '"Thursday".' +
+      '[click] And finally the model uses that output in its generated response. So in tool calling you\'re essentially allowing the ' +
+      'model to run code by telling it "hey if you generate a request in this format, we\'ll take it and run it for you and give you ' +
+      'the output". '
   };
 
   /* ======================================================================
@@ -721,11 +729,12 @@
       Kit.show(tl, q('.pz-cl'), { y: 18, duration: .5, at: '+=.1' });
     },
     notes:
-      'Auto Buy. You tell it to buy these gloves when they drop to seventy dollars. ' +
-      '[click] The model writes one record and stops. Item, target price, expires in six months. ' +
-      '[click] From there, plain code checks the price. No model is running for those six months. ' +
-      '[click] The price crosses the target, and the purchase completes within thirty minutes. ' +
-      'The step that spends your money is code you can read and audit.'
+      'And once you realize that it\'s just basically giving models API access, you can start to go for more interesting tools. The ' +
+      'example here for Rufus is that a shopper can ask it to monitor the price of an item and auto buy it once it reaches a certain ' +
+      'price.' +
+      '[click] The model can just call this auto buy tool with the correct parameters of the item, target price, and expiration date.' +
+      '[click] And from there, plain code takes over. The model is not running for those 6 months.' +
+      '[click] Once the price crosses the target, and the purchase completes within thirty minutes. '
   };
 
   /* ======================================================================
@@ -797,71 +806,12 @@
       Kit.show(tl, q('.tr-lab'), { y: 10, duration: .4, at: '-=.3' });
     },
     notes:
-      'Last part. Every Rufus answer carries a thumbs-up and a thumbs-down. ' +
-      '[click] Few shoppers press them, so you cannot train on them directly. Instead a second model learns to predict the rating, ' +
-      'and grades every answer. ' +
-      '[click] Then you train the writer toward answers the grader scores highly, with a cap so it does not drift into nonsense. ' +
-      '[click] New answers, new ratings, round again. Compare Airbnb: there we wrote the grader by hand. Here it is learned from people.'
-  };
-
-  /* ======================================================================
-     9 · TRAP — optimizing for approval (24 s, 2 clicks)
-     ====================================================================== */
-  var TRAP = {
-    id: 'trap', title: 'Optimizing for approval',
-    heading: 'Optimizing for approval', budgetSec: 24,
-    html: function () {
-      var cols = [
-        { x: 580, pill: 'reward approval', word: 'flattery', tint: C.skyT },
-        { x: 1340, pill: 'reward purchases', word: 'overselling', tint: C.orangeT }
-      ];
-      var h = '';
-      cols.forEach(function (c, i) {
-        h += '<div class="tp tp' + i + '">' +
-          '<div class="tp-pill" style="position:absolute;left:' + (c.x - 240) + 'px;top:400px;width:480px;height:88px;border-radius:44px;background:var(--surface);' +
-            'border:2px solid ' + C.line + ';display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--text-2)">' + c.pill + '</div>' +
-          '<div class="tp-card" style="position:absolute;left:' + (c.x - 310) + 'px;top:620px;width:620px;height:180px;border-radius:24px;background:var(--surface);' +
-            'border:3px solid ' + c.tint + ';display:flex;align-items:center;justify-content:center">' +
-            '<span class="t-h1" style="color:' + c.tint + '">' + c.word + '</span></div>' +
-        '</div>';
-      });
-      h += '<div class="tp-cl t-h2" ' + at(120, 882, 'width:1680px') + '>For the retailer, <span style="color:var(--orange-t)">overselling looks like success</span>.</div>';
-      var svg =
-        '<path class="tpa tpa0" d="M580,504 L580,606" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#tpA)"/>' +
-        '<path class="tpa tpa1" d="M1340,504 L1340,606" fill="none" stroke="' + C.blue + '" stroke-width="5" marker-end="url(#tpA)"/>';
-      return h + svgOverlay(svg, head('tpA', C.blue)) +
-        Kit.src('Reward-hacking failure modes are the report’s analysis, not an Amazon disclosure.');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q;
-      gsap.set([q('.tp1'), q('.tp-cl')], { autoAlpha: 0 });
-      gsap.set([q('.tpa0'), q('.tpa1')], { autoAlpha: 0 });
-
-      Kit.rise(tl, q('.hd'), { y: 24 });
-      Kit.rise(tl, q('.tp0').querySelector('.tp-pill'), { at: .15, y: 24, duration: .5 });
-      tl.set(q('.tpa0'), { autoAlpha: 1 });
-      Kit.draw(tl, q('.tpa0'), { duration: .4 });
-      Kit.rise(tl, q('.tp0').querySelector('.tp-card'), { y: 24, duration: .5, at: '-=.1' });
-      ctx.pause();
-
-      // ---- 1 · the same mechanism, a different input
-      tl.set(q('.tp1'), { autoAlpha: 1 });
-      Kit.show(tl, q('.tp1').querySelector('.tp-pill'), { y: 24, duration: .5 });
-      tl.set(q('.tpa1'), { autoAlpha: 1 });
-      Kit.draw(tl, q('.tpa1'), { duration: .4 });
-      Kit.show(tl, q('.tp1').querySelector('.tp-card'), { y: 24, duration: .5, at: '-=.1' });
-      ctx.pause();
-
-      // ---- 2 · weight moves to the uncomfortable case
-      tl.to(q('.tp1').querySelector('.tp-card'), { borderWidth: 5, duration: .3 });
-      tl.to(q('.tp0'), { opacity: .7, duration: .35 }, '<');
-      Kit.show(tl, q('.tp-cl'), { y: 18, duration: .5, at: '<' });
-    },
-    notes:
-      'There is a trap in that loop. Reward approval, and the model learns flattery. It tells you what you want to hear. ' +
-      '[click] Reward purchases, and it learns to oversell. ' +
-      '[click] Notice which way that second one points. For the retailer, overselling looks like success. ' +
-      'The reward and the business interest agree. That is the uncomfortable part.'
+      'The last part is learning from human feedback. There\'ll be a thumbs up or down option for shoppers for every Rufus answer that ' +
+      'they can press.' +
+      '[click] The actual feedback here is sparse. So instead Amazon trains a second model to predict the rating, and that model ' +
+      'grades every answer.' +
+      '[click] And then they train Rufus to get high scores from this grader model, with some caps of course.' +
+      '[click] And so you repeat this process and you continuously learn from human feedback to improve answer quality.'
   };
 
   /* ======================================================================
@@ -920,33 +870,31 @@
       Kit.show(tl, [q('.ra-verdict'), q('.ra-fix')], { y: 18, duration: .5, stagger: .12, at: '-=.1' });
     },
     notes:
-      'Does it work? Amazon says over four hundred million customers used it in the twelve months to September, ' +
-      'with interactions up five hundred and seventy percent. ' +
-      '[click] And nearly twelve billion dollars in extra annualized sales. That one is a year older, ' +
-      'and Amazon has not repeated it since the rename. Both numbers are Amazon’s own, unaudited. ' +
-      '[click] This one deserves a harder look. Users are sixty percent more likely to complete a purchase. ' +
-      '[click] Who opens a shopping assistant? People already researching a purchase. ' +
-      'So the gap mixes the assistant’s effect with who used it. Statisticians call it selection bias. ' +
-      'A clean test hides the feature from a random slice of customers. Amazon has not said whether it did that.'
+      'So if you combine all of these parts into one system, does it actually work? Amazon says over 400M customers used it in 12 ' +
+      'months, with interactions up 570%.' +
+      '[click] And $12B in extra annualized sales. These are just Amazon\'s self reported numbers.' +
+      '[click] They also report that users are 60% more likely to complete a purchase.' +
+      '[click] We do have to note the selection bias here, because anyone that actually opens a shopping assistant was already close ' +
+      'to buying. There was no clean test against a control group that did not have access to the assistant, so I wouldn\'t put much ' +
+      'weight on this stat.'
   };
 
   /* ======================================================================
-     11 · TAKEAWAYS — what travels beyond Rufus (36 s, 2 clicks)
+     11 · TAKEAWAYS — what travels beyond Rufus (30 s, 1 click)
      CANONICAL SECTION CLOSER — pixel-identical to airbnb/takeaways and
      griffin/takeaway apart from text, image and section colour.
      ====================================================================== */
   var TKROWS = [
     ['01', 'RAG', 'Facts change faster than<br>you can retrain. Fetch them.'],
-    ['02', 'Tool calling', 'Let the model write the request.<br>Let plain code run it.'],
-    ['03', 'Learning from ratings', 'Reward approval and<br>you get flattery.']
+    ['02', 'Tool calling', 'Let the model write the request.<br>Let plain code run it.']
   ];
 
   var TAKEAWAYS = {
     id: 'takeaways', title: 'Takeaways',
-    heading: 'Takeaways', budgetSec: 36,
+    heading: 'Takeaways', budgetSec: 30,
     html: function () {
       var rows = TKROWS.map(function (r, i) {
-        return '<div class="tk-row r' + i + '" style="top:' + (285 + i * 190) + 'px">' +
+        return '<div class="tk-row r' + i + '" style="top:' + (355 + i * 190) + 'px">' +
           '<div class="n t-mono">' + r[0] + '</div>' +
           '<div class="rule"></div>' +
           '<div class="tg t-caps">' + r[1] + '</div>' +
@@ -958,7 +906,7 @@
         '<div class="tk-veil"></div>' +
         rows +
         stripHtml() +
-        Kit.src('Amazon Science, Oct 2024; Amazon, SIGIR 2026. Reward hacking: the report’s analysis.');
+        Kit.src('Amazon Science, Oct 2024; Amazon, SIGIR 2026.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -969,8 +917,8 @@
       gsap.set(q('.tk-price .bg'), { backgroundColor: C.red, skewX: -12 });
       gsap.set(q('.tk-price .tx'), { color: '#FFFFFF' });
       gsap.set(slab, { backgroundColor: C.blue, skewX: -12, scaleX: 0, transformOrigin: 'left center' });
-      // rows 2 and 3 are hidden by default, so they are revealed with Kit.show (never from())
-      gsap.set([qa('.r1 > *'), qa('.r2 > *')], { autoAlpha: 0 });
+      // row 2 is hidden by default, so they are revealed with Kit.show (never from())
+      gsap.set(qa('.r1 > *'), { autoAlpha: 0 });
 
       // ---- entrance: image, veil, header, row 01, strip ----
       tl.from([q('.tk-img'), q('.tk-veil')], { autoAlpha: 0, duration: .9, ease: 'power2.out' }, 0);
@@ -979,26 +927,28 @@
       Kit.fade(tl, q('.thru'), { at: .7, duration: .5 });
       ctx.pause();
 
-      // ---- click 1: the second lesson ----
+      // ---- click 1: the second lesson, and the throughline moves on ----
       Kit.show(tl, qa('.r1 > *'), { stagger: .07, duration: .5 });
-      ctx.pause();
-
-      // ---- click 2: the third lesson, and the throughline moves on ----
-      Kit.show(tl, qa('.r2 > *'), { stagger: .07, duration: .5 });
       tl.to(slab, { scaleX: 1, duration: .5, ease: Kit.ease.out }, '<+.1');
       tl.to(q('.tk-assist .tx'), { color: '#FFFFFF', duration: .4 }, '<+.2');
       tl.to(q('.tk-interact .tx'), { color: C.purpleT, duration: .5 }, '<+.1');
     },
     notes:
-      'Three things that outlive Rufus. One: when the facts move faster than you can retrain, do not retrain. ' +
-      'Fetch. Think of a help desk, or a policy that changed last week. Frozen weights, fresh evidence. ' +
-      '[click] Two: let the model write the request, and let plain code run it. Anything costly or irreversible stays in code. ' +
-      '[click] Three: reward approval and you get flattery. The model chases the signal you wrote down, not your intent. ' +
-      'Our salesperson can price and it can assist. Next it interacts, on video, in real time.'
+      'Anyway, here\'s two general takeaways from this application. #1 is reiterating the classic RAG lesson, where if there are facts ' +
+      'that are changing faster than it\'s realistic to retrain then you should just retrieve them. ' +
+      '[click] #2 is this tool calling idea where you let the model write the request, and let plain code run it. And really you ' +
+      'should be trying to offload as much behavior as possible to deterministic code that your agent simply tool calls. \n\nOK, now our ' +
+      'AI salesperson can price products and assist the shopper, we\'re getting somewhere, let\'s keep going.'
   };
+
+  // the three parts from the overview slide; technique slides carry a marker for the one they explain
+  var PARTS = ['Looks it up', 'Calls tools', 'Learns'];
 
   Deck.section({
     id: 'rufus', order: 2, num: '02', kicker: 'Assist', title: 'Amazon Rufus',
-    slides: [OPENER, PROBLEM, OVERVIEW, DEMO, RAG, REACT, DISPOSE, THUMBS, TRAP, RESULTS, TAKEAWAYS]
+    slides: [OPENER, PROBLEM, OVERVIEW, DEMO,
+      Kit.withCrumbs(RAG, PARTS, 0), Kit.withCrumbs(REACT, PARTS, 1), Kit.withCrumbs(DISPOSE, PARTS, 1),
+      Kit.withCrumbs(THUMBS, PARTS, 2),
+      RESULTS, TAKEAWAYS]
   });
 })();

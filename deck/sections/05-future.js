@@ -1,7 +1,7 @@
 /* ==========================================================================
-   05 · Negotiate — Future markets   (budget 225 s)
+   05 · Negotiate+ — Future markets   (budget 185 s)
    Flow: Vending-Bench setup → live leaderboard → deception
-         → agent-to-agent negotiation → personalized pricing → HTTP 402
+         → agent-to-agent negotiation → personalized pricing
          → summary → closing question
    Spec: specs/future.md
    ========================================================================== */
@@ -100,10 +100,12 @@
       Kit.show(tl, qa('.score text'), { y: 0, duration: .4, stagger: .08, at: '-=.2' });
     },
     notes:
-      'Andon Labs runs a benchmark called Vending-Bench. A model gets five hundred dollars, one vending machine ' +
-      'and one simulated year.' +
+      'The first future market is an agent that can run the whole business on its own, so far we\'ve only gone over AI that can ' +
+      'automate only certain parts of the sales process. There\'s an interesting benchmark here by Andon Labs called Vending-Bench. A ' +
+      'model gets $500, one vending machine and one simulated year.' +
       '[click] It does the whole job alone: finds suppliers, negotiates by email, pays invoices, sets prices.' +
-      '[click] And it is graded on one number: the bank balance at year end. Remember that choice.'
+      '[click] And the score is just the final bank balance at the end of this simulated year. This is a pretty interesting measure of ' +
+      'automated selling capability as a whole.'
   };
 
   /* ======================================================================
@@ -190,10 +192,11 @@
       tl.from(q('.humsub'), { autoAlpha: 0, y: 12, duration: .4 }, '-=.1');
     },
     notes:
-      'This is the live leaderboard, read this morning. Gemini 4 Carbon leads on about sixteen and a half thousand ' +
-      'dollars, and the top eight of seventy-three all cluster above ten thousand.' +
-      '[click] A year ago the best score was five and a half thousand. All eight beat it. Three times better in a year.' +
-      '[click] And here is a good human operator: sixty-three thousand. The leader reaches a quarter of that.'
+      'Here\'s the current leaderboard. Gemini 4 Carbon is on top at $16.5k, which is pretty good compared to the starting value of ' +
+      '$500.' +
+      '[click] Note that a year ago the top score was only $5.5k, so models have gotten 3x better just in a year.' +
+      '[click] The estimate for a good human operator is $63k, I\'m pretty sure I personally couldn\'t get anywhere near that but it ' +
+      'just gives you some comparison of how much room there is for further performance in this automated selling domain.'
   };
 
   /* ======================================================================
@@ -244,11 +247,11 @@
       Kit.show(tl, q('.p2'), { y: 16, duration: .45, at: '-=.25' });
     },
     notes:
-      'That leaderboard has a cost. Scored on one number, one model invented a price history to push a ' +
-      'supplier down.' +
-      '[click] Andon also runs an arena where several models trade with each other. One joined a price ' +
-      'cartel in all six games.' +
-      '[click] Nobody asked for that. We graded profit, so we got profit.'
+      'The problem is that because models are scored only on the final balance, there\'s a lot of not so good stuff that goes on. For ' +
+      'example, some models would invent a price history to get a better deal from suppliers.' +
+      '[click] Andon also runs an arena where several models trade with each other. Some models would consistently join price cartels.' +
+      '[click] This is the problem that arises when you score models only on profit, imagine the harm that will occur when you put ' +
+      'them in the real world.'
   };
 
   /* ======================================================================
@@ -352,13 +355,13 @@
       Kit.show(tl, q('.next'), { y: 24, duration: .5 });
     },
     notes:
-      'Now the other side. Your agent buys, the shop’s agent sells.' +
-      '[click] Yours offers, theirs counters, and a price lands. No person involved.' +
-      '[click] Here is the finding. In a study from Toronto, MIT and Stanford, buyers whose agent was the weaker model ' +
-      'paid about two percent more, and never saw the better price.' +
+      'Another future market is agent to agent negotiation, which will happen once both buyers and sellers are using agents.' +
+      '[click] The agents will basically just negotiate prices with each other without any human involvement.' +
+      '[click] The problem is that there\'s a study that showed how in these scenarios, buyers whose agent was the weaker model paid ' +
+      'about 2% more, and never saw the better price.' +
       '[click] This is running now: Walmart negotiates supplier contracts through Pactum’s agent, two thousand at once.' +
-      '[click] And the suppliers asked for the same system. Both sides become software, and the better model takes ' +
-      'the difference.'
+      '[click] In response to this, suppliers asked for the same system, and now you have the beginnings of this sort of agent ' +
+      'negotiation arms race.'
   };
 
   /* ======================================================================
@@ -444,104 +447,12 @@
       Kit.show(tl, q('.regs'), { y: 24, duration: .5 });
     },
     notes:
-      'Same product, same minute, three shoppers.' +
-      '[click] A model that knows your history quotes each one a different number. These figures are made up; the ' +
-      'practice is not. The price stops describing the product and starts describing you.' +
-      '[click] Maryland has banned it, fifty bills are moving in twenty-six states, and the FTC proposed an ' +
-      'enforcement policy in August.'
-  };
-
-  /* ======================================================================
-     6 · PAYMENTS — "Payments: HTTP 402"   (40 s · 4 clicks)
-     ONE IDEA: there is already a payment handshake built for software buyers,
-     and almost nobody is using it yet.
-     ====================================================================== */
-  var PAY = {
-    id: 'payments',
-    title: 'Payments: HTTP 402',
-    heading: 'Payments: HTTP 402',
-    budgetSec: 40,
-    html: function () {
-      var AX = 300, SX = 1380, A1 = 332, A2 = 1348;
-      // one marker per colour: the arrowhead always matches its line
-      var MK = {}; MK[C.skyT] = 'payA'; MK[C.greenT] = 'payB'; MK[C.orangeT] = 'payC';
-      function msg(cls, y, label, back, color, sub) {
-        var x1 = back ? A2 : A1, x2 = back ? A1 : A2;
-        return '<g class="' + cls + '">' +
-          txt((A1 + A2) / 2, y - 18, label, { anchor: 'middle', size: 36, w: 600, mono: true, fill: color }) +
-          '<line class="ln" x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" stroke="' + color +
-            '" stroke-width="5" marker-end="url(#' + MK[color] + ')"/>' +
-          // the gloss sits on the label's own baseline, just past the word it explains:
-          // the 90 px message pitch leaves no clear band underneath
-          (sub ? txt(1080, y - 18, sub, { anchor: 'start', size: 28, w: 500, fill: C.text3 }) : '') +
-        '</g>';
-      }
-      return '' +
-      '<svg class="px" width="1680" height="530" viewBox="0 0 1680 530" style="position:absolute;left:120px;top:300px;overflow:visible">' +
-        '<defs>' + arrowDef('payA', C.skyT) + arrowDef('payB', C.greenT) + arrowDef('payC', C.orangeT) + '</defs>' +
-        txt(AX, 36, 'BUYER’S AGENT', { anchor: 'middle', size: 36, w: 800, ls: 2, fill: C.skyT }) +
-        txt(SX, 36, 'SELLER’S SERVER', { anchor: 'middle', size: 36, w: 800, ls: 2, fill: C.greenT }) +
-        '<line x1="' + AX + '" y1="70" x2="' + AX + '" y2="500" stroke="#4A4345" stroke-width="3"/>' +
-        '<line x1="' + SX + '" y1="70" x2="' + SX + '" y2="500" stroke="#4A4345" stroke-width="3"/>' +
-        // even pitch: the handshake does not speed up halfway through
-        msg('m1', 110, 'GET /article', false, C.skyT) +
-        msg('m2', 200, '402 Payment Required &#183; $0.10', true, C.orangeT) +
-        msg('m3', 290, 'POST /pay $0.10 USDC', false, C.skyT, 'a digital dollar') +
-        msg('m4', 380, 'GET /article again', false, C.skyT) +
-        msg('m5', 470, '200 OK, here is the article', true, C.greenT) +
-      '</svg>' +
-      '<div class="card vol" style="position:absolute;left:120px;top:830px;width:1680px;height:140px;padding:26px 36px;' +
-          'display:flex;align-items:center;justify-content:space-between">' +
-        '<div>' +
-          '<div class="t-h2 t-mono c-orange" style="font-weight:700">$28,000 a day</div>' +
-          '<div class="t-label faint" style="margin-top:12px">all x402 payments, 3 Nov 2026</div>' +
-        '</div>' +
-        '<div class="back t-caps faint">6 major backers</div>' +
-      '</div>' +
-      Kit.src('Artemis x402 dashboard: ~370,000 payments worth about $28,000 on 3 Nov 2026. Backers: Visa, Mastercard, Stripe, Google, AWS, Cloudflare. $0.10 is illustrative.');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set([q('.m2'), q('.m3'), q('.m4'), q('.m5'), q('.vol')], { autoAlpha: 0 });
-
-      function send(g) {
-        tl.set(g, { autoAlpha: 1 });
-        Kit.draw(tl, g.querySelector('.ln'), { duration: .5 });
-        tl.from(g.querySelectorAll('text'), { autoAlpha: 0, y: 10, duration: .35, stagger: .08 }, '-=.35');
-      }
-
-      // STEP 0 — the agent asks for something, the way any client would
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      tl.from(qa('.px > text'), { autoAlpha: 0, duration: .4, stagger: .1 }, .3);
-      tl.from(qa('.px > line'), { scaleY: 0, transformOrigin: 'top center', duration: .6, ease: 'power2.out' }, .35);
-      Kit.draw(tl, q('.m1 .ln'), { duration: .5, at: .7 });
-      tl.from(q('.m1 text'), { autoAlpha: 0, y: 10, duration: .35 }, .9);
-      ctx.pause();
-
-      // STEP 1 — the whole idea in one line: a price, in the HTTP reply
-      send(q('.m2'));
-      ctx.pause();
-
-      // STEP 2 — pay, then ask again: the agent needs no account and no card
-      send(q('.m3'));
-      send(q('.m4'));
-      ctx.pause();
-
-      // STEP 3 — the handshake closes
-      send(q('.m5'));
-      ctx.pause();
-
-      // STEP 4 — the rails are built; the demand is not there yet
-      Kit.show(tl, q('.vol'), { y: 24, duration: .5 });
-    },
-    notes:
-      'Last piece: agents need a way to pay without a card or a human. HTTP four-oh-two is a status code reserved ' +
-      'since the nineties and unused until now. The agent asks for a page.' +
-      '[click] The server answers four-oh-two, Payment Required, and quotes a price.' +
-      '[click] The agent pays in a digital dollar — a stablecoin, usually USDC — and asks again.' +
-      '[click] This time it gets the article. No account, no checkout.' +
-      '[click] Visa, Mastercard, Stripe, Google, AWS and Cloudflare are all behind it. Real volume: twenty-eight ' +
-      'thousand dollars a day. The system is built. Almost nobody uses it yet.'
+      'The last future market is even more disturbing with personalized pricing, where everyone gets a different price offered to them ' +
+      'depending on their willingness or ability to pay. ' +
+      '[click] For example, someone who always pays full price might get a higher price quoted to them. This is an extreme example, ' +
+      'but imagine if the price of a certain medicine is jacked up for just you because the seller has deduced that you really need it.' +
+      '[click] Thankfully this is getting regulated quite quickly, Maryland has banned it, 50 bills are moving in 26 states, and the ' +
+      'FTC proposed an enforcement policy in August.'
   };
 
   /* ======================================================================
@@ -553,7 +464,7 @@
     { n: '01', w: 'PRICE',     c: 'var(--red)',    s: 'learned what price would book' },
     { n: '02', w: 'ASSIST',    c: 'var(--blue)',   s: 'looks things up before answering' },
     { n: '03', w: 'INTERACT',  c: 'var(--purple)', s: 'makes a face fast enough to talk' },
-    { n: '04', w: 'NEGOTIATE', c: 'var(--green)',  s: 'both sides are software', sc: ' c-green' }
+    { n: '04', w: 'NEGOTIATE+', c: 'var(--green)',  s: 'agents that sell, buy and pay', sc: ' c-green' }
   ];
   var SUMMARY = {
     id: 'assembled',
@@ -576,7 +487,7 @@
       '<div style="position:absolute;inset:0;background:linear-gradient(90deg,#1E1B1C 0%,#1E1B1C 50%,rgba(30,27,28,.78) 60%,rgba(30,27,28,0) 74%)"></div>' +
       '<div class="asm-caps t-caps" style="position:absolute;left:120px;top:300px;color:var(--text-3)">Summary</div>' +
       rows +
-      Kit.src('Airbnb: Ye et al., KDD 2018. Rufus: Amazon. Griffin: Tavus. Negotiate: Andon Labs, Zhu et al., Pactum, Artemis.');
+      Kit.src('Airbnb: Ye et al., KDD 2018. Rufus: Amazon. Griffin: Tavus. Negotiate+: Andon Labs, Zhu et al., Pactum.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -605,7 +516,7 @@
       '[click] Price: gradient boosting, with a loss built for a number nobody ever sees.' +
       '[click] Assist: a general model that fetches evidence and calls tools before it answers.' +
       '[click] Interact: diffusion, distilled until it runs fast enough to hold a conversation.' +
-      '[click] Negotiate: the part where both sides of the deal are software. That part is just starting.'
+      '[click] Negotiate plus: the part where both sides of the deal are software. That part is just starting.'
   };
 
   /* ======================================================================
@@ -657,7 +568,7 @@
   };
 
   Deck.section({
-    id: 'future', order: 5, num: '04', kicker: 'Negotiate', title: 'What’s next',
-    slides: [VENDING, LEADERBOARD, CHEATS, ARMS, PRICING, PAY, SUMMARY, QUESTION]
+    id: 'future', order: 5, num: '04', kicker: 'Negotiate+', title: 'What’s next',
+    slides: [VENDING, LEADERBOARD, CHEATS, ARMS, PRICING, SUMMARY, QUESTION]
   });
 })();

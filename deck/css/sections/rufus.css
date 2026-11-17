@@ -71,3 +71,8 @@
 .slide[data-sec="rufus"][data-slide="results"] .rc-caps {
   letter-spacing: .06em; font-stretch: 100%; white-space: nowrap;
 }
+
+/* demo: "watch for" cards fill the column to the right of the clip */
+.slide[data-sec="rufus"] .dv-w { margin-top: 18px; height: 140px; padding: 0 32px; display: flex; align-items: center; gap: 28px; }
+.slide[data-sec="rufus"] .dv-n { font-size: 52px; color: var(--sec-t); width: 40px; flex: none; }
+.slide[data-sec="rufus"] .dv-sub { color: var(--text-3); margin-top: 8px; font-weight: 500; }

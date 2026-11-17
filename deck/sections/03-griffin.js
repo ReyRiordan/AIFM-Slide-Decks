@@ -1,7 +1,7 @@
 /* ==========================================================================
-   03 · Interact — Tavus Griffin   (budget 6:30 = 390 s)
-   open 20 · demo 70 · cascade 50 · overview 40 · diffusion 55 · stream 30
-   · distill 60 · results 35 · takeaway 30   = 390
+   03 · Interact — Tavus Griffin   (budget 6:24 = 384 s)
+   open 20 · demo 70 · cascade 50 · overview 50 · diffusion 55 · stream 34
+   · distill 40 · results 35 · takeaway 30   = 384
    ========================================================================== */
 (function () {
   'use strict';
@@ -9,6 +9,7 @@
 
   /* Demo link (for now: a Griffin demo video on YouTube; swap for a live demo room later). */
   var GRIFFIN_DEMO_URL = 'https://www.youtube.com/watch?v=lHw6yoyPkpo';
+  var GRIFFIN_LIVE_URL = 'https://maker.tavus.io/deployments/d52757dc-2672-45e4-ab3a-f490425c6d04';
 
   var IMG = 'assets/img/griffin/';
   var VID = 'assets/video/griffin/';
@@ -89,10 +90,10 @@
       }
     },
     notes:
-      'Our salesperson can price and it can answer. Part three is interaction: a face on a call. ' +
-      'In October, Tavus announced a model called Griffin — so far only a cut-down preview is out.' +
-      '[click] Griffin builds a face from one photo and draws it live during the call, room and shadows ' +
-      'included.'
+      'Our last application is actually from our company which is Tavus, specifically their Griffin model. They\'re essentially ' +
+      'targeting the hardest part of sales, which is the live human-like interaction.' +
+      '[click] The idea is that this Griffin model can take one photo and generate this live face and persona that interacts with the ' +
+      'user very naturally.'
   };
 
   /* ======================================================================
@@ -126,6 +127,9 @@
 
         '<a class="dm-btn t-label" href="' + GRIFFIN_DEMO_URL + '" target="_blank" rel="noopener"' +
           ' style="left:1280px;top:830px;width:520px;height:60px">Watch on YouTube&nbsp;<span>↗</span></a>' +
+
+        '<a class="dm-btn dm-live t-label" href="' + GRIFFIN_LIVE_URL + '" target="_blank" rel="noopener"' +
+          ' style="left:1280px;top:300px;width:520px;height:60px"><i class="dm-dot"></i>Try the live demo&nbsp;<span>↗</span></a>' +
 
         '<div class="dm-q t-h2 c-purple" style="position:absolute;left:1280px;top:420px;width:520px;height:370px">' +
           '<span>Every frame is drawn live, fast enough that you can interrupt it.</span></div>' +
@@ -164,7 +168,7 @@
 
       // ---- entrance: the stage, nothing to read yet ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.rise(tl, [frame, q('.dm-btn')], { at: .25, stagger: .1 });
+      Kit.rise(tl, [frame, q('.dm-live'), q('.dm-btn:not(.dm-live)')], { at: .25, stagger: .1 });
       ctx.pause();
 
       // ---- click 1: the card arrives with the three moments to watch for ----
@@ -176,14 +180,10 @@
       Kit.swap(tl, q('.dm-card'), q('.dm-q'));
     },
     notes:
-      'I would rather show you this. Tavus’s own launch video: their CEO on a video call with a coworker. ' +
-      'One of the two faces is generated live.' +
-      '[click] Three things to watch: a thumbs-up on request, someone walking into shot, and her breathing ' +
-      'slowing when he asks.' +
-      ' — [Click the video frame to play. It starts at 0:28 and stops by itself at 1:12, about 44 seconds. ' +
-      'Click again to pause.] — ' +
-      '[click] She was the generated one. Their own edit, so their best take. ' +
-      'Now: how do you draw a frame that fast?'
+      'No point in explaining further, let\'s just see it in action.' +
+      '[click] You can watch for a couple things while this plays.' +
+      '[click] Maybe not quite perfect yet, but quite realistic overall. The main question is how do you generate video frames fast ' +
+      'enough to the point where you can interrupt it?'
   };
 
   /* ======================================================================
@@ -317,17 +317,15 @@
       tl.fromTo(qa('.ccm-t'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .35 }, '-=.35');
     },
     notes:
-      'Before Griffin, Tavus ran a pipeline of five specialists. You stop talking. ' +
-      'Stage widths here are illustrative; the per-stage times are not published.' +
-      '[click] Raven reads your face. Sparrow decides you have finished. A language model writes the reply, ' +
-      'text-to-speech voices it, Phoenix draws the face. Each stage waits for the one before. Systems built ' +
-      'this way measure about three seconds — that range is for cascades built on Gemini, not for Tavus’s ' +
-      'own stack.' +
-      '[click] A person answers in under a second. The rest is dead air, and you feel it.' +
-      '[click] Two more problems. Only four pauses in ten mean “your turn”, so it talks over you. And the ' +
-      'renderer worked from a face model, so it could not gesture.' +
-      '[click] Griffin replaces all five: one model does the thinking, two streaming generators make the ' +
-      'sound and the picture.'
+      'So before Griffin, Tavus and pretty much everyone else ran a pipeline that combines specialist models.' +
+      '[click] Raven reads your face. Sparrow decides you have finished talking. A language model writes the reply, text-to-speech ' +
+      'voices it, Phoenix draws the next frame. The key here is that each step in this process is sequential and waits for the ones ' +
+      'before it. Systems built this way have about 3 seconds of latency.' +
+      '[click] A human answers in less than a second, so the rest of that latency ruins that experience.' +
+      '[click] Other problems with these avatars is that the turn taking would not be reliable so they would often talk over you, and ' +
+      'also only the face would change so they wouldn\'t be able to move their body in any way.' +
+      '[click] The key innovation of Griffin is that one model does most of this along with two parallel streaming generators for ' +
+      'audio and video.'
   };
 
   /* ======================================================================
@@ -337,7 +335,7 @@
     id: 'overview',
     title: 'Griffin architecture',
     heading: 'Griffin architecture',
-    budgetSec: 40,
+    budgetSec: 50,
     html: function () {
       return '' +
         '<svg class="ov" width="1680" height="660" viewBox="0 0 1680 660" style="position:absolute;left:120px;top:296px;overflow:visible">' +
@@ -452,14 +450,13 @@
       tl.fromTo([q('.ov-arc-t'), q('.ov-in-t')], { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .4, stagger: .1 }, '-=.3');
     },
     notes:
-      'Griffin stops queueing. One model, the Continuous Conversational Model, watches your camera and listens ' +
-      'to your mic. It replaces Raven, Sparrow and the language model, and it re-decides several times a second ' +
-      'instead of once per turn.' +
-      '[click] It streams text and controls to two generators: a speech generator built on Tavus’s own audio ' +
-      'codec, Tavec, and a video generator that paints frames with streaming diffusion, from one photo. ' +
-      'The generated voice drives the mouth.' +
-      '[click] You see the result, and the camera and mic never stop feeding the model. ' +
-      'That loop is why you can interrupt it.'
+      'Let\'s look at the actual architecture. We have a Continuous Conversational Model that watches your camera and listens to your ' +
+      'mic. This replaces Raven, Sparrow and the language model, and it re-decides several times a second instead of once per turn.' +
+      '[click] The output of the CCM is text and controls streamed to two generators: a speech generator, and a video generator that ' +
+      'also takes one photo as input.' +
+      '[click] You see and hear the outputs as they\'re generated, and your camera and mic never stop feeding the model, which is why ' +
+      'you can interrupt it so easily. For the rest of this section we\'ll focus on the video generation, because that\'s the hardest ' +
+      'part.'
   };
 
   /* ======================================================================
@@ -497,15 +494,19 @@
           txt(960, 730, 'adding noise is easy', { size: 36, w: 700, anchor: 'middle', fill: C.text, cls: 'df-l1' }) +
           txt(960, 730, 'the model learns one job: take a little noise back out',
             { size: 36, w: 700, anchor: 'middle', fill: C.purpleT, cls: 'df-l2' }) +
+          txt(960, 730, 'each step: noisy frame + CCM input → a cleaner frame',
+            { size: 36, w: 700, anchor: 'middle', fill: C.purpleT, cls: 'df-l3' }) +
           '<line class="df-bus" x1="290" y1="790" x2="1630" y2="790" stroke="' + C.purpleT + '" stroke-width="4"/>' +
           steer +
-          '<line class="df-feed" x1="466" y1="840" x2="466" y2="792" stroke="' + C.purpleT + '" stroke-width="4"/>' +
-          '<line class="df-feed" x1="1456" y1="840" x2="1456" y2="792" stroke="' + C.purpleT + '" stroke-width="4"/>' +
+          '<line class="df-feed" x1="960" y1="836" x2="960" y2="792" stroke="' + C.purpleT + '" stroke-width="4"/>' +
         '</svg>' +
-        '<div class="df-chip t-body" style="left:226px;width:480px">the voice <span class="faint ar">→</span> the mouth</div>' +
-        '<div class="df-chip t-body" style="left:1156px;width:600px">the CCM’s controls <span class="faint ar">→</span> the expression</div>' +
+        '<div class="df-chip" style="left:400px;width:1120px">' +
+          '<span class="t-caps c-purple">From the CCM</span>' +
+          '<span class="t-body">voice <span class="faint ar">→</span> mouth</span>' +
+          '<span class="t-body">controls <span class="faint ar">→</span> expression</span>' +
+        '</div>' +
 
-        Kit.src('Diffusion refines random noise into a sample step by step (Yin et al., <em>DMD2</em>, 2024). Portrait and noise strip are our own illustration.');
+        Kit.src('Inputs: one reference photo, the audio and the CCM’s controls (Tavus, Griffin). Diffusion steps: Yin et al., <em>DMD2</em>, 2024. Portrait and noise strip are our own illustration.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -529,7 +530,7 @@
       var R = { onUpdate: render };
       render();
 
-      gsap.set([head, q('.df-l2'), q('.df-bus'), qa('.df-tick'), qa('.df-feed'), qa('.df-chip')], { autoAlpha: 0 });
+      gsap.set([head, q('.df-l2'), q('.df-l3'), q('.df-bus'), qa('.df-tick'), qa('.df-feed'), qa('.df-chip')], { autoAlpha: 0 });
       gsap.set(q('.df-l1'), { autoAlpha: 0 });
 
       // ---- entrance: one real thing, and five empty slots ----
@@ -552,7 +553,8 @@
       tl.to(st, Object.assign({ pos: 0, duration: 1.6, ease: 'power1.inOut' }, R), '<');
       ctx.pause();
 
-      // ---- click 3: the steering enters at every step ----
+      // ---- click 3: the CCM's output is an input to every denoising step ----
+      Kit.swap(tl, q('.df-l2'), q('.df-l3'));
       Kit.show(tl, qa('.df-chip'), { y: 20, stagger: .12 });
       tl.to([q('.df-bus'), qa('.df-tick'), qa('.df-feed')], { autoAlpha: 1, duration: .01 }, '-=.3');
       tl.fromTo(qa('.df-feed'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, stagger: .08 }, '<');
@@ -561,24 +563,27 @@
       tl.to(rail, { stroke: C.purple, duration: .5 }, '-=.3');
     },
     notes:
-      'The video generator is a diffusion model, the same method behind almost every AI image you have seen. ' +
-      'Here is one frame.' +
-      '[click] Add a little random noise. Then a little more. Then more, until it is pure static. That direction ' +
-      'is easy — anybody can wreck a picture, and we know exactly how much noise we added.' +
-      '[click] So we train a network on the one job that is hard: look at a noisy frame, and take a little of ' +
-      'that noise back out. Do that over and over, and you walk backwards from static to a face. That is diffusion.' +
-      '[click] And at every step you can steer it. The voice it is speaking shapes the mouth. The CCM’s ' +
-      'controls shape the expression.'
+      'The video generator is a diffusion model, which is the same method behind almost every AI image you have seen. Let\'s look at ' +
+      'how one frame is generated.' +
+      '[click] First you take a picture and add noise to it incrementally until it\'s static. This gives you a pure noise image where ' +
+      'you know what noise was added at each step.' +
+      '[click] Then you train a neural network to take that pure noise and iteratively remove that noise until you get a clean frame. ' +
+      '[click] The key idea is that the CCM input is what steers this denoising process so that you get a frame that corresponds to ' +
+      'what you need to generate. So once your model gets very good at this, you can start with an actual pure static image and the ' +
+      'CCM input and just purely generate a new frame that corresponds to what you want. This denoising process is called diffusion. ' +
+      'Now Tavus doesn\'t reveal what type of diffusion they use, but the classic way diffusion is done is that the model actually ' +
+      'predicts the noise rather than the cleaner frame itself, and you subtract that predicted noise, repredict the remaining noise, ' +
+      'and repeat. This is just the basic idea and there are other methods, feel free to ask me more about this at the end.'
   };
 
   /* ======================================================================
-     6 · STREAM — why diffusion cannot stream (30 s, 2 clicks)
+     6 · STREAM — why diffusion cannot stream (34 s, 3 clicks)
      ====================================================================== */
   var STREAM = {
     id: 'stream',
     title: 'The streaming problem',
     heading: 'The streaming problem',
-    budgetSec: 30,
+    budgetSec: 34,
     html: function () {
       // right card: seven frames, local coords inside an 800×520 card.
       // the arcs point INTO 'now': the model reads its neighbours to draw it.
@@ -649,60 +654,77 @@
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
 
       gsap.set([q('.st-loop'), q('.st-count'), qa('.st-sub'), qa('.sa'), qa('.sq'), q('.sx'), q('.st-concl')], { autoAlpha: 0 });
+      gsap.set(qa('.st-card'), { autoAlpha: 0 });
 
-      // ---- entrance: exactly two obstacles, stated as a pair ----
+      // ---- entrance: the heading only; the two reasons arrive one at a time ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.rise(tl, [q('.st-card.a h3'), q('.st-card.b h3')], { at: .25, stagger: .1 });
-      Kit.fade(tl, q('.st-icg'), { at: .5 });
-      Kit.fade(tl, qa('.sf'), { at: .5, stagger: .05 });
       ctx.pause();
 
-      // ---- click 1: both halves show a failure ----
+      // ---- click 1: reason one, many passes per frame ----
+      Kit.show(tl, q('.st-card.a'), { y: 30, duration: .5 });
       tl.to(q('.st-loop'), { autoAlpha: 1, duration: .01 });
       tl.fromTo(q('.st-loop'), { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.1, ease: 'power1.inOut' }, '<');
       tl.to(q('.st-count'), { autoAlpha: 1, duration: .2 }, '<');
       Kit.count(tl, q('.st-count'), { from: 1, to: 50, prefix: '×', duration: 1.1, at: '<' });
-      // the arrows must reach forward before the future can be taken away from them
-      tl.to(qa('.sa'), { autoAlpha: 1, duration: .01 }, '<');
-      tl.fromTo(qa('.sa'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, stagger: .08 }, '<');
       // the frame resolves one notch cleaner as the loop completes: the passes do something
       tl.to(q('.st-ic2'), { attr: { opacity: 1 }, duration: 1.1, ease: 'none' }, '<');
-      tl.to(qa('.f4, .f5, .f6'), { opacity: .22, duration: .4 }, '+=.15');
+      tl.to(q('.st-card.a .st-sub'), { autoAlpha: 1, duration: .4 }, '-=.2');
+      ctx.pause();
+
+      // ---- click 2: reason two, it reads future frames ----
+      tl.to(q('.st-card.a'), { opacity: .62, duration: .4 });
+      Kit.show(tl, q('.st-card.b'), { y: 30, duration: .5, at: '<' });
+      // the arrows must reach forward before the future can be taken away from them
+      tl.to(qa('.sa'), { autoAlpha: 1, duration: .01 });
+      tl.fromTo(qa('.sa'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, stagger: .08 }, '<');
+      tl.to(qa('.f4, .f5, .f6'), { opacity: .22, duration: .4 }, '+=.25');
       tl.to(qa('.sq'), { autoAlpha: 1, duration: .4, stagger: .07 }, '<');
       tl.to(qa('.sa.fut'), { opacity: .45, duration: .4 }, '<');
       tl.to(q('.sx'), { autoAlpha: 1, duration: .4 }, '<+.2');
-      tl.to(qa('.st-sub'), { autoAlpha: 1, duration: .4 }, '-=.2');
+      tl.to(q('.st-card.b .st-sub'), { autoAlpha: 1, duration: .4 }, '-=.2');
       ctx.pause();
 
-      // ---- click 2: two problems become one requirement ----
+      // ---- click 3: two problems become one requirement ----
       tl.to(qa('.st-card'), { opacity: .62, duration: .45 });
       tl.fromTo(q('.st-concl'), { autoAlpha: 0, y: 54 }, { autoAlpha: 1, y: 0, duration: .6, ease: Kit.ease.out }, '-=.25');
     },
     notes:
-      'Two things stop that from running on a live call.' +
-      '[click] First, every frame costs many network passes. One published model used fifty, and ' +
-      'video needs many frames a second. Second, a normal video model reads the whole clip at once, including ' +
-      'the frames after the one it is drawing. On a live call those frames do not exist yet.' +
-      '[click] So Griffin needs a model that takes few steps and only looks backwards. ' +
-      'Fifty is a published model’s number; Griffin’s is not public.'
+      'Anyway, there are two reasons why normal diffusion doesn\'t work here.' +
+      '[click] First, you\'re going to be doing like 50 of these denoising steps to generate just one frame, and for video you need 30 ' +
+      'to 60 frames per second. So you just have too much computation to do in too little time.' +
+      '[click] Second, a normal video model denoises the whole video clip at once, so it needs future frames as well for smooth ' +
+      'consistent generation. This doesn\'t work for streaming video on a live call because those future frames do not exist yet.' +
+      '[click] So for Griffin we need a model that can generate frames with only a few steps and only based on past frames.'
   };
 
   /* ======================================================================
-     7 · DISTILL — teacher to student (60 s, 4 clicks)
+     7 · DISTILL — teacher to student, then one frame at a time (40 s, 2 clicks)
+     Stage 1 (DMD2) on top, stage 2 (teacher forcing → causal) below.
+     Self-Forcing, the third stage, is left out on purpose.
      ====================================================================== */
+  var DS_N = 10, DS_NOW = 6;                                 // frames in the row; the one being drawn
+  var DS_X = function (k) { return 120 + k * 140; };         // frame left (120 wide, 20 gap)
+
   var DISTILL = {
     id: 'distill',
     title: 'Distillation',
     heading: 'Distillation',
-    budgetSec: 60,
+    budgetSec: 40,
     html: function () {
-      var frames = '', k;
-      for (k = 0; k < 12; k++) {
-        frames += '<div class="ds-fr k' + k + '" style="left:' + (180 + k * 110) + 'px">' +
-          '<div class="fill"></div><div class="err"></div></div>';
+      var frames = '', arcs = '', k;
+      for (k = 0; k < DS_N; k++) {
+        frames += '<div class="ds-fr k' + k + '" style="left:' + DS_X(k) + 'px"><div class="fill"></div></div>';
       }
+      // past frames feed the one being drawn: arcs above the row, into 'now'
+      // drawn under the row, the same way the streaming slide draws them
+      [DS_NOW - 3, DS_NOW - 2, DS_NOW - 1].forEach(function (t, i) {
+        var a = DS_X(DS_NOW) + 36 + i * 14, b = DS_X(t) + 60, d = 22 + (DS_NOW - t) * 14;
+        arcs += '<path class="ds-arc" d="M' + b + ',862 Q' + ((a + b) / 2) + ',' + (862 + d * 2) + ' ' + a + ',864" fill="none" stroke="' +
+          C.purpleT + '" stroke-width="4" marker-end="url(#dsP)"/>';
+      });
 
       return '' +
+        '<div class="ds-st s1 t-caps"><b>1</b>Fewer steps</div>' +
         '<div class="ds-card a">' +
           '<div class="k t-caps faint">Teacher</div>' +
           '<div class="s t-body">many steps</div>' +
@@ -713,65 +735,41 @@
           '<div class="s t-body">few steps</div>' +
           '<div class="n t-num c-purple">×50</div>' +
         '</div>' +
-        '<div class="ds-bar ghost"></div>' +
-        '<div class="ds-bar"></div>' +
-        '<div class="ds-tcap t-label">whole clip at once</div>' +
-        '<div class="ds-cap t-label c-purple">one frame at a time</div>' +
+
+        '<div class="ds-st s2 t-caps"><b>2</b>One frame at a time</div>' +
+        '<div class="ds-block t-label">whole clip at once</div>' +
         frames +
-        '<div class="ds-key">' +
-          '<div class="t-label" style="color:var(--orange-t)">answer key</div>' +
-          '<div class="t-label faint" style="margin-top:8px">real frames to copy from</div>' +
-        '</div>' +
-        '<div class="ds-lab l1 t-label">its own mistakes pile up</div>' +
-        '<div class="ds-lab l2 t-label">Self-Forcing: it trains on its own frames</div>' +
+        '<div class="ds-now t-label c-purple" style="left:' + DS_X(DS_NOW) + 'px">now</div>' +
+        '<div class="ds-cap t-label">each new frame is built only from the frames before it</div>' +
 
         '<svg class="ds-ov" width="1920" height="1080" viewBox="0 0 1920 1080" ' +
           'style="position:absolute;left:0;top:0;pointer-events:none;overflow:visible">' +
-          '<defs>' + marker('dsA', C.text2, 4) + marker('dsO', C.orange, 4) + '</defs>' +
-          txt(960, 436, 'copy what it produces, not how', { size: 28, w: 700, anchor: 'middle', fill: C.text2, cls: 'ds-at' }) +
-          '<line class="ds-arr" x1="762" y1="480" x2="1158" y2="480" stroke="' + C.text2 + '" stroke-width="8" marker-end="url(#dsA)"/>' +
-          /* short tick from the label down onto the first frame that drifts */
-          '<line class="ds-tick" x1="890" y1="742" x2="890" y2="754" stroke="' + C.text2 + '" stroke-width="3"/>' +
-          '<path class="ds-fb" d="M1490,888 C1490,948 180,948 180,888" fill="none" stroke="' + C.orange + '" stroke-width="5" marker-end="url(#dsO)"/>' +
+          '<defs>' + marker('dsA', C.text2, 4) + marker('dsP', C.purpleT, 3.5) + '</defs>' +
+          txt(960, 432, 'copy what it produces, not how', { size: 28, w: 700, anchor: 'middle', fill: C.text2, cls: 'ds-at' }) +
+          '<line class="ds-arr" x1="762" y1="476" x2="1158" y2="476" stroke="' + C.text2 + '" stroke-width="8" marker-end="url(#dsA)"/>' +
+          arcs +
         '</svg>' +
 
-        Kit.src('Three-stage distillation named by Tavus: DMD2, teacher forcing, Self-Forcing (Yin et al. 2024; Huang et al. 2025). 50→4 is CausVid’s.');
+        Kit.src('Two of the three distillation stages Tavus names: DMD2 (Yin et al., 2024) and teacher forcing. 50→4 is CausVid’s, not Griffin’s.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      var errs = qa('.ds-fr .err'), fills = qa('.ds-fr .fill');
-      var st = { err: 0, drain: 0 };
+      var frs = qa('.ds-fr'), fills = qa('.ds-fr .fill');
 
-      function render() {
-        for (var k = 0; k < 12; k++) {
-          var base = k < 6 ? 0 : (k - 5) / 6;               // accumulates left → right
-          var drained = Math.max(0, Math.min(1, st.drain * 13 - (11 - k)));
-          var a = base * st.err * (1 - drained);
-          // drift is shown by the picture itself: the face slips, blurs and loses
-          // colour. the red tint only reinforces it.
-          errs[k].style.opacity = a * .4;
-          fills[k].style.filter = 'saturate(' + (1 - .9 * a).toFixed(3) +
-            ') brightness(' + (1 - .16 * a).toFixed(3) + ') blur(' + (a * 2.2).toFixed(2) + 'px)';
-          fills[k].style.transform = 'translate(' + (a * 13 * (k % 2 ? 1 : -1)).toFixed(2) + 'px,' +
-            (a * 8).toFixed(2) + 'px) scale(' + (1 + .14 * a).toFixed(3) + ')';
-        }
-      }
-      var R = { onUpdate: render };
-      render();
-
-      gsap.set(q('.ds-bar.ghost'), { autoAlpha: 0 });
-      gsap.set([q('.ds-arr'), q('.ds-at'), q('.ds-key'), q('.ds-lab.l1'), q('.ds-tick'),
-                q('.ds-lab.l2'), q('.ds-fb'), q('.ds-cap'), qa('.ds-fr')], { autoAlpha: 0 });
+      gsap.set([q('.ds-arr'), q('.ds-at'), q('.ds-st.s2'), q('.ds-block'), q('.ds-now'), q('.ds-cap'), qa('.ds-arc')], { autoAlpha: 0 });
+      gsap.set(frs, { autoAlpha: 0 });
+      gsap.set(fills, { autoAlpha: 0 });
       gsap.set(qa('.ds-card.b > *'), { autoAlpha: 0 });
 
-      // ---- entrance: the empty outline poses the question ----
+      // ---- entrance: stage 1, the teacher and an empty outline for the student ----
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.rise(tl, q('.ds-card.a'), { at: .25 });
-      tl.from(qa('.ds-card.a > *, .ds-bar:not(.ghost), .ds-tcap'), { autoAlpha: 0, y: 18, duration: .5, stagger: .08 }, .45);
-      Kit.rise(tl, q('.ds-card.b'), { at: .6 });
+      Kit.rise(tl, q('.ds-st.s1'), { at: .2 });
+      Kit.rise(tl, q('.ds-card.a'), { at: .3 });
+      tl.from(qa('.ds-card.a > *'), { autoAlpha: 0, y: 18, duration: .5, stagger: .08 }, .5);
+      Kit.rise(tl, q('.ds-card.b'), { at: .65 });
       ctx.pause();
 
-      // ---- click 1: fewer steps, measured in the same place the 50 sits ----
+      // ---- click 1: the student copies the result in far fewer steps ----
       tl.to(q('.ds-arr'), { autoAlpha: 1, duration: .01 });
       tl.fromTo(q('.ds-arr'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .6, ease: 'power2.out' }, '<');
       tl.to(q('.ds-at'), { autoAlpha: 1, duration: .4 }, '-=.3');
@@ -780,44 +778,30 @@
       Kit.count(tl, q('.ds-card.b .n'), { from: 50, to: 4, prefix: '×', duration: 1.0, ease: 'power2.inOut' });
       ctx.pause();
 
-      // ---- click 2: whole clip becomes a stream of frames, one at a time ----
-      tl.to(q('.ds-bar:not(.ghost)'), { x: 1060, duration: .8, ease: 'power2.inOut' });
-      tl.to(q('.ds-bar.ghost'), { autoAlpha: .32, duration: .5 }, '<+.2');
-      tl.to(q('.ds-bar:not(.ghost)'), { autoAlpha: 0, duration: .3 });
-      tl.addLabel('roll', '-=.15');
-      tl.to(qa('.ds-fr'), { autoAlpha: 1, duration: .25, stagger: .07 }, 'roll');
-      tl.to(q('.ds-cap'), { autoAlpha: 1, duration: .35 }, 'roll+=.2');
-      ctx.pause();
-
-      // ---- click 3: in training the real frames sit beside it ----
-      Kit.show(tl, q('.ds-key'), { y: 0, duration: .45 });
-      ctx.pause();
-
-      // ---- click 4: take the key away and watch the error accumulate ----
-      tl.to(q('.ds-key'), { x: 420, autoAlpha: 0, duration: .8, ease: 'power2.in' });
-      tl.to(st, Object.assign({ err: 1, duration: 1.1, ease: 'power1.inOut' }, R), '-=.55');
-      Kit.show(tl, q('.ds-lab.l1'), { y: 14, duration: .4, at: '-=.3' });
-      tl.to(q('.ds-tick'), { autoAlpha: 1, duration: .3 }, '-=.2');
-      ctx.pause();
-
-      // ---- click 5: its own output becomes its training input ----
-      tl.to(st, Object.assign({ drain: 1, duration: 1.0, ease: 'none' }, R));
-      tl.to(q('.ds-fb'), { autoAlpha: 1, duration: .01 }, '<');
-      tl.fromTo(q('.ds-fb'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .9, ease: 'power2.inOut' }, '<');
-      tl.to(q('.ds-tick'), { autoAlpha: 0, duration: .3 }, '-=.6');
-      Kit.swap(tl, q('.ds-lab.l1'), q('.ds-lab.l2'), { at: '-=.5' });
+      // ---- click 2: the whole clip splits into frames, drawn left to right ----
+      tl.to(qa('.ds-card, .ds-arr, .ds-at, .ds-st.s1'), { opacity: .7, duration: .4 });
+      Kit.show(tl, q('.ds-st.s2'), { y: 14, duration: .4, at: '<' });
+      Kit.show(tl, q('.ds-block'), { y: 14, duration: .4, at: '-=.1' });
+      tl.to(frs, { autoAlpha: 1, duration: .01 }, '+=.35');                  // empty slots under the block
+      tl.to(q('.ds-block'), { autoAlpha: 0, scaleX: .96, duration: .35, ease: 'power1.in' }, '<');
+      tl.addLabel('draw', '+=.05');
+      for (var k = 0; k < DS_NOW; k++) {
+        tl.to(fills[k], { autoAlpha: 1, duration: .2 }, 'draw+=' + (k * .14).toFixed(2));
+        tl.set(frs[k], { borderStyle: 'solid' }, '<');
+      }
+      tl.to(frs[DS_NOW], { borderColor: C.purpleT, borderStyle: 'solid', duration: .25 }, 'draw+=' + (DS_NOW * .14).toFixed(2));
+      tl.to(fills[DS_NOW], { autoAlpha: .45, duration: .4 }, '<');
+      Kit.show(tl, q('.ds-now'), { y: 8, duration: .3, at: '<' });
+      tl.to(qa('.ds-arc'), { autoAlpha: 1, duration: .01 }, '<');
+      tl.fromTo(qa('.ds-arc'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .45, stagger: .08 }, '<');
+      Kit.show(tl, q('.ds-cap'), { y: 12, duration: .4, at: '-=.1' });
     },
     notes:
-      'So how do you get a big, slow, future-peeking model to run live? You teach a student.' +
-      '[click] The student lands in a handful of steps where the teacher lands in fifty — copying the teacher’s ' +
-      'results, not its route.' +
-      '[click] Then you cut up the clip: instead of the whole video at once, it makes one frame at a time, each ' +
-      'built from the one before — the same shape as the shopping assistant writing one word at a time.' +
-      '[click] In training it always had the real frames beside it, like an answer key.' +
-      '[click] On a live call the key is gone, so it builds on its own slightly-wrong frames. Errors pile up ' +
-      'and the face drifts.' +
-      '[click] The fix, Self-Forcing, is to practice without the key: generate your own frames, then get graded ' +
-      'on the result. It learns to recover from its own mistakes.'
+      'So how do you get to this fast few step model? The solution has two stages.' +
+      '[click] The main one is the first stage of distillation. You first create a really good but slow model, which is going to be ' +
+      'the teacher, and then you train a new student model on that teacher\'s outputs to approximate it much faster.' +
+      '[click] Then you train the model to make one frame at a time only based on past frames by cutting whole clips into chunks. With ' +
+      'these two steps you directly resolve the two issues with the original diffusion model and get to something much more practical.'
   };
 
   /* ======================================================================
@@ -917,13 +901,12 @@
       Kit.show(tl, [q('.rs-chip'), q('.rs-card'), q('.rs-sub')], { y: 26, stagger: .14 });
     },
     notes:
-      'Tavus ran their own test. Fifty-four people had a one-minute video call, then said whether their ' +
-      'partner might be a machine. What they tested is Griffin-Lite, a cut-down preview; the full model is ' +
-      'not out.' +
-      '[click] Twenty-six of them, forty-eight percent, thought they had talked to a person.' +
-      '[click] With Tavus’s old system: one person in forty-one.' +
-      '[click] So read it with those caveats. And Griffin still replies slower than we do: one-point-nine ' +
-      'seconds against nine tenths. The point-four-three is the picture alone, not the thinking.'
+      'The key result that Tavus loves to tell everyone about is what they call the real-time video Turing test. Basically they put 54 ' +
+      'people in a room and had them talk to the model and guess whether it was real or AI.' +
+      '[click] The result was that 48% thought they were talking to a real person, which is basically random chance.' +
+      '[click] With their old system it was only 1/41, so about 2%.' +
+      '[click] This sounds great but it\'s just their own study so we have to take it with a grain of salt, and the latency is still ' +
+      'about the twice the human average at 1.9 seconds.'
   };
 
   /* ======================================================================
@@ -935,12 +918,11 @@
     { t: 'Price', cls: 'tk-price' },
     { t: 'Assist', cls: 'tk-assist' },
     { t: 'Interact', cls: 'tk-interact' },
-    { t: 'Negotiate', cls: 'tk-neg' }
+    { t: 'Negotiate+', cls: 'tk-neg' }
   ];
   var TKROWS = [
     ['01', 'Diffusion', 'Remove noise step by step<br>and a frame appears.'],
-    ['02', 'Distillation', 'A small student copies<br>a big teacher.'],
-    ['03', 'Evaluation', 'A believability score is not<br>a quality measure.']
+    ['02', 'Distillation', 'A small student copies<br>a big teacher.']
   ];
 
   var TAKEAWAY = {
@@ -950,7 +932,7 @@
     budgetSec: 30,
     html: function () {
       var rows = TKROWS.map(function (r, i) {
-        return '<div class="tk-row r' + i + '" style="top:' + (285 + i * 190) + 'px">' +
+        return '<div class="tk-row r' + i + '" style="top:' + (355 + i * 190) + 'px">' +
           '<div class="n t-mono">' + r[0] + '</div>' +
           '<div class="rule"></div>' +
           '<div class="tg t-caps">' + r[1] + '</div>' +
@@ -966,20 +948,20 @@
         '<div class="tk-veil"></div>' +
         rows +
         '<div class="thru">' + strip + '</div>' +
-        Kit.src('Tavus’s live study: 26 of 54 vs 1 of 41, one-minute calls, no control arm.', 'Self-reported');
+        Kit.src('Tavus, Griffin; Yin et al., <em>DMD2</em>, 2024.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
       var slab = q('.tk-interact .bg');
 
-      // strip: PRICE and ASSIST already slabbed, INTERACT unfilled at entrance, NEGOTIATE not reached
+      // strip: PRICE and ASSIST already slabbed, INTERACT unfilled at entrance, NEGOTIATE+ not reached
       gsap.set(qa('.thru .tx'), { color: C.text3 });
       gsap.set(q('.tk-price .bg'), { backgroundColor: C.red, skewX: -12 });
       gsap.set(q('.tk-assist .bg'), { backgroundColor: C.blue, skewX: -12 });
       gsap.set([q('.tk-price .tx'), q('.tk-assist .tx')], { color: '#FFFFFF' });
       gsap.set(slab, { backgroundColor: C.purple, skewX: -12, scaleX: 0, transformOrigin: 'left center' });
-      // rows 2 and 3 are hidden by default, so they are revealed with Kit.show (never from())
-      gsap.set([qa('.r1 > *'), qa('.r2 > *')], { autoAlpha: 0 });
+      // row 2 is hidden by default, so they are revealed with Kit.show (never from())
+      gsap.set(qa('.r1 > *'), { autoAlpha: 0 });
 
       // ---- entrance: image, veil, header, row 01, strip ----
       tl.from([q('.tk-img'), q('.tk-veil')], { autoAlpha: 0, duration: .9, ease: 'power2.out' }, 0);
@@ -988,26 +970,25 @@
       Kit.fade(tl, q('.thru'), { at: .7, duration: .5 });
       ctx.pause();
 
-      // ---- click 1: the second lesson ----
+      // ---- click 1: the second lesson, and the throughline moves on ----
       Kit.show(tl, qa('.r1 > *'), { stagger: .07, duration: .5 });
-      ctx.pause();
-
-      // ---- click 2: the third lesson, and the throughline moves on ----
-      Kit.show(tl, qa('.r2 > *'), { stagger: .07, duration: .5 });
       tl.to(slab, { scaleX: 1, duration: .5, ease: Kit.ease.out }, '<+.1');
       tl.to(q('.tk-interact .tx'), { color: '#FFFFFF', duration: .4 }, '<+.2');
       tl.to(q('.tk-neg .tx'), { color: C.greenT, duration: .5 }, '<+.1');
     },
     notes:
-      'Three things to keep. One: diffusion makes realistic images and video, and the clean-up passes are what ' +
-      'make it slow.' +
-      '[click] Two: distillation. Train a small student to copy a big teacher, and the same model streams live.' +
-      '[click] Three: the study measured whether people were fooled, not whether it was good. Half were fooled ' +
-      'in one-minute calls, and replies still take twice as long as ours. Next: the company that built it.'
+      'Two takeaways once again. #1, remember how diffusion denoises iteratively to generate realistic images and video.' +
+      '[click] #2 is this concept of distillation. When you have speed or cost constraints, it\'s often very effective to take the good ' +
+      'but slow model as a teacher and then train a small student model to copy it.'
   };
+
+  // the three parts of the architecture slide; diffusion → distillation all explain the video generator
+  var PARTS = ['CCM', 'Speech generator', 'Video generator'];
 
   Deck.section({
     id: 'griffin', order: 3, num: '03', kicker: 'Interact', title: 'Tavus Griffin',
-    slides: [OPEN, DEMO, CASCADE, OVERVIEW, DIFFUSION, STREAM, DISTILL, RESULTS, TAKEAWAY]
+    slides: [OPEN, DEMO, CASCADE, OVERVIEW,
+      Kit.withCrumbs(DIFFUSION, PARTS, 2), Kit.withCrumbs(STREAM, PARTS, 2), Kit.withCrumbs(DISTILL, PARTS, 2),
+      RESULTS, TAKEAWAY]
   });
 })();

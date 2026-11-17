@@ -23,6 +23,20 @@
     return '<div class="src">' + (flag ? '<span class="flag">' + Kit.esc(flag) + '</span>&nbsp;&nbsp;' : '') + text + '</div>';
   };
 
+  /** "Where we are" marker, top-right of a content slide: steps = ['Booking chance', 'Price', …], cur = 0-based index.
+      Ties a technique slide back to the section's roadmap. Static on purpose: it orients, it does not teach. */
+  Kit.crumbs = function (steps, cur) {
+    return '<div class="crumbs">' + steps.map(function (t, i) {
+      return (i ? '<i>→</i>' : '') + '<span class="cr' + (i === cur ? ' on' : '') + '"><b>' + (i + 1) + '</b>' + Kit.esc(t) + '</span>';
+    }).join('') + '</div>';
+  };
+  /** Wrap a slide def so its html also renders Kit.crumbs(steps, cur). Returns the def. */
+  Kit.withCrumbs = function (def, steps, cur) {
+    var h = def.html;
+    def.html = function (ctx) { return (typeof h === 'function' ? h(ctx) : (h || '')) + Kit.crumbs(steps, cur); };
+    return def;
+  };
+
   /** Slanted panels (inspo motif). items: [{x,y,w,h,color,opacity,glass,cls}] → HTML string */
   Kit.panels = function (items) {
     return items.map(function (p) {

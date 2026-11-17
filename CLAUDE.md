@@ -2,7 +2,7 @@
 
 A 27-minute lecture Rey gives solo to students with no ML background. It teaches real ML techniques through real products,
 assembling an "AI salesperson" piece by piece: **Price** (Airbnb) → **Assist** (Amazon Rufus) → **Interact** (Tavus Griffin)
-→ Tavus the company → **Negotiate** (the future of agent selling).
+→ Tavus the company → **Negotiate+** (the future of agent selling).
 
 The deck is static HTML/CSS/JS built on GSAP. It has no build step and opens directly from `file://`.
 

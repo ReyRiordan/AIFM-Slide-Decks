@@ -12,8 +12,8 @@
 }
 /* founder photos (real people — sanctioned by KIT §2.6, credited in the footer) */
 .slide[data-sec="tavus"] .fp { position: absolute; width: 220px; margin: 0; }
-.slide[data-sec="tavus"] .fp.fa { left: 1140px; top: 300px; }
-.slide[data-sec="tavus"] .fp.fb { left: 1380px; top: 300px; }
+.slide[data-sec="tavus"] .fp.fa { left: 1140px; top: 570px; }
+.slide[data-sec="tavus"] .fp.fb { left: 1380px; top: 570px; }
 .slide[data-sec="tavus"] .fp img {
   display: block; width: 200px; height: 200px; object-fit: cover;
   border-radius: 20px; border: 2px solid var(--line);

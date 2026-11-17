@@ -38,6 +38,11 @@
 .slide[data-sec="griffin"] .dm-btn span { margin-left: 10px; }
 .slide[data-sec="griffin"] .dm-btn:hover,
 .slide[data-sec="griffin"] .dm-btn:focus-visible { background: rgba(154, 65, 152, .22); outline: none; }
+.slide[data-sec="griffin"] .dm-live { background: var(--purple); border-color: var(--purple); color: #fff; }
+.slide[data-sec="griffin"] .dm-live:hover,
+.slide[data-sec="griffin"] .dm-live:focus-visible { background: var(--purple-t); border-color: var(--purple-t); }
+.slide[data-sec="griffin"] .dm-dot { width: 14px; height: 14px; border-radius: 50%; background: #fff; margin-right: 14px; animation: dm-pulse 1.6s ease-in-out infinite; }
+@keyframes dm-pulse { 50% { opacity: .35; } }
 .slide[data-sec="griffin"] .dm-q { line-height: 1.12; display: flex; align-items: center; }
 
 /* ---------- 3 · cascade ---------- */
@@ -64,8 +69,9 @@
 .slide[data-sec="griffin"] .df-g { opacity: 0; }
 .slide[data-sec="griffin"] .df-chip .ar { margin: 0 12px; }
 .slide[data-sec="griffin"] .df-chip {
-  position: absolute; top: 840px; height: 76px; border-radius: 38px;
-  background: var(--surface); display: flex; align-items: center; justify-content: center;
+  position: absolute; top: 836px; height: 84px; border-radius: 42px;
+  background: var(--surface); border: 2px solid var(--purple);
+  display: flex; align-items: center; justify-content: center; gap: 56px;
   color: var(--text); white-space: nowrap;
 }
 
@@ -86,34 +92,38 @@
 }
 
 /* ---------- 7 · distill ---------- */
+.slide[data-sec="griffin"] .ds-st {
+  position: absolute; left: 120px; display: flex; align-items: center; gap: 14px; color: var(--text-2);
+}
+.slide[data-sec="griffin"] .ds-st b {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--purple); color: #fff; font-family: var(--mono); letter-spacing: 0;
+}
+.slide[data-sec="griffin"] .ds-st.s1 { top: 286px; }
+.slide[data-sec="griffin"] .ds-st.s2 { top: 620px; }
 .slide[data-sec="griffin"] .ds-card {
-  position: absolute; top: 300px; width: 620px; height: 320px; border-radius: 20px;
+  position: absolute; top: 352px; width: 620px; height: 240px; border-radius: 20px;
 }
 .slide[data-sec="griffin"] .ds-card.a { left: 120px; background: var(--surface); }
 .slide[data-sec="griffin"] .ds-card.b { left: 1180px; background: transparent; border: 3px dashed var(--line); }
-.slide[data-sec="griffin"] .ds-card .k { position: absolute; left: 34px; top: 30px; }
-.slide[data-sec="griffin"] .ds-card .s { position: absolute; left: 34px; top: 86px; color: var(--text-2); }
-.slide[data-sec="griffin"] .ds-card .n { position: absolute; left: 34px; top: 130px; }
-.slide[data-sec="griffin"] .ds-bar {
-  position: absolute; left: 154px; top: 650px; width: 520px; height: 34px;
-  border-radius: 8px; background: var(--text-3);
+.slide[data-sec="griffin"] .ds-card .k { position: absolute; left: 34px; top: 26px; }
+.slide[data-sec="griffin"] .ds-card .s { position: absolute; left: 34px; top: 72px; color: var(--text-2); }
+.slide[data-sec="griffin"] .ds-card .n { position: absolute; left: 34px; top: 112px; }
+.slide[data-sec="griffin"] .ds-block {
+  position: absolute; left: 120px; top: 696px; width: 1380px; height: 160px; border-radius: 12px;
+  background: var(--surface); border: 2px solid var(--line); color: var(--text-2);
+  display: flex; align-items: center; justify-content: center; transform-origin: left center;
 }
-.slide[data-sec="griffin"] .ds-tcap { position: absolute; left: 706px; top: 642px; color: var(--text-2); }
-.slide[data-sec="griffin"] .ds-cap { position: absolute; left: 180px; top: 700px; }
 .slide[data-sec="griffin"] .ds-fr {
-  position: absolute; top: 750px; width: 100px; height: 134px; border-radius: 10px;
-  border: 2px solid var(--line); overflow: hidden;
+  position: absolute; top: 696px; width: 120px; height: 160px; border-radius: 10px;
+  border: 2px dashed var(--line); overflow: hidden;
 }
 .slide[data-sec="griffin"] .ds-fr .fill {
   position: absolute; inset: 0;
   background: #2A2426 url(../../assets/img/griffin/portrait.jpg) center 22% / cover no-repeat;
 }
-.slide[data-sec="griffin"] .ds-fr .err { position: absolute; inset: 0; background: var(--red); opacity: 0; }
-.slide[data-sec="griffin"] .ds-key {
-  position: absolute; left: 1540px; top: 750px; width: 260px; height: 134px; border-radius: 14px;
-  border: 2px dashed var(--orange); padding: 18px 20px;
-}
-.slide[data-sec="griffin"] .ds-lab { position: absolute; left: 840px; top: 700px; width: 650px; color: var(--text-2); }
+.slide[data-sec="griffin"] .ds-now { position: absolute; top: 652px; width: 120px; text-align: center; }
+.slide[data-sec="griffin"] .ds-cap { position: absolute; left: 1540px; top: 716px; width: 280px; color: var(--text-2); line-height: 1.25; }
 
 /* ---------- 8 · results ---------- */
 .slide[data-sec="griffin"] .rs-lab { position: absolute; top: 292px; color: var(--text-3); }

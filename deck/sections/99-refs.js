@@ -72,7 +72,7 @@
     'Y Combinator, Tavus company page: founder photos of Hassaan Raza and Quinn Favret, read 4 Nov 2026'
   ];
 
-  /* ---- 04 · Negotiate — benchmarks and studies ---- */
+  /* ---- 04 · Negotiate+ — benchmarks and studies ---- */
   var EVIDENCE = [
     'Andon Labs, <i>Vending-Bench 2</i> leaderboard, read 4 Nov 2026 (top 8 of 73)',
     'Andon Labs, <i>Vending-Bench Arena</i> (multi-agent games, cartels)',
@@ -82,13 +82,11 @@
     'Stanford HAI, <i>The Art of the Automated Negotiation</i> (the ≈2% gap)'
   ];
 
-  /* ---- 04 · Negotiate — markets, law and payments ---- */
+  /* ---- 04 · Negotiate+ — markets and law ---- */
   var MARKETS = [
     'Fox Business, <i>Walmart using AI to negotiate cost and purchase terms with vendors</i> (Pactum)',
     'Retail Dive, <i>The startup that’s automating supplier negotiations for Walmart</i>',
-    'Sidley, <i>From Disclosures to Prohibitions</i>, Oct 2026 (Maryland’s ban, state bills, the FTC Section 5 proposal)',
-    'Artemis, x402 dashboard, read 3 Nov 2026',
-    'Yahoo Finance, <i>x402 Foundation activated</i>, 14 Jul 2026 (40 members)'
+    'Sidley, <i>From Disclosures to Prohibitions</i>, Oct 2026 (Maryland’s ban, state bills, the FTC Section 5 proposal)'
   ];
 
   Deck.section({
@@ -102,9 +100,9 @@
         [COL_X[0], '03 · Interact', INTERACT],
         [COL_X[1], 'Tavus, the company', COMPANY]
       ]),
-      refSlide('refs-3', 'References 3 — negotiate', 'References, continued', [
-        [COL_X[0], '04 · Negotiate — benchmarks', EVIDENCE],
-        [COL_X[1], '04 · Negotiate — markets and law', MARKETS]
+      refSlide('refs-3', 'References 3 — negotiate+', 'References, continued', [
+        [COL_X[0], '04 · Negotiate+ — benchmarks', EVIDENCE],
+        [COL_X[1], '04 · Negotiate+ — markets and law', MARKETS]
       ])
     ]
   });
