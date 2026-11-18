@@ -1,8 +1,8 @@
 # macOS
 .DS_Store
 
-# QA screenshots (~260 MB) — regenerate locally, don't version
-deck/qa/
+# QA screenshots (hundreds of MB) — regenerate with tools/capture.py, don't version
+**/qa/
 
 # Build/render logs
 *.log

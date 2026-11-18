@@ -1,3 +1,6 @@
+> **Archived (deck 1).** Paths in this file refer to the old layout: `deck/` is now `decks/automated-selling/`, the reports are in `sources/`,
+> and the plans are in `plans/`. For a new deck, use `template/KIT.md` and `HANDOFF.md` instead.
+
 # KIT — builder contract for "Built to Sell"
 
 > **Fix pass (Nov 2026) overrides everything below where they conflict.** The decisions, heading map and budgets are in
