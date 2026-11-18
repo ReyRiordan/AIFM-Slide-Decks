@@ -38,5 +38,5 @@ Food design deck live site: https://ai-automated-selling-deck-food-desi.vercel.a
 - Asset paths are case-sensitive on the host, so match filename case exactly.
 
 ## Hosting
-- Private GitHub repo `ReyRiordan/ai-automated-selling-deck`. Each hosted deck is its own Vercel project with Root Directory `decks/<name>` (HANDOFF §6).
+- Private GitHub repo `ReyRiordan/AIFM-Slide-Decks`. Each hosted deck is its own Vercel project with Root Directory `decks/<name>` (HANDOFF §6).
 - Pushing to `main` redeploys. Work on a branch and push only when Rey asks.
