@@ -97,9 +97,22 @@
   };
 
   /** Draw SVG strokes (uses DrawSVGPlugin). */
+  /* Every Kit.rough / Kit.doodle call tags all of its paths with one data-sh id (sides, ghost pass and hatch lines alike),
+     so o.stagger applies per SHAPE, not per stroke: a hatched, overshooting box is one beat, not 30. */
   Kit.draw = function (tl, targets, o) {
     o = o || {};
-    return tl.from(targets, { drawSVG: '0%', duration: o.duration || .9, ease: o.ease || 'power2.inOut', stagger: o.stagger || 0 }, o.at);
+    var dur = o.duration || .9, ease = o.ease || 'power2.inOut';
+    var els = gsap.utils.toArray(targets);
+    if (!o.stagger || !els.length) return tl.from(els, { drawSVG: '0%', duration: dur, ease: ease }, o.at);
+    var groups = [], idx = {};
+    els.forEach(function (el, i) {
+      var k = el.getAttribute && el.getAttribute('data-sh'); k = k ? 's' + k : 'p' + i;
+      if (!(k in idx)) { idx[k] = groups.length; groups.push([]); }
+      groups[idx[k]].push(el);
+    });
+    var sub = gsap.timeline();
+    groups.forEach(function (g, k) { sub.from(g, { drawSVG: '0%', duration: dur, ease: ease }, k * o.stagger); });
+    return tl.add(sub, o.at);
   };
 
 
@@ -196,6 +209,18 @@
       return body + Kit.rough.path(hd, Object.assign({}, o, { seed: _seed(o, 'h' + x2 + y2) }));
     }
   };
+
+  var _shN = 0;
+  function _tagShapes(obj) {
+    Object.keys(obj).forEach(function (k) {
+      var f = obj[k];
+      obj[k] = function () {
+        var m = f.apply(this, arguments), id = ++_shN;
+        return typeof m === 'string' ? m.replace(/ data-sh="\d+"/g, '').replace(/<path /g, '<path data-sh="' + id + '" ') : m;
+      };
+    });
+  }
+  _tagShapes(Kit.rough);
 
   /* ---------------- deck 2: doodles ----------------
      Kit.doodle.* return SVG markup (rough paths, class "rp dd") for margin doodles that POINT AT the focal thing:
@@ -373,6 +398,8 @@
       return out;
     }
   };
+
+  _tagShapes(Kit.doodle);
 
   /** Full-stage SVG layer for doodles that must sit ON TOP of photos (section <svg>s come before Kit.photo imgs in html()).
       Put it last in html(): Kit.overlay(Kit.doodle.steam(...) + ...). cls lets you target it. */
