@@ -32,6 +32,10 @@
   function svg(cls, inner) {
     return '<svg class="sm-svg ' + cls + '" width="1920" height="1080" viewBox="0 0 1920 1080">' + inner + '</svg>';
   }
+  /** ML / rule tag: says whether a step is learned or written by hand. */
+  function tag(kind, x, y, cls, text) {
+    return div('sm-tag ' + kind + ' ' + (cls || ''), x, y, 0, text || (kind === 'ml' ? 'ML' : 'rule'));
+  }
   /** Absolutely positioned block. */
   function div(cls, x, y, w, inner, extra) {
     return '<div class="' + cls + '" style="left:' + x + 'px;top:' + y + 'px;' + (w ? 'width:' + w + 'px;' : '') +
@@ -200,11 +204,11 @@
 
   /* ============================================================== 3 · SYSTEM */
   var PARTS = [
-    { t: 'Understand', s: 'vision + language', chip: 'id: flour' },
+    { t: 'Understand', s: 'vision-language model', chip: 'id: flour' },
     { t: 'Sense', s: 'image recognition', chip: 'apple × 4', who: 'Gemini' },
-    { t: 'Rank', s: 'recommender', chip: 'top 3' },
+    { t: 'Rank', s: 'collaborative filtering', chip: 'top 3' },
     { t: 'Check', s: 'LLM + rules', chip: '✓ nut-free', who: 'OpenAI' },
-    { t: 'Act', s: 'parsing + rules', chip: '180 °C' }
+    { t: 'Act', s: 'sequence labeling + rules', chip: '180 °C' }
   ];
   var BX = [120, 465, 810, 1155, 1500], BW = 300, BH = 196, BY = 272;
   // Crops, not whole phone screens: at this width only a fragment stays legible (reviewer, Nov 2026).
@@ -425,12 +429,15 @@
         div('t-caps c-teal sm-fk', 640, 638, 700, 'Retrieve a recipe') +
         div('bignum sm-fn', 640, 690, 520, '<div class="t-num sm-fv">0</div>') +
         div('t-body sm-fl1', 1180, 744, 580, 'finds the right recipe among 1,000') +
-        div('t-label faint sm-fl2', 1180, 820, 580, 'only returns recipes that exist');
+        div('t-label faint sm-fl2', 1180, 820, 580, 'only returns recipes that exist') +
+        div('t-body sm-rs s1', 640, 900, 400, 'image recognition' + tag('ml', 0, 0, 'in')) +
+        div('t-body sm-rs s2', 1150, 900, 520, 'embedding search' + tag('ml', 0, 0, 'in')) +
+        svg('sm-rs-svg', '<g class="sm-rsa">' + Kit.rough.arrow(1020, 922, 1130, 922, { seed: 124, w: 'normal', head: 16 }) + '</g>');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
       wireVideo(ctx);
-      gsap.set(qa('.sm-wbox, .sm-wk, .sm-wl, .sm-hf, .sm-hc, .sm-fbox, .sm-fk, .sm-fn, .sm-fl1, .sm-fl2, .dd-ok'), { autoAlpha: 0 });
+      gsap.set(qa('.sm-wbox, .sm-wk, .sm-wl, .sm-hf, .sm-hc, .sm-fbox, .sm-fk, .sm-fn, .sm-fl1, .sm-fl2, .dd-ok, .sm-rs, .sm-rsa'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
       Kit.draw(tl, qa('.sm-frame .rp'), { at: .3, duration: .9 });
       Kit.fade(tl, q('.sm-vid'), { at: .9 });
@@ -456,11 +463,15 @@
       Kit.show(tl, qa('.sm-fl1, .sm-fl2'), { at: 'f+=.9', y: 12, stagger: .12, duration: .4 });
       tl.to(q('.dd-ok'), { autoAlpha: 1, duration: .01 }, 'f+=1.4');
       Kit.draw(tl, qa('.dd-ok .rp'), { at: 'f+=1.4', duration: .4 });
+      Kit.show(tl, q('.sm-rs.s1'), { at: 'f+=1.6', y: 10, duration: .4 });
+      tl.to(q('.sm-rsa'), { autoAlpha: 1, duration: .01 }, 'f+=1.9');
+      Kit.draw(tl, qa('.sm-rsa .rp'), { at: 'f+=1.9', duration: .3 });
+      Kit.show(tl, q('.sm-rs.s2'), { at: 'f+=2.1', y: 10, duration: .4 });
     },
     notes:
       'Point the app at a finished dish and it does something narrower: it recognises the food, then looks for recipes that use it. ' +
-      '[click] Writing a recipe from a dish photo means guessing what the camera cannot see: the salt, the oil, the oven temperature, the step order.' +
-      '[click] Searching only returns recipes that exist. In the clip, the pozole recipe lists half a teaspoon of salt and a spoon of olive oil: a person wrote those down, the camera never saw them. The best published system finds the right recipe out of a thousand, seven times in eight. A research number, not Samsung\'s.'
+      '[click] Writing a recipe from a dish photo means guessing what the camera cannot see: the salt, the oil, the oven temperature, the step order. ' +
+      '[click] Searching only returns recipes that exist. In the clip, the pozole recipe lists salt and olive oil that the camera never saw. Two ML steps do this. Image recognition names the food. Embedding search turns photos and recipes into lists of numbers in one shared space and returns the closest recipe. The best research system picks the right one of a thousand recipes seven times in eight. Samsung has not said which search it uses.'
   };
   Kit.withCrumbs(RETRIEVE, STEPS, 1);
 
@@ -496,14 +507,14 @@
         '<g class="sm-lift">' + Kit.rough.arrow(286, 1006, 286, 944, { seed: 139, w: 'normal', head: 18, stroke: C.rustT }) + '</g>' +
         '<g class="dd-cap">' + Kit.doodle.underline(1166, 932, 500, { seed: 207, color: 'var(--rust-t)' }) + '</g>') +
         div('t-h2 sm-top', 200, 296, 900, '<span class="sm-tv">0</span> recipes') +
-        div('t-caps c-rust sm-sk k1', 240, 404, 500, 'Hard filter') +
+        div('t-caps c-rust sm-sk k1', 240, 404, 500, 'Hard filter') + tag('rule', 830, 400, 'sm-sk k1') +
         div('t-body sm-sl l1', 240, 448, 600, 'nut allergy') +
         div('t-caps c-teal sm-sk k2', 300, 596, 500, 'Score') +
-        div('t-body sm-sl l2', 300, 640, 600, 'taste · time') +
+        div('t-body sm-sl l2', 300, 640, 600, 'collaborative filtering') + tag('ml', 790, 592, 'sm-sk k2') +
         div('t-caps dim sm-sk k3', 360, 788, 500, 'Boost') +
-        div('t-body sm-sl l3', 360, 828, 520, 'apples, use by Thursday') +
+        div('t-body sm-sl l3', 360, 828, 520, 'apples, use by Thursday') + tag('ml', 740, 784, 'sm-sk k3', 'ML feature') +
         div('t-body sm-kot', 1180, 420, 480, 'Taffy Apple Salad') +
-        div('t-caps faint sm-sg', 1160, 600, 640, 'Taste signals') +
+        div('t-caps faint sm-sg', 1160, 600, 640, 'Learned from') +
         div('t-label sm-bl g1', 1160, 662, 130, 'save') +
         div('t-label sm-bl g2', 1160, 730, 130, 'view') +
         resC +
@@ -570,10 +581,10 @@
     },
     notes:
       'Ranking starts with every recipe in the catalogue. This household has a nut allergy. ' +
-      '[click] Our demo recipe has peanuts in it, so it must never appear, however well it matches their taste. Allergies and diets are a filter, not a weight. ' +
-      '[click] Taste and cooking time are soft, so they go into a score. Where does taste come from? People almost never rate a recipe, so the system reads clues. A save says more than a view, and a saved recipe may still never be cooked. ' +
-      '[click] Three come out the bottom, in score order. Then context nudges the score: Samsung\'s meal plans favour ingredients near their use-by date. ' +
-      '[click] The apples have to go, so the apple dish moves to the front. Nothing was filtered out here, only reordered. Filter first, then rank. The allergy and the Thursday date are mine, to make it concrete.'
+      '[click] The first step is not ML at all. It is a rule. Our demo recipe has peanuts, so it must never appear, however well it matches. ' +
+      '[click] The score is the ML part: a recommender system. The usual technique is collaborative filtering. It learns a taste profile for each person and each recipe from what people saved and viewed, and scores the match. People rarely rate recipes, so a save counts for more than a view. Cookpad, a similar recipe site, published one built this way; Samsung has not named its model. ' +
+      '[click] Three come out in score order. Context is one more input to the score: Samsung\'s meal plans favour ingredients near their use-by date. ' +
+      '[click] So the apple dish moves to the front. Filter with rules, then rank with ML. The allergy and the date are mine, to make it concrete.'
   };
   Kit.withCrumbs(RANK, STEPS, 2);
 
@@ -725,7 +736,8 @@
         '<g class="dd-rx">' + Kit.doodle.mark(1476, 418, 30, 'x', { seed: 209, color: 'var(--rust-t)' }) + '</g>') +
         div('t-caps dim sm-ak', 120, 296, 700, 'One recipe step') +
         lines +
-        div('t-body sm-gt2', 840, 756, 340, 'Range check') +
+        div('t-body sm-gt2', 840, 756, 340, 'Range check') + tag('rule', 1090, 704, 'sm-gtag') +
+        tag('ml', 470, 290, 'sm-tg-ml', 'ML · sequence labeling') +
         div('t-label faint sm-ovl', 1310, 926, 300, 'the oven') +
         div('chip sm-conf', 820, 900, 0, '<span class="dot"></span>user confirms') +
         div('callout sm-rk2', 1290, 326, 460, 'out of range') +
@@ -733,7 +745,7 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-tg, .sm-da, .sm-jbox, .sm-jl2, .sm-ga, .sm-gate, .sm-gt2, .sm-oa, .sm-oven, .sm-lit, .dd-pass, .sm-ovl, .sm-conf, .sm-rej, .sm-rv, .sm-rk2, .dd-rx'), { autoAlpha: 0 });
+      gsap.set(qa('.sm-tg, .sm-tg-ml, .sm-gtag, .sm-da, .sm-jbox, .sm-jl2, .sm-ga, .sm-gate, .sm-gt2, .sm-oa, .sm-oven, .sm-lit, .dd-pass, .sm-ovl, .sm-conf, .sm-rej, .sm-rv, .sm-rk2, .dd-rx'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
       Kit.fade(tl, q('.sm-ak'), { at: .25 });
       tl.fromTo(qa('.sm-act-svg text.disp'), { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .12 }, .35);
@@ -742,6 +754,7 @@
       ctx.pause();
       tl.addLabel('t');
       tl.to(qa('.sm-tg'), { autoAlpha: 1, duration: .01, stagger: .14 }, 't');
+      Kit.show(tl, q('.sm-tg-ml'), { at: 't+=.5', y: 8, duration: .35 });
       Kit.draw(tl, qa('.sm-tg .rp'), { at: 't', duration: .3, stagger: .14 });
 
       // [click 2] the slots become a typed command
@@ -758,7 +771,7 @@
       tl.to(qa('.sm-ga, .sm-gate'), { autoAlpha: 1, duration: .01 }, 'g');
       Kit.draw(tl, qa('.sm-ga .rp'), { at: 'g', duration: .3 });
       Kit.draw(tl, qa('.sm-gate .rp'), { at: 'g+=.2', duration: .45 });
-      Kit.show(tl, q('.sm-gt2'), { at: 'g+=.4', y: 10 });
+      Kit.show(tl, qa('.sm-gt2, .sm-gtag'), { at: 'g+=.4', y: 10 });
       tl.to(q('.sm-rej'), { autoAlpha: 1, duration: .01 }, 'g+=.7');
       Kit.draw(tl, qa('.sm-rej .rp'), { at: 'g+=.7', duration: .45 });
       Kit.show(tl, qa('.sm-rv, .sm-rk2'), { at: 'g+=1', y: 12, stagger: .1, duration: .4 });
@@ -776,9 +789,9 @@
     },
     notes:
       'Samsung confirms a recipe can send settings to a SmartThings oven; its patents describe turning recipe text into device commands. ' +
-      '[click] "Bake at 180" is tagged like an ingredient line: action, temperature, duration. ' +
+      '[click] An ML model tags each word of "Bake at 180": action, temperature, duration. The technique is called sequence labeling. ' +
       '[click] Those slots become a typed object. Not a sentence an oven has to interpret. ' +
-      '[click] Then it is range-checked against this oven\'s limits. Eighteen hundred bounces off; one hundred and eighty passes, and the oven lights. Starting a cycle is still yours.'
+      '[click] Then a rule, not a model, range-checks it against this oven\'s limits. Eighteen hundred bounces off; one hundred and eighty passes, and the oven lights. Starting a cycle is still yours.'
   };
   Kit.withCrumbs(ACT, STEPS, 4);
 

@@ -103,3 +103,10 @@
 /* full-slide drawing layers must not swallow the click on the phone video */
 .slide[data-sec="samsung"] .sm-svg { pointer-events: none; }
 .slide[data-sec="samsung"] .sm-vid { z-index: 5; cursor: pointer; pointer-events: auto; }
+/* ML / rule tags: learned steps are teal-filled, hand-written rules are cream outlines */
+.slide[data-sec="samsung"] .sm-tag { position: absolute; font: 700 20px/1 var(--font); letter-spacing: .08em; text-transform: uppercase;
+  padding: 7px 12px; border-radius: 10px; white-space: nowrap; }
+.slide[data-sec="samsung"] .sm-tag.ml { background: var(--teal); color: var(--text); }
+.slide[data-sec="samsung"] .sm-tag.rule { border: 2px solid var(--text-2); color: var(--text-2); }
+.slide[data-sec="samsung"] .sm-tag.in { position: static; display: inline-block; margin-left: 14px; vertical-align: 3px; }
+.slide[data-sec="samsung"] .sm-rs { position: absolute; }
