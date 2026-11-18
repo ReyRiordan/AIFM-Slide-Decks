@@ -83,15 +83,17 @@
 .slide[data-sec="samsung"] .sm-veil { position: absolute; inset: 0; z-index: 0;
   background: linear-gradient(100deg, rgba(42, 46, 49, .95) 0%, rgba(42, 46, 49, .89) 50%, rgba(42, 46, 49, .79) 100%); }
 .slide[data-sec="samsung"] .sm-tk-svg { z-index: 1; }
-.slide[data-sec="samsung"] .sm-tk-row, .slide[data-sec="samsung"] .sm-strip { position: absolute; z-index: 1; }
-.slide[data-sec="samsung"] .sm-tk-h { display: flex; align-items: baseline; gap: 20px; }
-.slide[data-sec="samsung"] .sm-tn { font-size: var(--fs-label); color: var(--text-3); }
-.slide[data-sec="samsung"] .sm-tl { margin-top: 16px; }
-.slide[data-sec="samsung"] .sm-strip { display: flex; align-items: center; gap: 22px; font-size: var(--fs-label); font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; }
-.slide[data-sec="samsung"] .sm-mk { color: var(--text-3); padding: 10px 20px; border-radius: 12px; }
-.slide[data-sec="samsung"] .sm-mk.m0 { background: var(--teal); color: #1E2124; }
-.slide[data-sec="samsung"] .sm-mkd { font-style: normal; color: var(--line); }
+/* takeaway rows: number · rule · tag · one line (same grammar as the giuseppe pilot) */
+.slide[data-sec="samsung"] .tk-row { position: absolute; left: 120px; width: 1500px; display: flex; gap: 36px; z-index: 1; }
+.slide[data-sec="samsung"] .tk-n { width: 96px; color: var(--text-3); font-family: var(--mono); font-size: 44px; font-weight: 600; }
+.slide[data-sec="samsung"] .tk-body { flex: 1; }
+.slide[data-sec="samsung"] .tk-tag { margin-top: 34px; }
+.slide[data-sec="samsung"] .tk-line { margin-top: 12px; }
+.slide[data-sec="samsung"] .tk-strip { position: absolute; left: 120px; top: 930px; display: flex; align-items: center; gap: 16px; z-index: 1; }
+.slide[data-sec="samsung"] .tk-tok { padding: 10px 20px; border-radius: 12px; }
+.slide[data-sec="samsung"] .tk-sep { color: var(--line); }
+.slide[data-sec="samsung"] .tk-tok.tk-on { background: var(--teal); }
+.slide[data-sec="samsung"] .tk-tok.tk-on .t-caps { color: #1E2124; }
 .slide[data-sec="samsung"] .hd, .slide[data-sec="samsung"] .crumbs { z-index: 2; }
 
 .slide[data-sec="samsung"] .sm-conf { position: absolute; }

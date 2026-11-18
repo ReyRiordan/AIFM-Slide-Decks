@@ -32,6 +32,7 @@
   "one name, many spellings" Caveat, an underline under "Four spellings, one entity." and a rust underline under
   "from 140,000+ items"; `errors` rust loop round the ruined sodium figure and the "not on the page" Caveat;
   `dish` rust loop round the 49.3 and an underline under the closing line; `takeaways` an underline under each rule.
+  Loop geometry is tuned so no arc crosses a glyph or a box border (`Kit.doodle.circle` derives its radii from w/h/pad).
   No food doodles, sparkles, stars or decorative loops anywhere in the section.
 - **No source text on slides.** Every `Kit.src(...)` call and both provenance chips (the `Inferred` flag on
   `approach`, the `Illustrative` flag on `errors`) are deleted, with their CSS. The caveats are now spoken:
@@ -56,7 +57,9 @@
   262 × 357 so its title is readable from the back of the room.
 
 - Notes: 934 words against a 900-word (135 wpm) target; `[click]` count matches `ctx.pause()` on every slide.
-- QA: `qa/restyle/samsung-r5/`; image pass `qa/restyle/samsung-r7/` (includes the intro agenda).
+- `takeaways` uses the pilot's row grammar: number · rule · tag · one line, `tk-row/tk-n/tk-body/tk-rule/tk-tag/tk-line`,
+  rows at y 344 and 600 (256 px step), the marker strip at y 930 with `tk-tok.tk-on` on `Read`.
+- QA: `qa/restyle/samsung-r5/`; image pass `qa/restyle/samsung-r7/` (includes the intro agenda); review fixes `qa/restyle/samsung-r9/`.
 
 ## Story spine (approve before building)
 

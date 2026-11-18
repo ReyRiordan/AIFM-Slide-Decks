@@ -104,7 +104,7 @@
         '<g class="sm-jbox">' + Kit.rough.rect(1060, 320, 740, 380, { seed: 22, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .13, hachureGap: 24 }) + '</g>' +
         '<g class="sm-parrow">' + Kit.rough.arrow(866, 540, 1024, 540, { seed: 21, w: 'heavy', head: 28, bend: -12 }) + '</g>' +
         frames +
-        '<g class="dd-chip">' + Kit.doodle.circle(1058, 726, 428, 56, { seed: 202, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+        '<g class="dd-chip">' + Kit.doodle.circle(1060, 726, 380, 68, { seed: 202, color: 'var(--rust-t)', w: 'heavy', rx: 250, ry: 44 }) + '</g>' +
         '<g class="sm-darr">' + Kit.rough.arrow(360, 836, 290, 862, { seed: 26, w: 'normal', stroke: C.rustT, head: 18, bend: 14 }) + '</g>') +
         '<div class="t-caps dim sm-pk sm-pk1">A photo</div>' +
         Kit.photo(IMG + 'recipe-card.jpg', { x: 120, y: 320, w: 700, h: 440, rot: -3, framed: true, cls: 'sm-card', alt: 'A handwritten recipe card' }) +
@@ -536,7 +536,7 @@
         '<g class="sm-mis">' + Kit.rough.arrow(448, 452, 510, 452, { seed: 183, w: 'heavy', head: 22, stroke: C.rustT }) + '</g>' +
         inv +
         '<g class="sm-iva">' + Kit.rough.arrow(1500, 648, 1436, 636, { seed: 184, w: 'fine', head: 14, bend: -10, stroke: C.rustT }) + '</g>' +
-        '<g class="dd-sod">' + Kit.doodle.circle(432, 532, 162, 38, { seed: 207, color: 'var(--rust-t)', w: 'heavy', pad: 14 }) + '</g>' +
+        '<g class="dd-sod">' + Kit.doodle.circle(444, 532, 142, 38, { seed: 207, color: 'var(--rust-t)', w: 'heavy', rx: 92, ry: 40 }) + '</g>' +
         frames + links) + tiles +
         div('t-caps c-teal sm-ph p1', 160, 362, 600, 'Misread') +
         div('t-caps c-rust sm-ph p2', 1020, 362, 600, 'Invented') +
@@ -603,7 +603,7 @@
     html: function () {
       return svg('sm-dish-svg',
         '<g class="sm-dk">' + Kit.rough.arrow(344, 868, 410, 800, { seed: 191, w: 'fine', stroke: C.rustT, head: 14, bend: 14 }) + '</g>' +
-        '<g class="dd-f1">' + Kit.doodle.circle(776, 357, 220, 112, { seed: 208, color: 'var(--rust-t)', w: 'heavy', pad: 4 }) + '</g>' +
+        '<g class="dd-f1">' + Kit.doodle.circle(780, 358, 260, 112, { seed: 208, color: 'var(--rust-t)', w: 'heavy', rx: 165, ry: 82 }) + '</g>' +
         '<g class="dd-dl">' + Kit.doodle.underline(786, 918, 560, { seed: 209 }) + '</g>') +
         Kit.photo(IMG + 'dish.jpg', { x: 120, y: 340, w: 600, h: 460, rot: -3, framed: true, cls: 'sm-dish', alt: 'A finished stew' }) +
         div('callout sm-dq', 124, 856, 0, 'what is in it?') +
@@ -644,50 +644,54 @@
   };
 
   /* =========================================================== 9 · TAKEAWAYS */
-  var MARKERS = [
-    { k: 'Read', c: 'teal' }, { k: 'Find', c: 'olive' }, { k: 'Mix', c: 'saffron' },
-    { k: 'Sell', c: 'cranberry' }, { k: 'Next', c: 'plum' }
+  // one row per takeaway: number · rule · tag · one line (KIT §7, same grammar as the giuseppe pilot)
+  var TK = [
+    ['01', 'Structure is what makes data usable.', 'document understanding', 'A record you can compute with beats text you can read.'],
+    ['02', 'Chains misread. Big models invent.', 'two failure modes', 'Check for both, and keep a person at the end.']
   ];
+  var MARKS = [['Read', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
   var TAKE = {
     id: 'takeaways',
     title: 'Takeaways',
     heading: 'Takeaways',
     budgetSec: 35,
     html: function () {
-      var rows = [
-        { n: '01', tag: 'Document understanding', line: 'Structure is what makes data usable.' },
-        { n: '02', tag: 'Two failure modes', line: 'Chains misread. Big models invent. Check both.' }
-      ].map(function (r, i) {
-        return div('sm-tk-row tr' + i, 120, 420 + i * 240, 1600,
-          '<div class="sm-tk-h"><span class="t-mono sm-tn">' + r.n + '</span><span class="t-caps c-teal">' + r.tag + '</span></div>' +
-          '<div class="t-h2 sm-tl">' + Kit.esc(r.line) + '</div>');
+      var rows = TK.map(function (r, i) {
+        return '<div class="tk-row t' + i + '" style="top:' + (344 + i * 256) + 'px">' +
+          '<div class="t-h2 tk-n">' + r[0] + '</div>' +
+          '<div class="tk-body"><div class="t-h2 tk-rule">' + Kit.esc(r[1]) + '</div>' +
+            '<div class="t-caps c-teal tk-tag">' + r[2] + '</div>' +
+            '<div class="t-body dim tk-line">' + Kit.esc(r[3]) + '</div></div>' +
+        '</div>';
       }).join('');
-      var mk = MARKERS.map(function (m, i) {
-        return '<span class="sm-mk m' + i + '" style="--mc:' + C[m.c] + ';--mct:' + C[m.c + 'T'] + '">' + m.k + '</span>';
-      }).join('<i class="sm-mkd">·</i>');
+      var strip = MARKS.map(function (m, i) {
+        return (i ? '<span class="tk-sep">·</span>' : '') +
+          '<span class="tk-tok k' + i + (i === 0 ? ' tk-on' : '') + '"><span class="t-caps">' + m[0] + '</span></span>';
+      }).join('');
       return '<div class="sm-bg" style="background-image:url(' + IMG + 'cookbook.jpg)"></div><div class="sm-veil"></div>' +
         svg('sm-tk-svg',
-          '<g class="dd-t0">' + Kit.doodle.underline(126, 562, 700, { seed: 210 }) + '</g>' +
-          '<g class="dd-t1">' + Kit.doodle.underline(126, 802, 880, { seed: 211 }) + '</g>') +
-        rows + div('sm-strip', 120, 930, 1600, mk);
+          '<g class="dd-t0">' + Kit.doodle.underline(252, 416, 844, { seed: 210 }) + '</g>' +
+          '<g class="dd-t1">' + Kit.doodle.underline(252, 672, 800, { seed: 211 }) + '</g>') +
+        rows + '<div class="tk-strip">' + strip + '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-tk-row, .dd-t0, .dd-t1'), { autoAlpha: 0 });
+      gsap.set(qa('.t0 > *, .t1 > *, .dd-t0, .dd-t1'), { autoAlpha: 0 });
+      gsap.set(qa('.tk-tok:not(.tk-on) .t-caps'), { color: C.text3 });
       tl.fromTo(q('.sm-bg'), { autoAlpha: 0, scale: 1.04 }, { autoAlpha: 1, scale: 1, duration: .9, ease: 'power3.out' }, 0);
       Kit.rise(tl, qa('.hd > *'), { at: .2, stagger: .1 });
-      Kit.fade(tl, qa('.sm-strip'), { at: .5 });
+      Kit.fade(tl, q('.tk-strip'), { at: .5 });
 
       ctx.pause();
-      Kit.show(tl, q('.tr0'), { y: 18 });
+      Kit.show(tl, qa('.t0 > *'), { y: 18, stagger: .08, duration: .5 });
       tl.to(q('.dd-t0'), { autoAlpha: 1, duration: .01 }, '>-.2');
       Kit.draw(tl, qa('.dd-t0 .rp'), { at: '<', duration: .5 });
 
       ctx.pause();
-      Kit.show(tl, q('.tr1'), { y: 18 });
+      Kit.show(tl, qa('.t1 > *'), { y: 18, stagger: .08, duration: .5 });
       tl.to(q('.dd-t1'), { autoAlpha: 1, duration: .01 }, '>-.2');
       Kit.draw(tl, qa('.dd-t1 .rp'), { at: '<', duration: .5 });
-      tl.to(q('.m1'), { color: C.oliveT, duration: .5 }, '>-.2');
+      tl.to(q('.k1 .t-caps'), { color: C.oliveT, duration: .5 }, '>-.1');
     },
     notes:
       'Two things to take away, and neither of them is a fact about Samsung. ' +
