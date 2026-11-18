@@ -52,7 +52,7 @@
 
   /* AGENDA: rows match the section markers exactly (num · kicker · section title). */
   var ROWS = [
-    { num: '01', kicker: 'Read', title: 'Samsung Food', color: 'teal', img: 'card.webp', x: 170, w: 400, rot: -4 },
+    { num: '01', kicker: 'Cook', title: 'Samsung Food', color: 'teal', img: 'card.webp', x: 170, w: 400, rot: -4 },
     { num: '02', kicker: 'Find', title: 'Shiru', color: 'olive', img: 'beans.webp', x: 760, w: 380, rot: 3 },
     { num: '03', kicker: 'Mix', title: 'NotCo Giuseppe', color: 'saffron', img: 'bowl.webp', x: 1320, w: 380, rot: -2 },
     { num: '04', kicker: 'Sell', title: 'NotCo', color: 'cranberry' }
@@ -126,7 +126,7 @@
     },
     notes:
       'Here\'s the plan. Each section turns food into data, one step more abstract than the last. ' +
-      '[click] First, Read. Samsung Food takes a photo of a recipe card and turns it into a record a computer can use. ' +
+      '[click] First, Cook. Samsung Food helps a household decide what to cook, and it connects that choice to the kitchen. ' +
       '[click] Second, Find. Shiru turns proteins into lists of numbers and searches them for new ingredients. ' +
       '[click] Third, Mix. NotCo\'s Giuseppe turns whole recipes into points on a map and searches for new ones. ' +
       '[click] Then Sell: what NotCo did with that AI. ' +

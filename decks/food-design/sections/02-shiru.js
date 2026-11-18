@@ -623,7 +623,7 @@
     ['02', 'Embedding search', 'It finds what letters miss.', 'But only near something that already works.']
   ];
   var THRU = [
-    { t: 'Read', cls: '' }, { t: 'Find', cls: 'tk-on' }, { t: 'Mix', cls: 'tk-next' },
+    { t: 'Cook', cls: '' }, { t: 'Find', cls: 'tk-on' }, { t: 'Mix', cls: 'tk-next' },
     { t: 'Sell', cls: '' }, { t: 'Next', cls: '' }
   ];
 

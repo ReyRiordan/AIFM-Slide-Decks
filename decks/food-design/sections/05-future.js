@@ -1,356 +1,476 @@
 /* ==========================================================================
    05 · Next · Future   (budget 225 s) — the closing section.
-   Spec: specs/future.md. No roadmap and no crumbs: this section spends the
-   two techniques the deck already taught, then closes the talk.
+   Spec: specs/future.md (v2, two directions). No roadmap and no crumbs:
+   this section leads with the problem and points back at Giuseppe's loop
+   and Samsung's hard filter, then closes the talk.
    ========================================================================== */
 (function () {
   'use strict';
   var C = Kit.color;
   var IMG = 'assets/img/future/';
 
-  /* ------------------------------------------------------------- FORCES */
-  var COLX = [120, 465, 810, 1155, 1500];
-  var FORCE = [
-    { name: 'Weight-loss drugs', num: { to: 12.4, dec: 1, suffix: '%' }, lab: 'of US shoppers, up from 5.8% in 2024' },
-    { name: 'Dye rules', num: { to: 6, dec: 0, suffix: ' dyes' }, lab: 'FDA target, end of 2026' },
-    { name: 'Cocoa', html: '$12,931<br>→ $6,771', lab: 'per tonne, peak to Aug 2026' },
-    { name: 'Tariffs', html: 'Feb 2026', lab: 'struck down, still a top risk' },
-    { name: 'Health plans', num: { to: 13, dec: 0, suffix: ' states' }, lab: 'pay for food as treatment' }
+  function svgOpen(cls) { return '<svg class="fu-svg ' + (cls || '') + '" width="1920" height="1080" viewBox="0 0 1920 1080">'; }
+
+  /* ----------------------------------------------------------- QUESTION */
+  var QTAG = [
+    { x: 500, t: 'for one person' },
+    { x: 1000, t: 'for a factory' }
   ];
-  var BAR_X0 = 120, BAR_X1 = 1800, BAR_T = 866, BAR_B = 928;
+  var QTW = 420, QTY = 790, QTH = 96;
 
-  function barPath(b) {
-    return 'M' + BAR_X0 + ' ' + BAR_T + ' Q960 ' + (BAR_T + b * 1.7) + ' ' + BAR_X1 + ' ' + BAR_T +
-      ' L' + BAR_X1 + ' ' + BAR_B + ' Q960 ' + (BAR_B + b * 1.7) + ' ' + BAR_X0 + ' ' + BAR_B + ' Z';
-  }
-
-  var FORCES = {
-    id: 'forces',
-    title: 'Five forces at once',
-    heading: 'Five forces at once',
-    budgetSec: 60,
+  var QUESTION = {
+    id: 'question',
+    title: 'Two futures',
+    budgetSec: 20,
     html: function () {
-      var cols = FORCE.map(function (f, i) {
-        var num = f.html != null ? f.html : '';
-        return '<div class="t-caps fu-name n' + i + '" style="left:' + COLX[i] + 'px">' + f.name + '</div>' +
-          '<div class="t-mono fu-num v' + i + '" style="left:' + COLX[i] + 'px">' + num + '</div>' +
-          '<div class="t-label fu-lab l' + i + '" style="left:' + COLX[i] + 'px">' + f.lab + '</div>';
+      var svg = svgOpen() +
+        '<g class="dd-q">' + Kit.doodle.underline(548, 656, 824, { seed: 301, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+        QTAG.map(function (g, i) {
+          return '<g class="fu-qt q' + i + '">' + Kit.rough.rect(g.x, QTY, QTW, QTH,
+            { seed: 304 + i, w: 'normal', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .22, hachureGap: 20 }) + '</g>';
+        }).join('') +
+      '</svg>';
+      var labs = QTAG.map(function (g, i) {
+        return '<div class="t-h2 fu-qtl l' + i + '" style="left:' + g.x + 'px;width:' + QTW + 'px">' + g.t + '</div>';
       }).join('');
-      var arrows = FORCE.map(function (f, i) {
-        var cx = COLX[i] + 150;
-        return '<g class="fu-arr a' + i + '">' + Kit.rough.arrow(cx, 690, cx, 846, { seed: 60 + i * 3, w: 'normal', head: 20 }) + '</g>';
-      }).join('');
-      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        arrows +
-        '<g class="fu-bar"></g>' +
-        '<text class="fu-barlab" x="960" y="906" text-anchor="middle">ONE FORMULA</text>' +
-        // doodle: the arrow that names what the sag means, on the last click
-        '<g class="dd-bend">' + Kit.rough.arrow(1404, 1002, 1128, 958, { seed: 80, w: 'normal', stroke: C.rustT, head: 18, bend: 16 }) + '</g>' +
-      '</svg>';
-      return '<div class="t-caps fu-sub">Trade press calls 2026 “the great reformulation”</div>' +
-        svg + cols +
-        Kit.photo(IMG + 'candy.webp', { x: 446, y: 700, w: 140, rot: 8, cls: 'fu-candy', alt: 'coloured candy shells' }) +
-        '<div class="callout fu-bend">bending under all five</div>';
+      return svg +
+        '<div class="t-h1 fu-q1">Change what’s in it.</div>' +
+        '<div class="t-h1 fu-q2">Keep what people love.</div>' + labs;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      var st = { load: 0 }, bar = q('.fu-bar'), lab = q('.fu-barlab');
-      function render() {
-        bar.innerHTML = Kit.rough.path(barPath(st.load * 8), { seed: 31, w: 'heavy', stroke: C.chalk, fill: C.chalk, fillStyle: 'solid' });
-        gsap.set(lab, { y: st.load * 8 * .85 });
-      }
-      render();
+      gsap.set(qa('.fu-q2, .dd-q, .fu-qt, .fu-qtl'), { autoAlpha: 0 });
 
-      gsap.set(qa('.fu-name, .fu-num, .fu-lab, .fu-arr, .fu-candy, .dd-bend, .fu-bend'), { autoAlpha: 0 });
+      Kit.rise(tl, q('.fu-q1'), { at: .1, y: 26, duration: .7 });
 
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.fu-sub'), { at: .25 });
-      Kit.show(tl, q('.fu-bar'), { at: .3, y: 30, duration: .7 });
-      Kit.fade(tl, q('.fu-barlab'), { at: .5, duration: .5 });
-
-      FORCE.forEach(function (f, i) {
-        ctx.pause();
-        var L = 'f' + i;
-        tl.addLabel(L);
-        Kit.show(tl, q('.n' + i), { at: L, y: 16, duration: .4 });
-        Kit.show(tl, q('.v' + i), { at: L + '+=.12', y: 16, duration: .4 });
-        if (f.num) Kit.count(tl, q('.v' + i), { to: f.num.to, decimals: f.num.dec, suffix: f.num.suffix, duration: .7, at: L + '+=.12' });
-        Kit.show(tl, q('.l' + i), { at: L + '+=.2', y: 14, duration: .4 });
-        if (i === 1) Kit.drop(tl, q('.fu-candy'), { at: L + '+=.1' });
-        tl.to(q('.a' + i), { autoAlpha: 1, duration: .01 }, L + '+=.35');
-        Kit.draw(tl, qa('.a' + i + ' .rp'), { at: L + '+=.35', duration: .5 });
-        tl.to(st, { load: i + 1, duration: .6, ease: 'power2.out', onUpdate: render }, L + '+=.6');
-        if (i === FORCE.length - 1) {
-          tl.to(q('.dd-bend'), { autoAlpha: 1, duration: .01 }, L + '+=1.1');
-          Kit.draw(tl, qa('.dd-bend .rp'), { at: L + '+=1.1', duration: .5 });
-          Kit.show(tl, q('.fu-bend'), { at: L + '+=1.0', y: 12, duration: .45 });
-        }
-      });
-    },
-    notes:
-      'One formula at the bottom: the recipe for a product on a shelf. ' +
-      'Five pressures are pushing on it at once. ' +
-      '[click] Weight-loss drugs. About one in eight American shoppers takes one — that share is a market estimate. ' +
-      'They buy less and want protein, so brands redesign the product rather than add a badge. ' +
-      '[click] Colour. The FDA wants six petroleum dyes gone by year’s end. Natural colours fade, carry flavour, and blue is hardest to match. ' +
-      '[click] Cocoa fell by half from its peak, then spiked again. Not one smooth decline: formulas move both ways now. ' +
-      '[click] Tariffs. The court struck the big ones down in February; sourcing is still a top planning risk. ' +
-      '[click] And thirteen states let Medicaid pay for food as treatment. Five pressures, one formula, and it is bending.'
-  };
-
-  /* ------------------------------------------------------------- ENGINE */
-  var ENGINE = {
-    id: 'engine',
-    title: 'A reformulation engine',
-    heading: 'A reformulation engine',
-    budgetSec: 45,
-    html: function () {
-      var o = { w: 'normal', rough: 1.0 };
-      var fl = { w: 'heavy', head: 24, rough: 1.0 };     // the loop itself is the main flow
-      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="fu-loop">' +
-          Kit.rough.rect(140, 380, 330, 96, Object.assign({ seed: 11 }, o)) +
-          Kit.rough.rect(820, 380, 260, 96, Object.assign({ seed: 12 }, o)) +
-          Kit.rough.rect(140, 600, 260, 96, Object.assign({ seed: 13 }, o)) +
-          Kit.rough.arrow(478, 428, 808, 428, Object.assign({ seed: 14 }, fl)) +
-          Kit.rough.arrow(950, 486, 950, 588, Object.assign({ seed: 15 }, fl)) +
-          Kit.rough.arrow(610, 684, 412, 658, Object.assign({ seed: 16, bend: 10 }, fl)) +
-          Kit.rough.arrow(270, 590, 290, 486, Object.assign({ seed: 17, bend: 10 }, fl)) +
-        '</g>' +
-        '<g class="fu-sbox">' + Kit.rough.rect(620, 600, 540, 190,
-          { seed: 18, w: 'heavy', rough: 1.0, hatch: 'var(--sec-t)', fillOpacity: .15, hachureGap: 24 }) + '</g>' +
-        '<g class="fu-gap">' + Kit.rough.rect(1240, 360, 560, 220,
-          { seed: 21, w: 'fine', rough: 1.0, stroke: C.text2, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 24 }) + '</g>' +
-        '<g class="fu-wedge">' + Kit.rough.rect(1240, 640, 560, 280,
-          { seed: 22, w: 'normal', rough: 1.0, stroke: C.rust, hatch: 'var(--rust-t)', fillOpacity: .14, hachureGap: 26 }) + '</g>' +
-        // doodles: the arrow that says which part changes, and the line under the lesson
-        '<g class="fu-ca">' + Kit.rough.arrow(442, 776, 606, 728, { seed: 24, w: 'normal', stroke: C.rustT, head: 18, bend: -14 }) + '</g>' +
-        '<g class="dd-cap">' + Kit.doodle.underline(126, 930, 578, { seed: 25, color: 'var(--rust-t)' }) + '</g>' +
-      '</svg>';
-      var nodes =
-        '<div class="t-body fu-node" style="left:140px;top:408px;width:330px">point on the map</div>' +
-        '<div class="t-body fu-node" style="left:820px;top:408px;width:260px">decode</div>' +
-        '<div class="t-body fu-node" style="left:140px;top:628px;width:260px">steer</div>' +
-        '<div class="t-caps fu-tag" style="left:652px;top:628px">Score</div>' +
-        '<div class="t-body fu-score s1">how close to milk</div>' +
-        '<div class="t-body fu-score s2">cost · label<br>shelf life · allergens</div>';
-      var cards =
-        '<div class="t-caps fu-tag g1" style="left:1276px;top:404px">Mid-sized makers</div>' +
-        '<div class="t-body fu-cardb g2" style="left:1276px;top:452px">same pressure, a fraction of the IT budget</div>' +
-        '<div class="t-h2 fu-cardh w1" style="left:1276px;top:694px;color:' + C.rustT + '">Formula insurance</div>' +
-        '<div class="t-label fu-cardb w2" style="left:1276px;top:790px">backup formulas, computed before the shock</div>';
-      return '<div class="t-caps fu-bet">Bet 1</div>' + svg + nodes + cards +
-        '<div class="callout fu-c1">only this changes</div>' +
-        '<div class="t-h2 fu-cap">Same engine. New score.</div>';
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.s2, .fu-gap, .g1, .g2, .fu-wedge, .w1, .w2, .fu-cap, .fu-c1, .fu-ca, .dd-cap'), { autoAlpha: 0 });
-      gsap.set(qa('.fu-gap .rp, .fu-wedge .rp'), { drawSVG: '0%' });
-
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.fu-bet'), { at: .2 });
-      Kit.draw(tl, qa('.fu-loop .rp, .fu-sbox .rp'), { at: .25, duration: .8, stagger: .05 });
-      Kit.fade(tl, qa('.fu-node, .fu-tag:not(.g1), .s1'), { at: .6, stagger: .06 });
-
-      // [click 1] name the buyer before the product
-      ctx.pause();
-      tl.addLabel('gap');
-      tl.to(q('.fu-gap'), { autoAlpha: 1, duration: .01 }, 'gap');
-      tl.to(qa('.fu-gap .rp'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, 'gap');
-      Kit.show(tl, qa('.g1, .g2'), { at: 'gap+=.25', y: 16, stagger: .08, duration: .5 });
-
-      // [click 2] the one change that matters: the score
-      ctx.pause();
-      tl.addLabel('sw');
-      Kit.swap(tl, q('.s1'), q('.s2'), { at: 'sw' });
-      tl.fromTo(qa('.fu-sbox .rp'), { stroke: C.chalk }, { stroke: C.saffronT, duration: .4 }, 'sw+=.3');
-      tl.to(q('.fu-ca'), { autoAlpha: 1, duration: .01 }, 'sw+=.15');
-      Kit.draw(tl, qa('.fu-ca .rp'), { at: 'sw+=.15', duration: .45 });
-      Kit.show(tl, q('.fu-c1'), { at: 'sw+=.15', y: 10, duration: .45 });
-      Kit.show(tl, q('.fu-cap'), { at: 'sw+=.5', y: 20, duration: .5 });
-      tl.to(q('.dd-cap'), { autoAlpha: 1, duration: .01 }, 'sw+=.9');
-      Kit.draw(tl, qa('.dd-cap .rp'), { at: 'sw+=.9', duration: .5 });
-
-      // [click 3] the wedge
-      ctx.pause();
-      tl.addLabel('wd');
-      tl.to(q('.fu-wedge'), { autoAlpha: 1, duration: .01 }, 'wd');
-      tl.to(qa('.fu-wedge .rp'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, 'wd');
-      Kit.show(tl, qa('.w1, .w2'), { at: 'wd+=.25', y: 18, stagger: .08, duration: .5 });
-    },
-    notes:
-      'So what would I build? The first bet is the loop you just saw, pointed somewhere else: ' +
-      'same map, same decoder, same steering. ' +
-      '[click] The buyer is not the giant that can license Giuseppe, but the mid-sized maker with the same deadline and a fraction of the IT budget. ' +
-      'That gap is a trade report’s reading, not a customer I have spoken to. ' +
-      '[click] And only one thing changes: the score. Not how close to milk, but cost, label, shelf life and allergens. ' +
-      '[click] The product I would sell is insurance: backup formulas for the ingredients most likely to move, computed before the shock.'
-  };
-
-  /* ------------------------------------------------------------- PARITY */
-  var AX = 560, PA = 140, PB = 980;
-  function bar(x, y, pct, cls) {
-    return '<rect class="fu-bar2 ' + cls + '" x="' + x + '" y="' + y + '" width="' + (AX * pct) + '" height="40" rx="6" fill="' + C.plum + '"/>';
-  }
-  function track(x, y) {
-    return '<rect x="' + x + '" y="' + y + '" width="' + AX + '" height="40" rx="6" fill="' + C.chalk + '" opacity=".10"/>';
-  }
-  var PARITY = {
-    id: 'parity',
-    title: 'Parity testing',
-    heading: 'Parity testing',
-    budgetSec: 45,
-    html: function () {
-      var chx = PB + AX * .36;
-      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="fu-div">' + Kit.rough.line(920, 350, 920, 700, { seed: 44, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
-        track(PA, 539) + track(PB, 479) + track(PB, 614) +
-        bar(PA, 539, .90, 'bA') + bar(PB, 479, .33, 'b1') + bar(PB, 614, .67, 'b2') +
-        '<line class="fu-chance" x1="' + chx + '" y1="610" x2="' + chx + '" y2="672" stroke="' + C.chalk +
-          '" stroke-width="3" stroke-dasharray="12 9" opacity=".45"/>' +
-        '<text class="fu-bignum nA" x="' + (PA + AX * .90 + 22) + '" y="573">90%</text>' +
-        '<text class="fu-bignum n1" x="' + (PB + AX * .33 + 22) + '" y="513">33%</text>' +
-        '<text class="fu-bignum n2" x="' + (PB + AX * .67 + 22) + '" y="648">67%</text>' +
-        '<g class="fu-vcard">' + Kit.rough.rect(120, 806, 1680, 184,
-          { seed: 41, w: 'heavy', rough: 1.0, stroke: C.rust, hatch: 'var(--rust-t)', fillOpacity: .1, hachureGap: 30 }) + '</g>' +
-        // doodles: loop the number that works, point at the gap that does not, check the question that has an answer
-        '<g class="dd-90">' + Kit.doodle.circle(654, 534, 132, 58, { seed: 45, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
-        '<g class="fu-cha">' + Kit.rough.arrow(1544, 560, 1196, 612, { seed: 46, w: 'normal', stroke: C.rustT, head: 18, bend: 22 }) + '</g>' +
-        '<g class="dd-ok">' + Kit.doodle.mark(790, 892, 32, 'check', { seed: 47, color: 'var(--rust-t)' }) + '</g>' +
-      '</svg>';
-      return '<div class="t-caps fu-bet">Bet 2</div>' + svg +
-        '<div class="callout fu-chc">barely above chance</div>' +
-        '<div class="t-caps fu-ptitle" style="left:120px">Screening concepts</div>' +
-        '<div class="t-caps fu-ptitle" style="left:960px">Predicting the favorite</div>' +
-        '<div class="t-label fu-rlab cA" style="left:140px;top:596px">of human test-retest reliability</div>' +
-        '<div class="t-label fu-rlab c1" style="left:980px;top:438px">ranked first</div>' +
-        '<div class="t-label fu-rlab c2" style="left:980px;top:573px">in the top three</div>' +
-        '<div class="t-label fu-foot2 fA" style="left:140px">the same human, asked twice</div>' +
-        '<div class="t-label fu-foot2 fB" style="left:980px">about 36% by chance (top three)</div>' +
-        '<div class="t-h1 fu-vq">Will they notice?</div>' +
-        '<div class="t-label fu-vt">parity, not liking</div>';
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.fu-bignum, .cA, .fA, .fB, .fu-vcard, .fu-vq, .fu-vt, .dd-90, .fu-cha, .fu-chc, .dd-ok'), { autoAlpha: 0 });
-      gsap.set(qa('.fu-vcard .rp'), { drawSVG: '0%' });
-      gsap.set(qa('.bA, .b1, .b2'), { scaleX: 0, transformOrigin: '0% 50%' });
-
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.fu-bet, .fu-ptitle, .fu-rlab, .fu-chance, .fu-div'), { at: .2, stagger: .05 });
-
-      // [click 1] concept screening already works
-      ctx.pause();
-      tl.addLabel('a');
-      tl.to(q('.bA'), { scaleX: 1, duration: .8, ease: 'power2.out' }, 'a');
-      tl.to(q('.nA'), { autoAlpha: 1, duration: .3 }, 'a+=.5');
-      Kit.count(tl, q('.nA'), { to: 90, suffix: '%', duration: .7, at: 'a+=.2' });
-      Kit.show(tl, qa('.cA, .fA'), { at: 'a+=.6', y: 14, stagger: .08, duration: .45 });
-      tl.to(q('.dd-90'), { autoAlpha: 1, duration: .01 }, 'a+=.9');
-      Kit.draw(tl, qa('.dd-90 .rp'), { at: 'a+=.9', duration: .6 });
-
-      // [click 2] ranking a favourite is near chance
+      // [click 1] the half people forget
       ctx.pause();
       tl.addLabel('b');
-      tl.to(qa('.b1, .b2'), { scaleX: 1, duration: .8, ease: 'power2.out', stagger: .15 }, 'b');
-      tl.to(qa('.n1, .n2'), { autoAlpha: 1, duration: .3, stagger: .15 }, 'b+=.5');
-      Kit.count(tl, q('.n1'), { to: 33, suffix: '%', duration: .7, at: 'b+=.2' });
-      Kit.count(tl, q('.n2'), { to: 67, suffix: '%', duration: .7, at: 'b+=.35' });
-      tl.to(qa('.fu-chance'), { stroke: C.rustT, opacity: 1, duration: .4 }, 'b+=.8');
-      Kit.show(tl, q('.fB'), { at: 'b+=.8', y: 14, duration: .45 });
-      tl.to(q('.fu-cha'), { autoAlpha: 1, duration: .01 }, 'b+=1.1');
-      Kit.draw(tl, qa('.fu-cha .rp'), { at: 'b+=1.1', duration: .4 });
-      Kit.show(tl, q('.fu-chc'), { at: 'b+=1.1', y: 10, duration: .45 });
+      Kit.show(tl, q('.fu-q2'), { at: 'b', y: 26, duration: .6 });
+      tl.to(q('.dd-q'), { autoAlpha: 1, duration: .01 }, 'b+=.6');
+      Kit.draw(tl, qa('.dd-q .rp'), { at: 'b+=.6', duration: .6 });
 
-      // [click 3] the question that is worth selling
+      // [click 2] the two markets that open from it
       ctx.pause();
-      tl.addLabel('v');
-      tl.to(q('.fu-vcard'), { autoAlpha: 1, duration: .01 }, 'v');
-      tl.to(qa('.fu-vcard .rp'), { drawSVG: '100%', duration: .7, ease: 'power2.inOut' }, 'v');
-      Kit.show(tl, qa('.fu-vq, .fu-vt'), { at: 'v+=.3', y: 20, stagger: .08, duration: .5 });
-      tl.to(q('.dd-ok'), { autoAlpha: 1, duration: .01 }, 'v+=.8');
-      Kit.draw(tl, qa('.dd-ok .rp'), { at: 'v+=.8', duration: .4 });
+      tl.addLabel('t');
+      QTAG.forEach(function (g, i) {
+        var at = 't+=' + (i * .2);
+        tl.to(q('.q' + i), { autoAlpha: 1, duration: .01 }, at);
+        Kit.draw(tl, qa('.q' + i + ' .rp'), { at: at, duration: .5 });
+        Kit.show(tl, q('.l' + i), { at: 't+=' + (i * .2 + .2), y: 14, duration: .45 });
+      });
     },
     notes:
-      'The second bet comes from a limit we met in Mix. Can a model taste? ' +
-      '[click] For screening ideas, close enough. Ask a language model to answer a survey as a shopper, and it reaches ninety per cent of the reliability of the same human asked twice. ' +
-      'That is one study, with a toothpaste maker. ' +
-      '[click] For ranking, no. On twenty-one thousand real tastings it put the human favourite first a third of the time, and in its top three two thirds — about thirty-six per cent by chance. ' +
-      '[click] So ask the narrower question: not what will they love, but will they notice we changed it. That has a right answer.'
+      'NotCo asked who else needs the engine. Here is the answer. Anyone who has to change a recipe ' +
+      '[click] without losing the people who buy it. ' +
+      '[click] That opens two markets. One person’s needs, or one factory’s supply. ' +
+      'In both, AI helps decide which recipes are worth making and testing.'
   };
 
-  /* -------------------------------------------------------------- AVOID */
-  var DEAD = [
-    { x: 120, name: 'Zume', money: '~$500M', out: 'raised; collapsed, Jun 2026', cross: 202 },
-    { x: 690, name: 'Picnic', money: '~$50M', out: 'raised; wound down, May 2026', cross: 170 },
-    { x: 1260, name: 'Karakuri', money: '£350,000', out: 'what the whole company sold for', cross: 0 }
+  /* ----------------------------------------------------------- PERSONAL */
+  var KEEP = [
+    { y: 320, t: 'cocoa aroma' },
+    { y: 400, t: 'snap' },
+    { y: 480, t: 'smooth melt' }
   ];
-  var AVOID = {
-    id: 'avoid',
-    title: 'What not to build',
-    heading: 'What not to build',
-    budgetSec: 30,
+
+  var PERSONAL = {
+    id: 'personal',
+    title: 'Food for one person',
+    heading: 'Food for one person',
+    budgetSec: 45,
     html: function () {
-      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        DEAD.map(function (d, i) {
-          return '<g class="fu-card k' + i + '">' + Kit.rough.rect(d.x, 350, 540, 272, { seed: 51 + i * 4, w: 'fine', rough: 1.0, stroke: C.text3 }) + '</g>' +
-            (d.cross ? '<g class="fu-x x' + i + '">' + Kit.rough.line(d.x + 28, 492, d.x + 28 + d.cross, 476,
-              { seed: 71 + i, w: 'heavy', stroke: C.rustT, bow: .4, rough: .7 }) + '</g>' : '');
-        }).join('') +
-        '<g class="fu-work-b">' + Kit.rough.rect(120, 700, 1680, 250,
-          { seed: 61, w: 'heavy', rough: 1.0, stroke: C.rust, hatch: 'var(--rust-t)', fillOpacity: .12, hachureGap: 30 }) + '</g>' +
-      '</svg>';
-      var cards = DEAD.map(function (d, i) {
-        return '<div class="t-h2 fu-cname m' + i + '" style="left:' + (d.x + 36) + 'px;top:392px">' + d.name + '</div>' +
-          '<div class="t-mono fu-cmoney m' + i + '" style="left:' + (d.x + 36) + 'px;top:452px">' + d.money + '</div>' +
-          '<div class="t-label fu-cout m' + i + '" style="left:' + (d.x + 36) + 'px;top:540px">' + d.out + '</div>';
+      var keepArr = KEEP.map(function (k, i) {
+        return '<g class="pe-ka ka' + i + '">' + Kit.rough.arrow(560, k.y + 10, 470, k.y + 24,
+          { seed: 310 + i, w: 'fine', stroke: C.plumT, head: 14, bend: i === 1 ? 0 : (i ? 10 : -10) }) + '</g>';
       }).join('');
-      return '<div class="t-caps fu-sub">The one I would not start</div>' + svg + cards +
-        '<div class="t-h2 fu-work">In food plants, the robots work.</div>' +
-        '<div class="fu-chef"><b class="t-h1">$43.1M</b><span class="t-label">Chef Robotics Series A · 44M+ servings reported</span></div>';
+      var svg = svgOpen() +
+        keepArr +
+        '<g class="pe-card">' + Kit.rough.rect(140, 660, 580, 250,
+          { seed: 316, w: 'normal', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 22 }) + '</g>' +
+        '<g class="pe-rule">' + Kit.rough.line(1020, 512, 1520, 512, { seed: 317, w: 'fine', stroke: C.text3 }) + '</g>' +
+        '<g class="dd-w">' + Kit.doodle.circle(1030, 610, 500, 160, { seed: 318, color: 'var(--rust-t)', w: 'heavy', rx: 302, ry: 76 }) + '</g>' +
+        '<g class="pe-ca">' + Kit.rough.arrow(1252, 822, 1214, 776, { seed: 319, w: 'normal', stroke: C.rustT, head: 16, bend: -12 }) + '</g>' +
+      '</svg>';
+      var keeps = KEEP.map(function (k, i) {
+        return '<div class="callout pe-k k' + i + '" style="top:' + (k.y - 14) + 'px">' + k.t + '</div>';
+      }).join('');
+      return svg +
+        Kit.photo(IMG + 'cocoa-bar.webp', { x: 150, y: 300, w: 300, rot: -4, cls: 'pe-bar', alt: 'dark chocolate bar snapped in two' }) +
+        keeps +
+        '<div class="t-caps pe-ct">Care plan</div>' +
+        '<div class="t-body pe-cl c1">carbs per serving</div>' +
+        '<div class="t-body pe-cl c2">no peanuts</div>' +
+        Kit.photo(IMG + 'dates.webp', { x: 1540, y: 290, w: 250, rot: 5, cls: 'pe-dates', alt: 'Medjool dates and date purée' }) +
+        '<div class="t-caps pe-st">The swap</div>' +
+        '<div class="t-mono pe-eq e1">− 10 g sugar</div>' +
+        '<div class="t-mono pe-eq e2">+ 10 g date purée</div>' +
+        '<div class="pe-res r1"><span class="t-body pe-rl">sugar</span>' +
+          '<span class="t-mono pe-rv"><span class="v">0</span></span></div>' +
+        '<div class="pe-res r2"><span class="t-body pe-rl">water</span>' +
+          '<span class="t-mono pe-rv c-rust"><span class="v">0</span></span></div>' +
+        '<div class="callout pe-c1">softer snap</div>' +
+        '<div class="callout pe-c2">shorter shelf life</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.k1, .k2, .m1, .m2, .fu-x, .fu-work, .fu-chef, .fu-work-b'), { autoAlpha: 0 });
-      gsap.set(qa('.fu-x .rp, .fu-work-b .rp'), { drawSVG: '0%' });
+      gsap.set(qa('.pe-k, .pe-ka, .pe-card, .pe-ct, .pe-cl, .pe-dates, .pe-st, .pe-eq, .pe-rule, .pe-res, .dd-w, .pe-ca, .pe-c1, .pe-c2'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.fu-sub'), { at: .2 });
-      Kit.draw(tl, qa('.k0 .rp'), { at: .3, duration: .7 });
-      Kit.fade(tl, qa('.m0'), { at: .5, stagger: .08 });
-
-      // [click 1] the other two, then the money crossed out
-      ctx.pause();
-      tl.addLabel('d');
-      [1, 2].forEach(function (i, j) {
-        var at = 'd+=' + (j * .25);
-        tl.to(q('.k' + i), { autoAlpha: 1, duration: .01 }, at);
-        Kit.draw(tl, qa('.k' + i + ' .rp'), { at: at, duration: .5 });
-        Kit.show(tl, qa('.m' + i), { at: 'd+=' + (j * .25 + .15), y: 16, stagger: .06, duration: .4 });
+      Kit.drop(tl, q('.pe-bar'), { at: .2 });
+      KEEP.forEach(function (k, i) {
+        tl.to(q('.ka' + i), { autoAlpha: 1, duration: .01 }, .6 + i * .18);
+        Kit.draw(tl, qa('.ka' + i + ' .rp'), { at: .6 + i * .18, duration: .4 });
+        Kit.show(tl, q('.k' + i), { at: .62 + i * .18, y: 10, duration: .4 });
       });
-      tl.to(qa('.fu-cmoney'), { color: C.text3, duration: .4 }, 'd+=.9');
-      tl.to(qa('.fu-x'), { autoAlpha: 1, duration: .01 }, 'd+=.9');
-      tl.to(qa('.fu-x .rp'), { drawSVG: '100%', duration: .45, stagger: .12 }, 'd+=.9');
 
-      // [click 2] the same robots, a different place
+      // [click 1] the limits the care team sets
       ctx.pause();
-      tl.addLabel('w');
-      tl.to(qa('.fu-card, .fu-cname, .fu-cmoney, .fu-cout, .fu-x'), { opacity: .55, duration: .5 }, 'w');
-      tl.to(q('.fu-work-b'), { autoAlpha: 1, duration: .01 }, 'w');
-      tl.to(qa('.fu-work-b .rp'), { drawSVG: '100%', duration: .7, ease: 'power2.inOut' }, 'w');
-      Kit.show(tl, q('.fu-work'), { at: 'w+=.25', y: 20, duration: .5 });
-      Kit.show(tl, q('.fu-chef'), { at: 'w+=.5', y: 20, duration: .5 });
+      tl.addLabel('p');
+      tl.to(q('.pe-card'), { autoAlpha: 1, duration: .01 }, 'p');
+      Kit.draw(tl, qa('.pe-card .rp'), { at: 'p', duration: .6 });
+      Kit.show(tl, qa('.pe-ct, .c1, .c2'), { at: 'p+=.25', y: 14, stagger: .1, duration: .45 });
+
+      // [click 2] the swap that looks obvious
+      ctx.pause();
+      tl.addLabel('s');
+      Kit.drop(tl, q('.pe-dates'), { at: 's' });
+      Kit.show(tl, q('.pe-st'), { at: 's+=.2', y: 12, duration: .4 });
+      Kit.show(tl, qa('.e1, .e2'), { at: 's+=.35', y: 16, stagger: .12, duration: .45 });
+
+      // [click 3] what the swap really does
+      ctx.pause();
+      tl.addLabel('r');
+      tl.to(q('.pe-rule'), { autoAlpha: 1, duration: .01 }, 'r');
+      Kit.draw(tl, qa('.pe-rule .rp'), { at: 'r', duration: .4 });
+      Kit.show(tl, q('.r1'), { at: 'r+=.15', y: 16, duration: .45 });
+      Kit.count(tl, q('.r1 .v'), { to: 3.4, decimals: 1, prefix: '−', suffix: ' g', duration: .8, at: 'r+=.25' });
+      Kit.show(tl, q('.r2'), { at: 'r+=.5', y: 16, duration: .45 });
+      Kit.count(tl, q('.r2 .v'), { to: 2.1, decimals: 1, prefix: '+', suffix: ' g', duration: .8, at: 'r+=.6' });
+      tl.to(q('.dd-w'), { autoAlpha: 1, duration: .01 }, 'r+=1.3');
+      Kit.draw(tl, qa('.dd-w .rp'), { at: 'r+=1.3', duration: .7 });
+      tl.to(q('.pe-ca'), { autoAlpha: 1, duration: .01 }, 'r+=1.7');
+      Kit.draw(tl, qa('.pe-ca .rp'), { at: 'r+=1.7', duration: .4 });
+      Kit.show(tl, qa('.pe-c1, .pe-c2'), { at: 'r+=1.8', y: 10, stagger: .15, duration: .45 });
     },
     notes:
-      'One thing I would not start: the robot chef. ' +
-      '[click] Zume raised half a billion dollars and collapsed. Picnic raised fifty million and wound down in May. Karakuri, which Ocado backed, sold for three hundred and fifty thousand pounds. Money in, nothing out. ' +
-      '[click] The robots that work are already inside food factories, assembling meals, and they are funded. At the consumer end, Samsung Food gives the app away.'
+      'A person picks a food they love and names what has to stay: the cocoa aroma, the snap, the smooth melt. ' +
+      '[click] Their care team sets the limits. ' +
+      '[click] Dates look like the obvious sugar swap. But dates are two-thirds sugar themselves. ' +
+      'Per hundred grams, sixty-six and a half grams of sugars and twenty-one grams of water. ' +
+      '[click] So ten grams of purée for ten grams of sugar removes only about three and a half grams of sugar, and adds two grams of water. ' +
+      'That water softens the snap and shortens shelf life. One change, three problems. ' +
+      'For diabetes the check is total carbohydrate against the plan, not “contains dates”.'
+  };
+
+  /* ------------------------------------------------------------- TAILOR */
+  /* the loop echoes Giuseppe's steer loop; `check plan` is a hard filter, as on Samsung's rank */
+  var LOOP = [
+    { k: 'propose', x: 180, y: 360 },
+    { k: 'check plan', x: 620, y: 360 },
+    { k: 'taste', x: 620, y: 800 },
+    { k: 'learn', x: 180, y: 800 }
+  ];
+  var LBW = 300, LBH = 100;
+  /* the target sits in the middle of the loop: centre x 550, centre y 630 */
+  var TGX = 400, TGY = 570, TGW = 300, TGH = 120;
+
+  var TAILOR = {
+    id: 'tailor',
+    title: 'A loop aimed at one person',
+    heading: 'A loop aimed at one person',
+    budgetSec: 35,
+    html: function () {
+      var fl = { w: 'heavy', head: 24, rough: 1.0 };
+      var svg = svgOpen() +
+        LOOP.map(function (b, i) {
+          return '<g class="ta-b b' + i + '">' + Kit.rough.rect(b.x, b.y, LBW, LBH, { seed: 330 + i, w: 'normal' }) + '</g>';
+        }).join('') +
+        '<g class="ta-ar">' +
+          Kit.rough.arrow(490, 410, 614, 410, Object.assign({ seed: 336 }, fl)) +
+          Kit.rough.arrow(770, 466, 770, 794, Object.assign({ seed: 337 }, fl)) +
+          Kit.rough.arrow(614, 850, 490, 850, Object.assign({ seed: 338 }, fl)) +
+          Kit.rough.arrow(330, 794, 330, 466, Object.assign({ seed: 339 }, fl)) +
+        '</g>' +
+        '<g class="ta-t">' + Kit.rough.rect(TGX, TGY, TGW, TGH,
+          { seed: 340, w: 'heavy', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .28, hachureGap: 18 }) + '</g>' +
+        // the target feeds the two steps that use it: propose and taste
+        '<g class="ta-ta">' +
+          Kit.rough.arrow(470, 564, 424, 472, { seed: 345, w: 'fine', stroke: C.plumT, head: 13, bend: -10 }) +
+          Kit.rough.arrow(652, 696, 700, 790, { seed: 346, w: 'fine', stroke: C.plumT, head: 13, bend: -10 }) +
+        '</g>' +
+        // the hard filter: the same rust-heavy band Samsung's rank uses
+        '<g class="ta-f">' + Kit.rough.rect(620, 360, LBW, LBH,
+          { seed: 341, w: 'heavy', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .22, hachureGap: 16 }) + '</g>' +
+        '<g class="ta-fa">' + Kit.rough.arrow(952, 312, 902, 350, { seed: 342, w: 'normal', stroke: C.rustT, head: 16, bend: 12 }) + '</g>' +
+        '<g class="ta-card">' + Kit.rough.rect(1060, 330, 740, 190,
+          { seed: 343, w: 'normal', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 22 }) + '</g>' +
+        '<g class="dd-31">' + Kit.doodle.circle(1060, 604, 330, 150, { seed: 344, color: 'var(--rust-t)', w: 'heavy', rx: 196, ry: 92 }) + '</g>' +
+      '</svg>';
+      var boxes = LOOP.map(function (b, i) {
+        return '<div class="t-body ta-n n' + i + '" style="left:' + b.x + 'px;top:' + (b.y + 30) + 'px;width:' + LBW + 'px">' + b.k + '</div>';
+      }).join('');
+      return svg + boxes +
+        '<div class="t-h2 ta-tl">your bar</div>' +
+        '<div class="callout ta-c1">like Giuseppe, aimed at you</div>' +
+        '<div class="callout ta-c2">a rule, not a score</div>' +
+        '<div class="t-caps ta-ft">First buyers</div>' +
+        '<div class="t-h2 ta-fb">medically tailored meals</div>' +
+        '<div class="ta-num"><div class="t-num c-rust"><span class="v">0</span></div>' +
+          '<div class="t-body dim ta-nl">fewer hospital stays</div>' +
+          '<div class="t-label faint ta-ns">Massachusetts Medicaid</div></div>';
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.ta-t, .ta-ta, .ta-tl, .ta-c1, .ta-f, .ta-fa, .ta-c2, .ta-card, .ta-ft, .ta-fb, .ta-num, .dd-31'), { autoAlpha: 0 });
+      // the card opens as a labelled, still-empty slot at click 1; click 3 fills it
+
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
+      Kit.draw(tl, qa('.ta-b .rp'), { at: .25, duration: .7, stagger: .06 });
+      Kit.fade(tl, qa('.ta-n'), { at: .5, stagger: .07 });
+      Kit.draw(tl, qa('.ta-ar .rp'), { at: .7, duration: .5, stagger: .08 });
+
+      // [click 1] the target in the middle, and where the deck already taught this
+      ctx.pause();
+      tl.addLabel('t');
+      tl.to(q('.ta-t'), { autoAlpha: 1, duration: .01 }, 't');
+      Kit.draw(tl, qa('.ta-t .rp'), { at: 't', duration: .55 });
+      Kit.show(tl, q('.ta-tl'), { at: 't+=.25', y: 14, duration: .45 });
+      tl.to(q('.ta-ta'), { autoAlpha: 1, duration: .01 }, 't+=.5');
+      Kit.draw(tl, qa('.ta-ta .rp'), { at: 't+=.5', duration: .45, stagger: .1 });
+      Kit.show(tl, q('.ta-c1'), { at: 't+=.8', y: 10, duration: .45 });
+      // the buyer card's frame opens here so the right half is never dead
+      tl.to(q('.ta-card'), { autoAlpha: 1, duration: .01 }, 't+=.9');
+      Kit.draw(tl, qa('.ta-card .rp'), { at: 't+=.9', duration: .6 });
+      Kit.show(tl, q('.ta-ft'), { at: 't+=1.1', y: 12, duration: .4 });
+
+      // [click 2] the care plan is a filter, not a weight
+      ctx.pause();
+      tl.addLabel('f');
+      tl.to(q('.ta-f'), { autoAlpha: 1, duration: .01 }, 'f');
+      Kit.draw(tl, qa('.ta-f .rp'), { at: 'f', duration: .55 });
+      tl.to(q('.n1'), { color: C.rustT, duration: .4 }, 'f+=.3');
+      tl.to(q('.ta-fa'), { autoAlpha: 1, duration: .01 }, 'f+=.45');
+      Kit.draw(tl, qa('.ta-fa .rp'), { at: 'f+=.45', duration: .4 });
+      Kit.show(tl, q('.ta-c2'), { at: 'f+=.45', y: 10, duration: .45 });
+
+      // [click 3] who pays for it first
+      ctx.pause();
+      tl.addLabel('m');
+      Kit.show(tl, q('.ta-fb'), { at: 'm', y: 16, duration: .45 });
+      Kit.show(tl, q('.ta-num'), { at: 'm+=.6', y: 18, duration: .5 });
+      Kit.count(tl, q('.ta-num .v'), { to: 31, suffix: '%', duration: .9, at: 'm+=.7' });
+      tl.to(q('.dd-31'), { autoAlpha: 1, duration: .01 }, 'm+=1.5');
+      Kit.draw(tl, qa('.dd-31 .rp'), { at: 'm+=1.5', duration: .7 });
+    },
+    notes:
+      'Same loop as Giuseppe, aimed at one person. ' +
+      '[click] Their bar is the target, and every round proposes, tastes and learns. ' +
+      '[click] The care plan is not a score. It is a filter, like Samsung’s allergy rule: a candidate that breaks it never appears. ' +
+      'Bodies differ too, so this would learn per person. ' +
+      '[click] Start where someone already pays. Massachusetts Medicaid members who got medically tailored meals had thirty-one percent fewer hospital stays. ' +
+      'That funding is fragile. North Carolina suspended its programme last year.'
+  };
+
+  /* ------------------------------------------------------------- BACKUP */
+  var ROLE = [
+    { x: 200, y: 676, t: 'fat: snap + melt', ax: [628, 714, 782, 722] },
+    { x: 200, y: 800, t: 'roasted aroma', ax: [628, 838, 782, 824] },
+    { x: 1300, y: 676, t: 'colour + bitterness', ax: [1292, 714, 1138, 722] },
+    { x: 1300, y: 800, t: 'coating flow', ax: [1292, 838, 1138, 824] }
+  ];
+  var RW = 420, RH = 76;
+
+  var BACKUP = {
+    id: 'backup',
+    title: 'When an ingredient fails',
+    heading: 'When an ingredient fails',
+    budgetSec: 45,
+    html: function () {
+      var svg = svgOpen() +
+        '<g class="bk-ax">' +
+          Kit.rough.line(170, 600, 1800, 600, { seed: 350, w: 'fine', stroke: C.text3 }) +
+          Kit.rough.line(170, 330, 170, 600, { seed: 351, w: 'fine', stroke: C.text3 }) +
+        '</g>' +
+        '<g class="bk-line">' + Kit.rough.curve([[200, 560], [400, 505], [580, 432], [760, 400], [940, 448], [1120, 512], [1300, 546], [1420, 550]],
+          { seed: 352, w: 'heavy', stroke: C.plumT }) + '</g>' +
+        '<g class="bk-eu">' + Kit.rough.line(1500, 340, 1500, 600, { seed: 353, w: 'normal', stroke: C.rustT }) + '</g>' +
+        ROLE.map(function (r, i) {
+          return '<g class="bk-chip c' + i + '">' + Kit.rough.rect(r.x, r.y, RW, RH,
+            { seed: 356 + i, w: 'normal', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 18 }) + '</g>' +
+            '<g class="bk-ca a' + i + '">' + Kit.rough.arrow(r.ax[0], r.ax[1], r.ax[2], r.ax[3],
+              { seed: 362 + i, w: 'fine', stroke: C.plumT, head: 14, bend: i % 2 ? -10 : 10 }) + '</g>';
+        }).join('') +
+        '<g class="dd-jobs">' + Kit.doodle.underline(700, 1000, 520, { seed: 368, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+      '</svg>';
+      var chips = ROLE.map(function (r, i) {
+        return '<div class="t-body bk-ct t' + i + '" style="left:' + r.x + 'px;top:' + (r.y + 18) + 'px;width:' + RW + 'px">' + r.t + '</div>';
+      }).join('');
+      return svg + chips +
+        '<div class="t-caps bk-k">Cocoa price</div>' +
+        '<div class="t-mono bk-peak">$12,000+ / t</div>' +
+        '<div class="t-label faint bk-peakl">December 2024</div>' +
+        '<div class="t-mono bk-fall">~70%</div>' +
+        '<div class="callout bk-both">both ways, fast</div>' +
+        '<div class="t-caps bk-eul">EU forest rule</div>' +
+        '<div class="t-label bk-eud">30 Dec 2026</div>' +
+        Kit.photo(IMG + 'biscuit.webp', { x: 790, y: 636, w: 340, rot: -3, cls: 'bk-bis', alt: 'chocolate-coated biscuit with a bite taken out' }) +
+        '<div class="t-h2 bk-jobs">cocoa does four jobs</div>';
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.bk-line, .bk-peak, .bk-peakl, .bk-fall, .bk-both, .bk-eu, .bk-eul, .bk-eud, .bk-chip, .bk-ca, .bk-ct, .bk-bis, .bk-jobs, .dd-jobs'), { autoAlpha: 0 });
+      gsap.set(qa('.bk-line .rp, .bk-eu .rp'), { drawSVG: '0%' });
+
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
+      Kit.fade(tl, q('.bk-k'), { at: .2 });
+      Kit.draw(tl, qa('.bk-ax .rp'), { at: .3, duration: .7 });
+
+      // [click 1] the price goes up, then down, just as fast
+      ctx.pause();
+      tl.addLabel('p');
+      tl.to(q('.bk-line'), { autoAlpha: 1, duration: .01 }, 'p');
+      tl.to(qa('.bk-line .rp'), { drawSVG: '100%', duration: 1.4, ease: 'power1.inOut' }, 'p');
+      Kit.show(tl, qa('.bk-peak, .bk-peakl'), { at: 'p+=.6', y: 12, stagger: .1, duration: .45 });
+      Kit.show(tl, q('.bk-fall'), { at: 'p+=1.2', y: 12, duration: .45 });
+      Kit.show(tl, q('.bk-both'), { at: 'p+=1.4', y: 10, duration: .45 });
+
+      // [click 2] the date the rule lands
+      ctx.pause();
+      tl.addLabel('e');
+      tl.to(q('.bk-eu'), { autoAlpha: 1, duration: .01 }, 'e');
+      tl.to(qa('.bk-eu .rp'), { drawSVG: '100%', duration: .5 }, 'e');
+      Kit.show(tl, qa('.bk-eul, .bk-eud'), { at: 'e+=.2', y: 14, stagger: .1, duration: .45 });
+
+      // [click 3] one ingredient, four jobs
+      ctx.pause();
+      tl.addLabel('r');
+      Kit.drop(tl, q('.bk-bis'), { at: 'r' });
+      ROLE.forEach(function (x, i) {
+        var at = 'r+=' + (.4 + i * .22);
+        tl.to(q('.c' + i), { autoAlpha: 1, duration: .01 }, at);
+        Kit.draw(tl, qa('.c' + i + ' .rp'), { at: at, duration: .4 });
+        Kit.show(tl, q('.t' + i), { at: at, y: 10, duration: .4 });
+        tl.to(q('.a' + i), { autoAlpha: 1, duration: .01 }, at + '+=.15');
+        Kit.draw(tl, qa('.a' + i + ' .rp'), { at: at + '+=.15', duration: .35 });
+      });
+      Kit.show(tl, q('.bk-jobs'), { at: 'r+=1.5', y: 16, duration: .5 });
+      tl.to(q('.dd-jobs'), { autoAlpha: 1, duration: .01 }, 'r+=1.9');
+      Kit.draw(tl, qa('.dd-jobs .rp'), { at: 'r+=1.9', duration: .5 });
+    },
+    notes:
+      'Now the factory. ' +
+      '[click] Cocoa futures topped twelve thousand dollars a tonne in December 2024, then fell about seventy percent. ' +
+      'A manufacturer has to move both ways, and fast. ' +
+      '[click] And from the end of December 2026, the EU deforestation rule applies to large and medium companies. ' +
+      'Cocoa farming has been linked to forest loss in Côte d’Ivoire and Ghana. ' +
+      '[click] But you cannot just swap cocoa out. In a coating it does four jobs: it sets the snap and the melt, it gives the roasted aroma, ' +
+      'it sets colour and bitterness, and it changes how the coating flows on the line. A substitute has to pass all four.'
+  };
+
+  /* ------------------------------------------------------------ LIBRARY */
+  var CHECKS = ['taste', 'shelf life', 'line', 'label'];
+  var CKX = [180, 316, 516, 632];
+  var CARDY = [320, 490, 660];
+  var CDW = 620, CDH = 150;
+  var CARDN = ['Coating A', 'Filling B', 'Colour C'];
+  /* land per tonne of oil: palm short, the alternative more than twice as long (illustrative of the >2x ratio) */
+  var LANDX = 1040, LANDY = [524, 650], LANDW = [240, 560];
+
+  var LIBRARY = {
+    id: 'library',
+    title: 'Backups before the shock',
+    heading: 'Backups before the shock',
+    budgetSec: 35,
+    html: function () {
+      var cards = CARDY.map(function (y, i) {
+        return '<g class="lb-card d' + i + '">' + Kit.rough.rect(140, y, CDW, CDH,
+          { seed: 370 + i, w: i ? 'fine' : 'normal', stroke: i ? C.text3 : C.chalk }) + '</g>' +
+          CHECKS.map(function (c, j) {
+            return '<text class="lb-cl" x="' + CKX[j] + '" y="' + (y + 134) + '" font-size="24">' + c + '</text>' +
+              '<g class="lb-ck m' + i + '_' + j + '">' + Kit.doodle.mark(CKX[j] + 24, y + 92, 24, 'check',
+                { seed: 380 + i * 4 + j, color: 'var(--sec-t)' }) + '</g>';
+          }).join('');
+      }).join('');
+      var bars = LANDY.map(function (y, i) {
+        return '<g class="lb-bar lb' + i + '">' + Kit.rough.rect(LANDX, y, LANDW[i], 50,
+          { seed: 394 + i, w: 'normal', stroke: i ? C.rustT : C.plumT, hatch: i ? 'var(--rust-t)' : 'var(--sec-t)', fillOpacity: .3, hachureGap: 14 }) + '</g>';
+      }).join('');
+      var svg = svgOpen() + cards +
+        '<g class="lb-tag">' + Kit.rough.rect(140, 836, 560, 120,
+          { seed: 390, w: 'normal', stroke: C.plumT, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 20 }) + '</g>' +
+        bars +
+        '<g class="dd-keep">' + Kit.doodle.underline(1044, 856, 580, { seed: 396, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+      '</svg>';
+      var names = CARDY.map(function (y, i) {
+        return '<div class="t-body lb-n d' + i + '" style="top:' + (y + 16) + 'px">' + CARDN[i] + '</div>';
+      }).join('');
+      return svg + names +
+        '<div class="t-caps lb-k">Backup library</div>' +
+        '<div class="callout lb-c1">tested before it’s needed</div>' +
+        '<div class="t-body lb-tn">ChoViva · sunflower seeds</div>' +
+        '<div class="t-label dim lb-ts">Nestlé Germany, April 2026</div>' +
+        Kit.photo(IMG + 'sunflower.webp', { x: 726, y: 826, w: 150, rot: 6, cls: 'lb-sun', alt: 'roasted sunflower seeds' }) +
+        '<div class="t-caps lb-lk">Land for the same oil</div>' +
+        '<div class="t-body lb-bl b0">oil palm</div>' +
+        '<div class="t-body lb-bl b1">soy or rapeseed</div>' +
+        '<div class="t-hand lb-ans">keep palm, change the source</div>' +
+        Kit.photo(IMG + 'palm.webp', { x: 1540, y: 300, w: 250, rot: -5, cls: 'lb-palm', alt: 'oil palm fruit' });
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.lb-ck, .lb-c1, .lb-tag, .lb-tn, .lb-ts, .lb-sun, .lb-lk, .lb-bar, .lb-bl, .lb-palm, .lb-ans, .dd-keep'), { autoAlpha: 0 });
+      gsap.set(qa('.lb-bar'), { scaleX: 0, transformOrigin: LANDX + 'px 50%' });
+
+      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
+      Kit.fade(tl, q('.lb-k'), { at: .2 });
+      Kit.draw(tl, qa('.lb-card .rp'), { at: .3, duration: .6, stagger: .12 });
+      Kit.fade(tl, qa('.lb-n, .lb-cl'), { at: .6, stagger: .03 });
+
+      // [click 1] one formula earns its place, check by check
+      ctx.pause();
+      tl.addLabel('c');
+      CHECKS.forEach(function (c, j) {
+        var at = 'c+=' + (j * .3);
+        tl.to(q('.m0_' + j), { autoAlpha: 1, duration: .01 }, at);
+        Kit.draw(tl, qa('.m0_' + j + ' .rp'), { at: at, duration: .3 });
+      });
+      Kit.show(tl, q('.lb-c1'), { at: 'c+=1.1', y: 10, duration: .45 });
+
+      // [click 2] it already sells
+      ctx.pause();
+      tl.addLabel('v');
+      tl.to(q('.lb-tag'), { autoAlpha: 1, duration: .01 }, 'v');
+      Kit.draw(tl, qa('.lb-tag .rp'), { at: 'v', duration: .5 });
+      Kit.show(tl, qa('.lb-tn, .lb-ts'), { at: 'v+=.2', y: 14, stagger: .1, duration: .45 });
+      Kit.drop(tl, q('.lb-sun'), { at: 'v+=.3' });
+
+      // [click 3] the answer the search has to be allowed to give
+      ctx.pause();
+      tl.addLabel('l');
+      Kit.drop(tl, q('.lb-palm'), { at: 'l' });
+      Kit.show(tl, q('.lb-lk'), { at: 'l+=.15', y: 12, duration: .4 });
+      LANDY.forEach(function (y, i) {
+        tl.to(q('.lb' + i), { autoAlpha: 1, duration: .01 }, 'l+=' + (.3 + i * .25));
+        tl.to(q('.lb' + i), { scaleX: 1, duration: .7, ease: 'power2.out' }, 'l+=' + (.3 + i * .25));
+        Kit.show(tl, q('.b' + i), { at: 'l+=' + (.3 + i * .25), y: 10, duration: .4 });
+      });
+      Kit.show(tl, q('.lb-ans'), { at: 'l+=1.3', y: 14, duration: .5 });
+      tl.to(q('.dd-keep'), { autoAlpha: 1, duration: .01 }, 'l+=1.7');
+      Kit.draw(tl, qa('.dd-keep .rp'), { at: 'l+=1.7', duration: .5 });
+    },
+    notes:
+      'The same search, role by role. ' +
+      '[click] The best few get tested early, and a formula enters the library only after tasting, shelf-life, line and label checks. ' +
+      '[click] This already sells. Planet A Foods raised thirty million dollars for its sunflower-seed cocoa, and Nestlé Germany launched a line with it in April. ' +
+      '[click] Oil palm gives more than twice the oil per hectare of soy or rapeseed, so swapping it out can use more land. ' +
+      'And making palm deforestation-free would cut its emissions by ninety-two percent. ' +
+      'So the software has to be allowed to say: keep palm, change the source.'
   };
 
   /* ------------------------------------------------------------ SUMMARY */
   var SUM = [
-    { num: '01', k: 'Read', color: 'teal', pre: 'a recipe card', rest: ' becomes a typed record' },
+    { num: '01', k: 'Cook', color: 'teal', pre: 'a kitchen', rest: ' becomes a graph' },
     { num: '02', k: 'Find', color: 'olive', pre: 'a protein', rest: ' becomes a vector' },
     { num: '03', k: 'Mix', color: 'saffron', pre: 'a recipe', rest: ' becomes a point on a map' },
     { num: '04', k: 'Sell', color: 'cranberry', pre: 'the engine', rest: ' outlived the food' }
@@ -366,7 +486,7 @@
     heading: 'Summary',
     budgetSec: 45,
     html: function () {
-      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+      var svg = svgOpen() +
         SUM.map(function (r, i) {
           return '<g class="su-rule rl' + i + '">' +
             Kit.rough.line(120, sruleY(i), SRULE_X1, sruleY(i), { seed: 320 + i, w: 'normal', stroke: C[r.color + 'T'] }) + '</g>';
@@ -388,7 +508,7 @@
       }).join('');
       return '<div class="su-bg" style="background-image:url(' + IMG + 'close-table.jpg)"></div>' +
         '<div class="su-scrim"></div>' + svg + rows +
-        '<div class="t-h2 su-line1">A model chose what\'s in it.</div>' +
+        '<div class="t-h2 su-line1">A model chose what’s in it.</div>' +
         '<div class="t-h1 su-line2">Would you notice?</div>';
     },
     build: function (ctx) {
@@ -423,23 +543,25 @@
       Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=1.1', duration: .6 });
     },
     notes:
-      'So, four sections, and every one of them did the same thing. ' +
-      '[click] Read: a recipe card became a typed record. ' +
+      'Four sections, all doing the same thing. ' +
+      '[click] Cook: a kitchen became a graph. ' +
       '[click] Find: a protein became a vector, a list of numbers you can search. ' +
       '[click] Mix: a whole recipe became a point on a map. ' +
-      '[click] And Sell: the engine turned out to be worth more than the milk. ' +
-      'Each step made food more abstract, and that is exactly what let a machine search it. None of it removes the cook. ' +
-      '[click] Which leaves you with this. A model chose what is in it. Would you notice?'
+      '[click] And Sell: the engine was worth more than the milk. ' +
+      'Each step made food more abstract, which is what let a machine search it. ' +
+      'None of it removes the cook: the camera cannot see salt, the protein search only finds what is near something that works, ' +
+      'and every swap still needs a human tasting. ' +
+      '[click] Both futures end the same way, with something people choose again. A model chose what is in it. Would you notice?'
   };
 
   Deck.section({
     id: 'future', order: 5, num: '05', kicker: 'Next', title: 'Future', color: 'plum',
-    toss: 'assets/img/future/candy.webp',
+    toss: 'assets/img/future/cocoa-bar.webp',
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Last section: Next. Food companies are being pushed to rewrite their recipes, and the techniques we have seen are about to matter much more.'
+        'Last section: Next. Two futures for this work. Food fitted to one person, and formulas that survive a supply shock.'
     },
-    slides: [FORCES, ENGINE, PARITY, AVOID, SUMMARY]
+    slides: [QUESTION, PERSONAL, TAILOR, BACKUP, LIBRARY, SUMMARY]
   });
 })();

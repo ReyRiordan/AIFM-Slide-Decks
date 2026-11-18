@@ -25,23 +25,31 @@
     };
   }
 
-  /* ---- 01 · Read · Samsung Food ------------------------------------------ */
-  var READ_A = [
+  /* ---- 01 · Cook · Samsung Food ------------------------------------------ */
+  var COOK_A = [
     'Samsung Food Help Center, <i>Saving recipes</i>',
     'App Store, <i>Samsung Food 5.48.0</i>, Jul 2025',
     'Samsung US, <i>Samsung Food brand page</i>',
+    'Samsung Food, <i>Terms</i>, clause 13.3.1 (OpenAI)',
     'Samsung Newsroom, <i>Image-to-Recipe</i>, CES 2024',
+    'Samsung Newsroom, <i>Personalize and meal plans</i>, CES 2024',
+    'Samsung Newsroom, <i>Upgraded Samsung Food</i>, IFA 2024',
+    'Samsung Newsroom, <i>AI Vision with Google Gemini</i>, CES 2026',
+    'Samsung Newsroom, <i>AI Vision Inside fridges</i>, Mar 2025',
     'Samsung, patent US20230134600A1, 2023',
+    'Samsung, patent US12105943B2, 2024',
     'Whisk, <i>Whisk Platform documentation</i>'
   ];
-  var READ_B = [
-    'Digital Humanities Now, <i>NYT recipe CRFs</i>',
-    'The New York Times, <i>ingredient-phrase-tagger</i>',
-    'Ingredient Parser docs, 60,000 sentences',
-    'Li et al., <i>TrOCR</i>, AAAI 2023',
-    'Kim et al., <i>Donut</i>, ECCV 2022',
+  var COOK_B = [
+    'Gomi and Yanai, <i>SIMMER recipe retrieval</i>, 2026',
+    'Salvador et al., <i>Inverse Cooking</i>, CVPR 2019',
     'Chhikara et al., <i>FIRE</i>, WACV 2024',
-    'Salvador et al., <i>Inverse Cooking</i>, CVPR 2019'
+    'Hu, Koren and Volinsky, <i>Implicit feedback</i>, ICDM 2008',
+    'Twomey et al., <i>Recipe personalisation</i> (Cookpad), RecSys 2020',
+    '<i>January Food Benchmark</i>, Aug 2025 (nutrition error)',
+    'U.S. FDA, <i>FASTER Act allergen resources</i>, Jan 2025',
+    'FDA Law Blog, <i>Sesame as a major allergen</i>, Apr 2021',
+    'FoodSafety.gov, <i>Safe minimum internal temperatures</i>'
   ];
 
   /* ---- 02 · Find · Shiru ------------------------------------------------- */
@@ -88,25 +96,27 @@
 
   /* ---- 05 · Next · Future ------------------------------------------------ */
   var NEXT = [
-    'FoodNavigator, <i>GLP-1s and groceries</i>, Mar 2026',
-    'Food Industry Executive, <i>Dye removal</i>, Jun 2026',
-    'ConfectioneryNews, <i>The future of cocoa</i>, Oct 2026',
-    'Food Industry Executive, <i>Tariffs</i>, Feb 2026',
-    'Episcopal Health Foundation, <i>Medicaid</i>, 2026',
-    'PyMC Labs and Colgate-Palmolive, arXiv, 2026',
-    'IFT, <i>Can AI predict deliciousness?</i>',
-    'GeekWire, <i>Picnic shuts down</i>, 2026',
-    'Dealroom, <i>Miso Robotics acquires Zume</i>, 2026',
-    'Yahoo Finance UK, <i>Robot chef sold</i>, 2026',
-    'The Robot Report, <i>Chef Robotics raises $43M</i>, 2026'
+    'USDA FoodData Central, <i>Medjool dates</i>',
+    'CT Mirror / Stateline, <i>Massachusetts Medicaid meals</i>, Jul 2026',
+    'KFF Health News, <i>Medicaid meal cuts</i>, Sep 2026',
+    'Zeevi et al., <i>Personalized nutrition</i>, Cell 2015',
+    'ConfectioneryNews, <i>Cocoa prices crash</i>, Mar 2026',
+    'European Commission, <i>EUDR delayed to 30 Dec 2026</i>',
+    'Kalischek et al., <i>Cocoa and forest loss</i>, Nature Food 2023',
+    'World Fund, <i>Planet A Foods raises $30M</i>',
+    'Munich Startup, <i>Nestlé Germany launches ChoViva</i>, Apr 2026',
+    'Science of the Total Environment, <i>Replacing palm oil</i>, 2024',
+    'Wageningen via Food Ingredients First, <i>Palm oil land efficiency</i>'
   ];
 
   /* ---- research reports + image notes ------------------------------------ */
   var REPORTS = [
+    '<i>Samsung Food: multimodal food intelligence</i>, Nov 2026',
     '<i>Samsung Food: recipes from a photo</i>, Nov 2026',
     '<i>Shiru: protein discovery by search</i>, Nov 2026',
     '<i>NotCo Giuseppe: formula generation</i>, Nov 2026',
     '<i>NotCo: the company</i>, Nov 2026',
+    '<i>AI in food formulation</i>, Nov 2026',
     '<i>AI in food design: opportunities</i>, Nov 2026',
     'Each report lists its own sources in full.'
   ];
@@ -126,8 +136,8 @@
     id: 'refs', order: 99, num: '—', kicker: 'References', title: '', color: 'teal',
     slides: [
       refSlide('refs-1', [
-        [COL_X[0], '01 · Read · Samsung Food', READ_A],
-        [COL_X[1], '01 · Read · parsing and research', READ_B]
+        [COL_X[0], '01 · Cook · Samsung Food', COOK_A],
+        [COL_X[1], '01 · Cook · models and research', COOK_B]
       ]),
       refSlide('refs-2', [
         [COL_X[0], '02 · Find · Shiru', FIND],

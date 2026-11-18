@@ -829,7 +829,7 @@
     ['01', 'Learn the space, then search it', 'generate + score', 'A score aims a generative model at a target.'],
     ['02', 'Put the rules inside the search', 'constrained decoding', 'Block a choice before it is made, not after.']
   ];
-  var MARKS = [['Read', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
+  var MARKS = [['Cook', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
   var TKP = proj(1348, 352, 448);
 
   var TAKEAWAYS = {
