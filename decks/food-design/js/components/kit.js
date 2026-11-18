@@ -241,7 +241,7 @@
     /** Loose loop around a box (x,y,w,h): overshoots past its start, like circling something on a page. */
     circle: function (x, y, w, h, o) {
       // an ellipse through the box corners has radii w/2·√2, h/2·√2; pad adds breathing room on top
-      o = _dd(o); var pad = o.pad != null ? o.pad : 14, cx = x + w / 2, cy = y + h / 2, rx = Math.min(w / 2 * 1.3, w / 2 + 40) + pad, ry = Math.min(h / 2 * 1.3, h / 2 + 30) + pad, pts = [];
+      o = _dd(o); var pad = o.pad != null ? o.pad : 14, cx = x + w / 2, cy = y + h / 2, rx = o.rx || Math.min(w / 2 * 1.3, w / 2 + 40) + pad, ry = o.ry || Math.min(h / 2 * 1.3, h / 2 + 30) + pad, pts = [];   // o.rx/o.ry: exact radii (tight loops at margins)
       var a0 = -2.3, turns = 1.12, n = 28, s = o.seed || 13;
       for (var i = 0; i <= n; i++) { var a = a0 + i / n * Math.PI * 2 * turns, j = 1 + .05 * Math.sin(i * 1.7 + s) - (i / n) * .06;
         pts.push([_f(cx + Math.cos(a) * rx * j), _f(cy + Math.sin(a) * ry * j)]); }
