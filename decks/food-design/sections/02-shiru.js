@@ -108,7 +108,7 @@
       '</svg>';
       return svg + CARDS.map(function (c, i) {
         return '<div class="ap-card a' + i + '" style="left:' + APX[i] + 'px">' +
-            '<div class="t-mono ap-n">0' + (i + 1) + '</div>' +
+            '<div class="t-caps faint ap-n">Step ' + (i + 1) + '</div>' +
             '<div class="t-h2 ap-t">' + STEPS[i] + '</div>' +
             '<div class="t-label ap-q">' + c.q + '</div>' +
             '<div class="t-label ap-tech">' + c.tech + '</div>' +
@@ -180,7 +180,7 @@
             Kit.rough.curve([[680, 736], [928, 762], [1176, 736]], { seed: 83, w: 'normal', stroke: C.rustT }) +
             Kit.rough.curve([[432, 736], [928, 790], [1424, 736]], { seed: 84, w: 'fine', stroke: C.rustT }) +
           '</g>' +
-          '<g class="dd-pay">' + Kit.doodle.underline(752, 918, 424, { seed: 85 }) + '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(752, 932, 424, { seed: 85 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint ln-k ln-k1">A sentence</div>' +
         '<div class="t-h2 ln-sent">' + sentence + '</div>' +
@@ -296,7 +296,7 @@
             '<text class="em-pl" x="' + (PT_C[0] - 22) + '" y="' + (PT_C[1] + 48) + '" text-anchor="end" font-size="28" font-weight="700" fill="' + C.rustT + '">C · 73% of letters match A</text>' +
           '</g>' +
           '<g class="dd-ab">' + Kit.doodle.circle(1152, 572, 152, 122, { seed: 93, pad: 10 }) + '</g>' +
-          '<g class="dd-pay">' + Kit.doodle.underline(124, 912, 392, { seed: 94 }) + '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(124, 936, 392, { seed: 94 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint em-k em-k1">Two sequences</div>' +
         row('A', C.oliveT, SEQ_A, null, 0) +
@@ -383,7 +383,7 @@
           '<g class="sr-frame">' + Kit.rough.rect(SM.x, SM.y, SM.w, SM.h, { seed: 101, w: 'heavy', rough: .9 }) + '</g>' +
           '<g class="sr-cmpbox">' + Kit.rough.rect(1340, 740, 460, 248,
             { seed: 102, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .17, hachureGap: 22 }) + '</g>' +
-          '<g class="dd-24">' + Kit.doodle.circle(1336, 530, 168, 118, { seed: 103, color: 'var(--rust-t)', w: 'heavy', pad: 4 }) + '</g>' +
+          '<g class="dd-24">' + Kit.doodle.circle(1336, 526, 168, 118, { seed: 103, color: 'var(--rust-t)', w: 'heavy', rx: 132, ry: 84 }) + '</g>' +
           '<g class="dd-win">' + Kit.doodle.underline(1370, 860, 412, { seed: 104 }) + '</g>' +
           '<g class="sr-far">' + far + '</g>' + '<g class="sr-near">' + near + '</g>' +
           '<circle class="sr-ring" cx="' + QP[0] + '" cy="' + QP[1] + '" r="10" fill="none" stroke="' + C.rustT + '" stroke-width="3" stroke-dasharray="10 12"/>' +
@@ -559,7 +559,8 @@
             { seed: 151, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .3, hachureGap: 12, overshoot: 8 }) + '</g>' +
           '<g class="rs-bar1">' + Kit.rough.rect(330, 674, 460, 26,
             { seed: 152, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .3, hachureGap: 12, overshoot: 8 }) + '</g>' +
-          '<g class="dd-fat">' + Kit.doodle.circle(1178, 744, 316, 110, { seed: 153, color: 'var(--rust-t)', w: 'heavy', pad: 0 }) + '</g>' +
+          // loop the figure: explicit radii, so the ellipse clears the glyph box on every corner
+          '<g class="dd-fat">' + Kit.doodle.circle(1170, 735, 316, 110, { seed: 153, color: 'var(--rust-t)', w: 'heavy', rx: 250, ry: 88 }) + '</g>' +
           '<g class="dd-ai">' + Kit.doodle.underline(124, 890, 506, { seed: 154 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint rs-k">The searchable database</div>' +
@@ -616,9 +617,10 @@
   };
 
   /* -------------------------------------------------------------- TAKEAWAYS */
+  /* number · rule · tag · one line — the deck-wide takeaway row (KIT §7) */
   var TKROWS = [
-    ['01', 'Pre-training', 'When one label costs weeks,<br>learn the data first.'],
-    ['02', 'Embedding search', 'It finds what letters miss.<br>Only near what already works.']
+    ['01', 'Pre-training', 'Learn the data first.', 'When one label costs weeks, do not start by labelling.'],
+    ['02', 'Embedding search', 'It finds what letters miss.', 'But only near something that already works.']
   ];
   var THRU = [
     { t: 'Read', cls: '' }, { t: 'Find', cls: 'tk-on' }, { t: 'Mix', cls: 'tk-next' },
@@ -632,17 +634,21 @@
     budgetSec: 40,
     html: function () {
       var rows = TKROWS.map(function (r, i) {
-        return '<div class="tk-row r' + i + '" style="top:' + (360 + i * 200) + 'px">' +
-          '<div class="n t-mono">' + r[0] + '</div><div class="rule"></div>' +
-          '<div class="tg t-caps">' + r[1] + '</div><div class="ln t-h2">' + r[2] + '</div>' +
+        return '<div class="tk-row r' + i + '" style="top:' + (344 + i * 256) + 'px">' +
+          '<div class="t-h2 tk-n">' + r[0] + '</div>' +
+          '<div class="tk-body">' +
+            '<div class="t-h2 tk-rule">' + r[2] + '</div>' +
+            '<div class="t-caps tk-tag">' + r[1] + '</div>' +
+            '<div class="t-body dim tk-line">' + r[3] + '</div>' +
+          '</div>' +
         '</div>';
       }).join('');
       var strip = THRU.map(function (k, i) {
         return (i ? '<span class="sep t-caps">·</span>' : '') + '<span class="tok ' + k.cls + ' t-caps">' + k.t + '</span>';
       }).join('');
       var svg = '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="dd-u0">' + Kit.doodle.underline(284, 472, 620, { seed: 161 }) + '</g>' +
-        '<g class="dd-u1">' + Kit.doodle.underline(284, 672, 572, { seed: 162 }) + '</g>' +
+        '<g class="dd-u0">' + Kit.doodle.underline(252, 416, 476, { seed: 161 }) + '</g>' +
+        '<g class="dd-u1">' + Kit.doodle.underline(252, 672, 612, { seed: 162 }) + '</g>' +
       '</svg>';
       return Kit.photo(IMG + 'legumes.webp', { x: 1250, y: 300, w: 560, cls: 'tk-img', alt: '' }) +
         svg + rows + '<div class="tk-thru">' + strip + '</div>';

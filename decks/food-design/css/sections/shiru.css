@@ -18,7 +18,6 @@
   display: flex; flex-direction: column; gap: 20px;
 }
 .slide[data-sec="shiru"] .ap-cost { left: 150px; top: 886px; width: 420px; }
-.slide[data-sec="shiru"] .ap-n { font-size: var(--fs-label); color: var(--text-3); }
 .slide[data-sec="shiru"] .ap-t { color: var(--sec-t); }
 .slide[data-sec="shiru"] .ap-q { color: var(--text-2); flex: 1; font-weight: 500; }
 .slide[data-sec="shiru"] .ap-tech { color: var(--sec-t); border-top: 2px solid rgba(243,235,221,.22); padding-top: 18px; }
@@ -116,12 +115,14 @@
 
 /* ---------- takeaways · canonical section closer ---------- */
 .slide[data-sec="shiru"] .tk-img { z-index: 0; filter: none; opacity: .3; }
-.slide[data-sec="shiru"] .tk-row { position: absolute; left: 120px; width: 1120px; height: 190px; z-index: 2; }
-.slide[data-sec="shiru"] .tk-row .n { position: absolute; left: 0; top: 38px; font-size: var(--fs-h2); font-weight: 600; color: var(--text-3); }
-.slide[data-sec="shiru"] .tk-row .rule { position: absolute; left: 112px; top: 0; width: 2px; height: 190px; background: var(--line); }
-.slide[data-sec="shiru"] .tk-row .tg { position: absolute; left: 160px; top: 0; color: var(--sec-t); }
-.slide[data-sec="shiru"] .tk-row .ln { position: absolute; left: 160px; top: 42px; width: 1060px; font-weight: 700; line-height: 1.34; }
-.slide[data-sec="shiru"] .tk-thru { position: absolute; left: 120px; top: 900px; z-index: 2; display: flex; align-items: center; color: var(--text-3); }
+/* row grammar matches the Giuseppe pilot: number · rule · tag · one line */
+.slide[data-sec="shiru"] .tk-row { position: absolute; left: 120px; width: 1100px; z-index: 2; display: flex; gap: 36px; }
+.slide[data-sec="shiru"] .tk-n { width: 96px; flex: none; color: var(--text-3); font-family: var(--mono); font-size: 44px; font-weight: 600; }
+.slide[data-sec="shiru"] .tk-body { flex: 1; }
+.slide[data-sec="shiru"] .tk-rule { font-weight: 700; }
+.slide[data-sec="shiru"] .tk-tag { margin-top: 34px; color: var(--sec-t); }
+.slide[data-sec="shiru"] .tk-line { margin-top: 12px; }
+.slide[data-sec="shiru"] .tk-thru { position: absolute; left: 120px; top: 930px; z-index: 2; display: flex; align-items: center; color: var(--text-3); }
 .slide[data-sec="shiru"] .tk-thru .sep { margin: 0 20px; color: var(--line); }
 .slide[data-sec="shiru"] .tk-thru .tok { display: inline-block; padding: 10px 20px; border-radius: 12px; }
 .slide[data-sec="shiru"] .tk-thru .tk-on { background: var(--olive); color: #1E2124; }

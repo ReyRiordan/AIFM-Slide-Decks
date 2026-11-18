@@ -45,10 +45,10 @@
 /* ---- bridge ---- */
 .slide[data-sec="notco"] .nc-b-l1 { position: absolute; left: 150px; top: 300px; width: 1300px; }
 .slide[data-sec="notco"] .nc-b-l2 { position: absolute; left: 150px; top: 382px; width: 1300px; }
-.slide[data-sec="notco"] .nc-b-cap { position: absolute; left: 170px; top: 806px; width: 300px; }
-.slide[data-sec="notco"] .nc-b-pct { position: absolute; left: 690px; top: 540px; color: var(--cranberry-t); }
-.slide[data-sec="notco"] .nc-b-pl { position: absolute; left: 692px; top: 706px; width: 340px; }
-.slide[data-sec="notco"] .nc-b-bk { position: absolute; left: 1060px; top: 478px; }
-.slide[data-sec="notco"] .nc-b-bl1 { position: absolute; left: 1060px; top: 619px; width: 648px; text-align: center; }
-.slide[data-sec="notco"] .nc-b-bl2 { position: absolute; left: 1520px; top: 812px; width: 280px; text-align: right; }
+.slide[data-sec="notco"] .nc-b-cap { position: absolute; left: 170px; top: 836px; width: 300px; }
+/* the figure sits directly over the bar it is a share of */
+.slide[data-sec="notco"] .nc-b-pct { position: absolute; left: 1060px; top: 360px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-b-pl { position: absolute; left: 1060px; top: 530px; width: 540px; }
+.slide[data-sec="notco"] .nc-b-bk { position: absolute; left: 1060px; top: 288px; }
+.slide[data-sec="notco"] .nc-b-bl2 { position: absolute; left: 1520px; top: 876px; width: 280px; text-align: right; }
 .slide[data-sec="notco"] .nc-b-l3 { position: absolute; left: 150px; top: 888px; width: 1000px; }

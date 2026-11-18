@@ -27,7 +27,7 @@
           Kit.rough.line(120, 752, 1040, 752, { seed: 22, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
         '<g class="nc-o-ar">' + Kit.rough.arrow(646, 806, 556, 718, { seed: 31, w: 'normal', stroke: C.rustT, head: 18, bend: 22 }) + '</g>' +
         '<g class="nc-o-crd">' + tileRect(1140, 676, 660, 124, 32, { hatch: 'var(--sec-t)', fillOpacity: .14 }) + '</g>' +
-        '<g class="dd-pct">' + Kit.rough.ellipse(1230, 888, 252, 142, { seed: 211, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
+        '<g class="dd-pct">' + Kit.doodle.circle(1140, 846, 194, 80, { seed: 211, color: 'var(--rust-t)', w: 'heavy', rx: 140, ry: 80 }) + '</g>' +
       '</svg>';
 
       /* the chip sits on the photo, so its plate and outline are painted after it */
@@ -308,56 +308,54 @@
     title: 'Bridge',
     budgetSec: 30,
     html: function () {
-      /* the one figure on the slide, drawn: 90% of the AI work is no longer plant-based */
-      var BX = 1060, BY = 528, BH = 216, BIG = 648, SM = 72, SX = BX + BIG + 14;
+      /* The one figure on the slide: of the AI work NotCo is asked for, 90% is no longer plant-based.
+         The figure and the bar are one block, so the number can only be read as a share of the bar.
+         (No arrow from the photo: that read as "the food business becomes 90%".) */
+      var BX = 1060, BY = 620, BH = 180, BIG = 648, SM = 72, SX = BX + BIG + 14;
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="nc-b-ar">' + Kit.rough.arrow(505, 630, 635, 630, { seed: 90, w: 'heavy', head: 26 }) + '</g>' +
         '<g class="nc-b-b1">' + Kit.rough.rect(BX, BY, BIG, BH, { seed: 91, w: 'heavy', rough: .9, overshoot: 6,
           hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 24 }) + '</g>' +
         '<g class="nc-b-b2">' + Kit.rough.rect(SX, BY, SM, BH, { seed: 92, w: 'fine', rough: .9, overshoot: 5, stroke: C.text3 }) + '</g>' +
         '<g class="nc-b-tk">' + Kit.rough.line(SX + SM / 2, BY + BH + 14, SX + SM / 2, BY + BH + 58,
           { seed: 93, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
-        '<g class="dd-90">' + Kit.rough.ellipse(835, 615, 390, 152, { seed: 215, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
+        '<g class="dd-90">' + Kit.doodle.circle(1060, 372, 250, 110, { seed: 215, color: 'var(--rust-t)', w: 'heavy', rx: 185, ry: 86 }) + '</g>' +
         '<g class="dd-q">' + Kit.doodle.underline(150, 1000, 596, { seed: 216 }) + '</g>' +
       '</svg>';
 
       return svg +
         '<div class="t-h2 nc-b-l1">The food business is almost gone.</div>' +
         '<div class="t-h2 nc-b-l2">The AI it built is the product.</div>' +
-        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 470, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
+        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 500, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
         '<div class="t-label dim nc-b-cap">the food business</div>' +
         '<div class="t-caps faint nc-b-bk">NotCo AI requests \u00b7 2025</div>' +
         '<div class="t-num nc-b-pct"><span class="v">0</span>%</div>' +
-        '<div class="t-label dim nc-b-pl">of NotCo\'s AI requests</div>' +
-        '<div class="t-label nc-b-bl1">not plant-based</div>' +
+        '<div class="t-label dim nc-b-pl">are not plant-based</div>' +
         '<div class="t-label faint nc-b-bl2">plant-based</div>' +
         '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-b-ar, .nc-b-b1, .nc-b-b2, .nc-b-tk, .nc-b-bk, .nc-b-pct, .nc-b-pl, .nc-b-bl1, .nc-b-bl2, .nc-b-l3, .dd-90, .dd-q'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-b-b1, .nc-b-b2, .nc-b-tk, .nc-b-bk, .nc-b-pct, .nc-b-pl, .nc-b-bl2, .nc-b-l3, .dd-90, .dd-q'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.nc-b-l1, .nc-b-l2'), { at: 0, stagger: .12 });
       Kit.drop(tl, q('.nc-b-img'), { at: .3 });
       Kit.show(tl, q('.nc-b-cap'), { at: .7, y: 12 });
 
-      // [click 1] where the work went: the split, as a bar, and the figure
+      // [click 1] where the work went: name the pool, draw the split, then the share of it
       ctx.pause();
       tl.addLabel('s');
-      tl.to(q('.nc-b-ar'), { autoAlpha: 1, duration: .01 }, 's');
-      Kit.draw(tl, qa('.nc-b-ar .rp'), { at: 's', duration: .45 });
-      tl.to(q('.nc-b-pct'), { autoAlpha: 1, duration: .3 }, 's+=.35');
-      Kit.count(tl, q('.nc-b-pct .v'), { to: 90, duration: 1.0, at: 's+=.35' });
-      Kit.show(tl, q('.nc-b-pl'), { at: 's+=.9', y: 12 });
-      tl.to(qa('.nc-b-b1, .nc-b-b2'), { autoAlpha: 1, duration: .01 }, 's+=.5');
-      Kit.draw(tl, qa('.nc-b-b1 .rp'), { at: 's+=.5', duration: .7 });
-      Kit.draw(tl, qa('.nc-b-b2 .rp'), { at: 's+=.8', duration: .4 });
-      Kit.show(tl, qa('.nc-b-bk, .nc-b-bl1'), { at: 's+=.9', y: 12, stagger: .06 });
-      tl.to(q('.nc-b-tk'), { autoAlpha: 1, duration: .01 }, 's+=1.0');
-      Kit.draw(tl, qa('.nc-b-tk .rp'), { at: 's+=1.0', duration: .3 });
-      Kit.show(tl, q('.nc-b-bl2'), { at: 's+=1.15', y: 10 });
-      tl.to(q('.dd-90'), { autoAlpha: 1, duration: .01 }, 's+=1.4');
-      Kit.draw(tl, qa('.dd-90 .rp'), { at: 's+=1.4', duration: .7 });
+      Kit.show(tl, q('.nc-b-bk'), { at: 's', y: 10 });
+      tl.to(qa('.nc-b-b1, .nc-b-b2'), { autoAlpha: 1, duration: .01 }, 's+=.15');
+      Kit.draw(tl, qa('.nc-b-b1 .rp'), { at: 's+=.15', duration: .7 });
+      Kit.draw(tl, qa('.nc-b-b2 .rp'), { at: 's+=.45', duration: .4 });
+      tl.to(q('.nc-b-tk'), { autoAlpha: 1, duration: .01 }, 's+=.7');
+      Kit.draw(tl, qa('.nc-b-tk .rp'), { at: 's+=.7', duration: .3 });
+      Kit.show(tl, q('.nc-b-bl2'), { at: 's+=.85', y: 10 });
+      tl.to(q('.nc-b-pct'), { autoAlpha: 1, duration: .3 }, 's+=1.0');
+      Kit.count(tl, q('.nc-b-pct .v'), { to: 90, duration: 1.0, at: 's+=1.0' });
+      Kit.show(tl, q('.nc-b-pl'), { at: 's+=1.5', y: 12 });
+      tl.to(q('.dd-90'), { autoAlpha: 1, duration: .01 }, 's+=1.9');
+      Kit.draw(tl, qa('.dd-90 .rp'), { at: 's+=1.9', duration: .7 });
 
       // [click 2] the question the next section answers
       ctx.pause();

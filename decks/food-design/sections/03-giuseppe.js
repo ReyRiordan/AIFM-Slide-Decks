@@ -35,7 +35,7 @@
         '<g class="pr-arr">' + Kit.rough.arrow(1352, 498, 1352, 570, { seed: 35, w: 'normal', stroke: C.rustT, head: 20 }) + '</g>' +
         '<g class="pr-box">' + Kit.rough.rect(140, 806, 1660, 192, { seed: 36, w: 'normal', stroke: C.text3 }) + '</g>' +
         
-        '<g class="dd-huge">' + Kit.doodle.circle(1298, 602, 396, 112, { seed: 212, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+        '<g class="dd-huge">' + Kit.doodle.circle(1298, 599, 396, 112, { seed: 212, color: 'var(--rust-t)', w: 'heavy', rx: 255, ry: 88 }) + '</g>' +
         '<g class="dd-test">' + Kit.doodle.underline(1362, 944, 386, { seed: 213 }) + '</g>' +
       '</svg>';
       return svg +
@@ -256,13 +256,15 @@
         '</g>' +
         '<g class="gp-m">' +
           '<circle cx="' + M[0] + '" cy="' + M[1] + '" r="11" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
-          '<text class="gp-pl" x="' + M[0] + '" y="' + (M[1] - 22) + '" text-anchor="middle" font-size="30" font-weight="800" fill="' + C.rustT + '">M</text>' +
+          // M sits below its dot: A and B label from above, so the space over the chord stays free for the callout arrow
+          '<text class="gp-pl" x="' + M[0] + '" y="' + (M[1] + 46) + '" text-anchor="middle" font-size="30" font-weight="800" fill="' + C.rustT + '">M</text>' +
         '</g>' +
         // our recipe's point P
         '<g class="gp-p"><circle cx="' + P[0] + '" cy="' + P[1] + '" r="13" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
           '<text class="gp-pl" x="' + (P[0] + 20) + '" y="' + (P[1] + 34) + '" font-size="30" font-weight="800" fill="' + C.rustT + '">P</text></g>' +
         // doodle callouts' arrows
-        '<g class="gp-c1a">' + Kit.rough.arrow(770, 392, (A[0] + M[0]) / 2 - 4, (A[1] + M[1]) / 2 - 14, { seed: 17, w: 'normal', stroke: C.rustT, head: 18, bend: 16 }) + '</g>' +
+        // "one swap apart" points at the A–B chord, left of M, so it never shares a target with "no holes"
+        '<g class="gp-c1a">' + Kit.rough.arrow(770, 392, (A[0] + M[0]) / 2 - 2, (A[1] + M[1]) / 2 - 12, { seed: 17, w: 'normal', stroke: C.rustT, head: 18, bend: 16 }) + '</g>' +
         '<g class="gp-c2a">' + Kit.rough.arrow(990, 566, M[0] + 20, M[1] + 12, { seed: 18, w: 'normal', stroke: C.rustT, head: 18, bend: -18 }) + '</g>' +
         // doodles: loop the one recipe, swoosh it into the encoder, twinkle the in-between point
         '<g class="dd-rec">' + Kit.doodle.circle(186, 402, 296, 296, { seed: 231 }) + '</g>' +
@@ -763,7 +765,8 @@
         '</g>' +
         '<g class="rs-ca">' + Kit.doodle.underline(134, 642, 428, { seed: 131, color: 'var(--rust-t)' }) + '</g>' +
         '<g class="rs-cb">' + Kit.rough.arrow(1532, 848, 1436, 708, { seed: 132, w: 'fine', head: 16, stroke: C.rustT, bend: -18 }) + '</g>' +
-        '<g class="dd-fast">' + Kit.rough.ellipse(848, 822, 480, 178, { seed: 274, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
+        // loop the figure, same grammar as the score loop: explicit radii that clear the glyph box
+        '<g class="dd-fast">' + Kit.doodle.circle(587, 725, 500, 190, { seed: 274, color: 'var(--rust-t)', w: 'heavy', rx: 250, ry: 95 }) + '</g>' +
       '</svg>';
       return svg + cuts +
         '<div class="t-caps rs-k">Giuseppe’s answer for milk</div>' +
