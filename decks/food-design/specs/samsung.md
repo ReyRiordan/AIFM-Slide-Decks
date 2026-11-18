@@ -12,6 +12,41 @@
 
 ---
 
+**Restyle (Nov 2026) — matched to the `giuseppe` doodle pilot**
+
+- **Stroke weight is hierarchy.** No `sw:` numbers are left in the section; every diagram uses at least two of
+  `w: 'heavy'` (9) / `'normal'` (5) / `'fine'` (2.5). Heavy goes on the focal shape: the phone frame (`demo`),
+  the photo → record arrow (`problem`), the step arrows (`approach`), the Path B "one model" box and its output
+  arrow (`read`), the page outline (`parse`), the `flour` entity node (`link`), the misread arrow (`errors`).
+  Fine goes on the OCR inset, the spelling chips, the outcome cards, the bottom strips and the page rules;
+  fine strokes are chalk or `--text-3`, never `--line`. Rects overshoot their corners (the default).
+- **Hatched focal boxes** (`Kit.rough.rect(..., {hatch:'var(--sec-t)', fillOpacity})`): the four roadmap cards (.15),
+  the record box on `problem` (.13), the four chain boxes on `read` (.12), the Path B box (rust hatch, .12),
+  the entity node on `link` (.18), the two error panels (.10 teal / .10 rust). The phone frame on `demo`
+  carries a .1 teal hachure, so the placeholder screen reads as a screen.
+- **Doodles must teach.** One or two per slide, each marking what the speaker says at that click:
+  `demo` underline under "Photo in, record out."; `problem` rust loop round "50+ fields, typed by hand" and the
+  Caveat "none of them read the photo" with a rough arrow into the feature row; `approach` underline under
+  "Each step can fail on its own."; `read` the "pixels in, characters out" Caveat and its arrow, plus the rust
+  dots on the chain joins (error propagation); `parse` rust loop round the low-confidence bar; `link` the
+  "one name, many spellings" Caveat, an underline under "Four spellings, one entity." and a rust underline under
+  "from 140,000+ items"; `errors` rust loop round the ruined sodium figure and the "not on the page" Caveat;
+  `dish` rust loop round the 49.3 and an underline under the closing line; `takeaways` an underline under each rule.
+  No food doodles, sparkles, stars or decorative loops anywhere in the section.
+- **No source text on slides.** Every `Kit.src(...)` call and both provenance chips (the `Inferred` flag on
+  `approach`, the `Illustrative` flag on `errors`) are deleted, with their CSS. The caveats are now spoken:
+  "I made those field names up" (`problem`), "Samsung has published none of this; the four steps are my
+  reconstruction" (`approach`), "That record is my sketch" and "Samsung has never said which path it uses"
+  (`read`), "I made the bars up, but the shape is real" (`parse`), "The id is a stand-in" (`link`),
+  "Both examples here are made up" (`errors`), "Both numbers are from research papers, not from Samsung" (`dish`).
+- **Content zone now runs to y 1030** (no footer). Re-laid out: `approach` cards are 500 tall with arrows between
+  them and a closing line; `read` drops both lanes ~60 px; `parse` spreads the field rows on a 94 px pitch and
+  adds a `confidence` column header; `link` spaces the spelling chips on a 118 px pitch and adds the caption
+  "Four spellings, one entity."; `errors` moves the defence strip down to y 848; `dish` grows the photo and the
+  closing line. `problem` draws the five feature tiles as rough frames that appear with their labels on the last click.
+- Notes: 934 words against a 900-word (135 wpm) target; `[click]` count matches `ctx.pause()` on every slide.
+- QA: `qa/restyle/samsung-r5/`.
+
 ## Story spine (approve before building)
 
 1. **Problem.** A recipe on a cookbook page or a handwritten card is pixels. Every feature in Samsung Food — ingredient search, nutrition, serving changes, the shopping list, oven settings — needs a typed record instead, and typing one by hand takes over 50 fields.
