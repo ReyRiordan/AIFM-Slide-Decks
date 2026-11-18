@@ -252,7 +252,7 @@
       .to(q('.op-word'), { attr: { fill: ink }, duration: .3 }, 1.15)
       .fromTo(q('.op-ul'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power2.out' }, 1.25);
     var toss = q('.op-toss');
-    if (toss) tl.fromTo(toss, { y: -1000, rotation: -25 }, { y: 0, rotation: 8, duration: .6, ease: 'back.out(1.5)' }, .7);
+    if (toss) tl.fromTo(toss, { y: -1500, rotation: -25, autoAlpha: 0 }, { y: 0, rotation: 8, autoAlpha: 1, duration: .6, ease: 'back.out(1.5)' }, .7);   // hidden until it drops (no corner peeking in early)
   }
   function makeOpener(sec) {
     var o = sec.opener === true ? {} : sec.opener;
