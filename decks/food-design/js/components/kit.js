@@ -112,29 +112,36 @@
        sketch:false (one clean pass, no ghost stroke), ghostOpacity.
      Doodle look: each shape is drawn twice, a main pass plus a thinner, looser, half-transparent "ghost" pass (class rp-ghost).
      Animate with Kit.draw(tl, el.querySelectorAll('.rp')) — ghost passes draw on with the main ones. */
-  Kit.SKETCH = { rough: 1.55, bow: 1.7, ghostW: .45, ghostOpacity: .55, ghostRough: 1.6 };
-  Kit.W = { heavy: 7, normal: 4, fine: 2 };
+  Kit.SKETCH = { rough: 2.1, bow: 2.4, ghostW: .6, ghostOpacity: .75, ghostRough: 1.9, overshoot: 14 };
+  Kit.W = { heavy: 9, normal: 5, fine: 2.5 };
   var _gen = null;
   function gen() { if (!_gen && window.rough) _gen = window.rough.generator(); return _gen; }
   function _seed(o, k) { if (o.seed != null) return o.seed; var h = 7; for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 2147483; return h + 1; }
+  function rnd2(seed) { seed = (seed % 2147483646) + 1; return function () { seed = seed * 16807 % 2147483647; return (seed - 1) / 2147483646; }; }
+  function _f(n) { return Math.round(n * 10) / 10; }
   function _sw(o) { return o.sw || Kit.W[o.w] || Kit.W.normal; }
   function _opts(o, key) {
     var r = (o.rough != null ? o.rough : 1.1) * Kit.SKETCH.rough;
     return { seed: _seed(o, key), roughness: r, bowing: o.bow != null ? o.bow : Kit.SKETCH.bow,
       stroke: '#000', strokeWidth: _sw(o), fill: o.fill, fillStyle: o.fillStyle || 'hachure',
-      fillWeight: o.fillWeight || Math.max(1.5, _sw(o) * .55), hachureGap: o.hachureGap || 9, hachureAngle: o.hachureAngle != null ? o.hachureAngle : -41,
+      fillWeight: o.fillWeight || 2.2, hachureGap: o.hachureGap || 14, hachureAngle: o.hachureAngle != null ? o.hachureAngle : -41,
       disableMultiStroke: true, preserveVertices: true, curveFitting: .9 };
   }
   function _paths(drawable, o, ghost) {
     var g = gen(); if (!g) return '';
-    var stroke = o.stroke || Kit.color.chalk, isVar = stroke.indexOf('var(') === 0;
+    var stroke = o.stroke || Kit.color.chalk;
     return g.toPaths(drawable).map(function (p) {
       var isFill = p.fill && p.fill !== 'none' && (!p.stroke || p.stroke === 'none');
-      if (ghost && isFill) return '';
+      // hachure / zigzag fill lines come back as strokes in the fill color (the outline uses the '#000' sentinel)
+      if (!isFill && (!p.stroke || p.stroke === 'none')) return '';
+      var isHatch = !isFill && p.stroke !== '#000';
+      if (ghost && (isFill || isHatch)) return '';
+      var col = isHatch ? p.stroke : stroke, colVar = col.indexOf('var(') === 0;
       // CSS vars can't go in presentation attributes: write them as inline style (with a chalk attribute fallback).
-      var strokeAttr = isFill ? 'none' : (isVar ? Kit.color.chalk : stroke);
-      return '<path class="rp' + (isFill ? ' rp-fill' : '') + (ghost ? ' rp-ghost' : '') + (o.cls ? ' ' + o.cls : '') + '" d="' + p.d +
-        '" stroke="' + strokeAttr + '"' + (isVar && !isFill ? ' style="stroke:' + stroke + '"' : '') +
+      var strokeAttr = isFill ? 'none' : (colVar ? Kit.color.chalk : col);
+      return '<path class="rp' + (isFill ? ' rp-fill' : '') + (isHatch ? ' rp-hatch' : '') + (ghost ? ' rp-ghost' : '') + (o.cls ? ' ' + o.cls : '') + '" d="' + p.d +
+        '" stroke="' + strokeAttr + '"' + (colVar && !isFill ? ' style="stroke:' + col + '"' : '') +
+        (isHatch ? ' opacity="' + (o.fillOpacity != null ? o.fillOpacity : .35) + '"' : '') +
         ' stroke-width="' + p.strokeWidth + '" fill="' + (isFill ? p.fill : 'none') + '"' +
         (o.attrs ? ' ' + o.attrs : '') + '/>';
     }).join('');
@@ -153,7 +160,22 @@
   }
   Kit.rough = {
     line: function (x1, y1, x2, y2, o) { o = o || {}; return _shape(o, 'l' + x1 + y1 + x2 + y2, function (op) { return gen().line(x1, y1, x2, y2, op); }); },
-    rect: function (x, y, w, h, o) { o = o || {}; return _shape(o, 'r' + x + y + w + h, function (op) { return gen().rectangle(x, y, w, h, op); }); },
+    /** Rectangle drawn as 4 separate strokes whose ends overshoot the corners (o.overshoot px, default Kit.SKETCH.overshoot;
+        0 = closed rough.js rectangle). o.fill / o.hatch:true add a hachure shading inside (o.fillOpacity, default .35). */
+    rect: function (x, y, w, h, o) {
+      o = o || {}; var key = 'r' + x + y + w + h, sd = _seed(o, key);
+      var fill = o.fill || (o.hatch ? (o.hatch === true ? (o.stroke || Kit.color.chalk) : o.hatch) : null), out = '';
+      if (fill) out += _paths(gen().rectangle(x, y, w, h, Object.assign(_opts(o, key), { fill: fill, stroke: 'none', strokeWidth: 0 })), o);
+      var e = o.overshoot != null ? o.overshoot : Kit.SKETCH.overshoot;
+      if (!e) return out + _shape(Object.assign({}, o, { fill: undefined }), key, function (op) { return gen().rectangle(x, y, w, h, op); });
+      var r = rnd2(sd), J = function (k) { return (r() - .3) * k; };
+      var L = function (x1, y1, x2, y2, k) { return Kit.rough.line(_f(x1), _f(y1), _f(x2), _f(y2), Object.assign({}, o, { fill: undefined, hatch: undefined, seed: sd + k })); };
+      return out +
+        L(x - e * .6 - J(e), y + J(4), x + w + J(e), y + J(5), 1) +
+        L(x + w + J(4), y - J(e) * .7, x + w + J(5), y + h + e * .5 + J(e), 2) +
+        L(x + w + e * .5 + J(e), y + h + J(4), x - J(e), y + h + J(5), 3) +
+        L(x + J(4), y + h + e * .6 + J(e), x + J(5), y - e * .4 - J(e), 4);
+    },
     ellipse: function (cx, cy, w, h, o) { o = o || {}; return _shape(o, 'e' + cx + cy + w + h, function (op) { return gen().ellipse(cx, cy, w, h, op); }); },
     circle: function (cx, cy, d, o) { o = o || {}; return _shape(o, 'c' + cx + cy + d, function (op) { return gen().circle(cx, cy, d, op); }); },
     path: function (d, o) { o = o || {}; return _shape(o, 'p' + d, function (op) { return gen().path(d, op); }); },
@@ -178,7 +200,6 @@
      Common opts: seed, color, w ('heavy'|'normal'|'fine'), rot (deg, about the doodle's center). Animate with Kit.draw like any .rp. */
   function _dd(o, def) { o = Object.assign({ w: def || 'normal' }, o || {}); o.stroke = o.color || o.stroke || 'var(--sec-t)'; o.cls = 'dd' + (o.cls ? ' ' + o.cls : ''); return o; }
   function _rot(markup, o, cx, cy) { return o.rot ? '<g transform="rotate(' + o.rot + ' ' + cx + ' ' + cy + ')">' + markup + '</g>' : markup; }
-  function _f(n) { return Math.round(n * 10) / 10; }
   Kit.doodle = {
     /** Five-point star centered at (cx,cy), radius r. */
     star: function (cx, cy, r, o) {
@@ -215,7 +236,8 @@
     },
     /** Loose loop around a box (x,y,w,h): overshoots past its start, like circling something on a page. */
     circle: function (x, y, w, h, o) {
-      o = _dd(o); var cx = x + w / 2, cy = y + h / 2, rx = w / 2 + (o.pad != null ? o.pad : 18), ry = h / 2 + (o.pad != null ? o.pad : 18), pts = [];
+      // an ellipse through the box corners has radii w/2·√2, h/2·√2; pad adds breathing room on top
+      o = _dd(o); var pad = o.pad != null ? o.pad : 14, cx = x + w / 2, cy = y + h / 2, rx = w / 2 * 1.3 + pad, ry = h / 2 * 1.3 + pad, pts = [];
       var a0 = -2.3, turns = 1.12, n = 28, s = o.seed || 13;
       for (var i = 0; i <= n; i++) { var a = a0 + i / n * Math.PI * 2 * turns, j = 1 + .05 * Math.sin(i * 1.7 + s) - (i / n) * .06;
         pts.push([_f(cx + Math.cos(a) * rx * j), _f(cy + Math.sin(a) * ry * j)]); }
@@ -277,7 +299,7 @@
       o = _dd(o, 'fine'); var h = o.h || 38, x = cx - L / 2, y = cy - h / 2, z = 6;
       var d = 'M' + x + ' ' + y + ' L' + (x + L) + ' ' + y + ' L' + (x + L - z) + ' ' + (y + h * .33) + ' L' + (x + L) + ' ' + (y + h * .66) + ' L' + (x + L - z) + ' ' + (y + h) +
         ' L' + x + ' ' + (y + h) + ' L' + (x + z) + ' ' + (y + h * .66) + ' L' + x + ' ' + (y + h * .33) + ' Z';
-      var fillCol = o.fill || 'rgba(243,235,221,.22)';
+      var fillCol = o.fill || 'rgba(236,214,170,.62)';   // warm masking tape; works on framed photos (on a transparent cut-out, put it where the photo is opaque)
       return _rot('<path class="dd-tape" d="' + d + '" fill="' + fillCol + '" stroke="none"/>' + Kit.rough.path(d, Object.assign({ rough: .5, sketch: false }, o)), Object.assign({ rot: -8 }, o), cx, cy);
     },
     /** Small chalk "x" or check mark. kind: 'x' | 'check'. */
@@ -286,6 +308,59 @@
       if (kind === 'check') return Kit.rough.linear([[cx - s, cy], [cx - s * .3, cy + s * .7], [cx + s, cy - s * .8]], o);
       return Kit.rough.line(cx - s, cy - s, cx + s, cy + s, o) + Kit.rough.line(cx + s, cy - s, cx - s, cy + s, Object.assign({}, o, { seed: (o.seed || 37) + 1 }));
     },
+    /* ---- little food doodles for margins (s = rough size in px, ~60–140). Each takes rot. ---- */
+    /** Spoon, bowl up-left, handle down-right. */
+    spoon: function (cx, cy, s, o) {
+      o = _dd(o); return _rot(Kit.rough.ellipse(cx, cy - s * .3, s * .42, s * .58, Object.assign({}, o, { seed: (o.seed || 51) })) +
+        Kit.rough.curve([[cx, cy - s * .01], [cx - s * .03, cy + s * .3], [cx + s * .02, cy + s * .62]], Object.assign({}, o, { seed: (o.seed || 51) + 1 })), Object.assign({ rot: 30 }, o), cx, cy);
+    },
+    /** Fork: handle plus four tines. */
+    fork: function (cx, cy, s, o) {
+      o = _dd(o); var out = Kit.rough.line(cx, cy - s * .05, cx, cy + s * .6, Object.assign({}, o, { seed: (o.seed || 53) }));
+      out += Kit.rough.path('M' + (cx - s * .18) + ' ' + (cy - s * .55) + ' L' + (cx - s * .18) + ' ' + (cy - s * .15) + ' Q' + cx + ' ' + (cy + s * .05) + ' ' + (cx + s * .18) + ' ' + (cy - s * .15) + ' L' + (cx + s * .18) + ' ' + (cy - s * .55), Object.assign({}, o, { seed: (o.seed || 53) + 1 }));
+      [-.06, .06].forEach(function (k, i) { out += Kit.rough.line(cx + s * k, cy - s * .55, cx + s * k, cy - s * .12, Object.assign({}, o, { w: 'fine', seed: (o.seed || 53) + 2 + i })); });
+      return _rot(out, Object.assign({ rot: 20 }, o), cx, cy);
+    },
+    /** Whisk: handle and three wire loops. */
+    whisk: function (cx, cy, s, o) {
+      o = _dd(o); var out = Kit.rough.line(cx, cy + s * .15, cx, cy + s * .65, Object.assign({}, o, { seed: (o.seed || 57) }));
+      [.12, .24, .34].forEach(function (k, i) {
+        out += Kit.rough.path('M' + (cx - s * .04) + ' ' + (cy + s * .15) + ' C' + (cx - s * k * 1.6) + ' ' + (cy - s * .2) + ' ' + (cx - s * k) + ' ' + (cy - s * .62) + ' ' + cx + ' ' + (cy - s * .62) +
+          ' C' + (cx + s * k) + ' ' + (cy - s * .62) + ' ' + (cx + s * k * 1.6) + ' ' + (cy - s * .2) + ' ' + (cx + s * .04) + ' ' + (cy + s * .15), Object.assign({}, o, { w: i ? 'fine' : o.w, seed: (o.seed || 57) + 1 + i }));
+      });
+      return _rot(out, Object.assign({ rot: 25 }, o), cx, cy);
+    },
+    /** Herb sprig: a curved stem with leaves. */
+    sprig: function (cx, cy, s, o) {
+      o = _dd(o); var out = Kit.rough.curve([[cx - s * .1, cy + s * .55], [cx, cy], [cx + s * .12, cy - s * .55]], Object.assign({}, o, { seed: (o.seed || 61) }));
+      [[-.04, .3, -1], [.02, .02, 1], [.06, -.28, -1], [.1, -.5, 1]].forEach(function (L, i) {
+        var bx = cx + s * L[0], by = cy + s * L[1], d = L[2], tx = bx + d * s * .36, ty = by - s * .16;
+        out += Kit.rough.path('M' + bx + ' ' + by + ' Q' + (bx + d * s * .12) + ' ' + (by - s * .22) + ' ' + tx + ' ' + ty + ' Q' + (bx + d * s * .26) + ' ' + (by + s * .04) + ' ' + bx + ' ' + by,
+          Object.assign({}, o, { w: 'fine', seed: (o.seed || 61) + 1 + i }));
+      });
+      return _rot(out, o, cx, cy);
+    },
+    /** Carrot: tapered root with a leafy top. */
+    carrot: function (cx, cy, s, o) {
+      o = _dd(o); var out = Kit.rough.path('M' + (cx - s * .16) + ' ' + (cy - s * .3) + ' Q' + (cx - s * .12) + ' ' + (cy + s * .2) + ' ' + cx + ' ' + (cy + s * .6) + ' Q' + (cx + s * .12) + ' ' + (cy + s * .2) + ' ' + (cx + s * .16) + ' ' + (cy - s * .3) + ' Z', Object.assign({}, o, { seed: (o.seed || 67) }));
+      out += Kit.rough.line(cx - s * .1, cy - s * .05, cx - s * .02, cy - s * .02, Object.assign({}, o, { w: 'fine', seed: (o.seed || 67) + 1 }));
+      out += Kit.rough.line(cx + s * .02, cy + s * .2, cx + s * .09, cy + s * .23, Object.assign({}, o, { w: 'fine', seed: (o.seed || 67) + 2 }));
+      [-.14, 0, .14].forEach(function (k, i) { out += Kit.rough.curve([[cx + s * k * .4, cy - s * .3], [cx + s * k, cy - s * .48], [cx + s * k * 1.6, cy - s * .62]], Object.assign({}, o, { w: 'fine', seed: (o.seed || 67) + 3 + i })); });
+      return _rot(out, Object.assign({ rot: -30 }, o), cx, cy);
+    },
+    /** Cooking pot with handles and steam. */
+    pot: function (cx, cy, s, o) {
+      o = _dd(o); var w = s * .9, h = s * .5, x = cx - w / 2, y = cy - h / 2 + s * .1;
+      var out = Kit.rough.path('M' + x + ' ' + y + ' L' + (x + s * .04) + ' ' + (y + h) + ' Q' + cx + ' ' + (y + h + s * .08) + ' ' + (x + w - s * .04) + ' ' + (y + h) + ' L' + (x + w) + ' ' + y, Object.assign({}, o, { seed: (o.seed || 71) }));
+      out += Kit.rough.line(x - s * .08, y, x + w + s * .08, y, Object.assign({}, o, { seed: (o.seed || 71) + 1 }));
+      out += Kit.rough.line(x - s * .16, y + h * .25, x, y + h * .25, Object.assign({}, o, { seed: (o.seed || 71) + 2 })) + Kit.rough.line(x + w, y + h * .25, x + w + s * .16, y + h * .25, Object.assign({}, o, { seed: (o.seed || 71) + 3 }));
+      return _rot(out + Kit.doodle.steam(cx, y - s * .08, s * .42, Object.assign({}, o, { w: 'fine', gap: s * .2, seed: (o.seed || 71) + 4 })), o, cx, cy);
+    },
+    /** Leaf (single), pointing up-right. */
+    leaf: function (cx, cy, s, o) {
+      o = _dd(o); var d = 'M' + (cx - s * .4) + ' ' + (cy + s * .4) + ' Q' + (cx - s * .4) + ' ' + (cy - s * .3) + ' ' + (cx + s * .4) + ' ' + (cy - s * .4) + ' Q' + (cx + s * .3) + ' ' + (cy + s * .4) + ' ' + (cx - s * .4) + ' ' + (cy + s * .4);
+      return _rot(Kit.rough.path(d, Object.assign({}, o, { seed: (o.seed || 73) })) + Kit.rough.line(cx - s * .4, cy + s * .4, cx + s * .2, cy - s * .2, Object.assign({}, o, { w: 'fine', seed: (o.seed || 73) + 1 })), o, cx, cy);
+    },
     /** Small dots/specks of chalk dust scattered in a box. */
     dust: function (x, y, w, h, o) {
       o = _dd(o, 'fine'); var n = o.n || 7, s = o.seed || 41, out = '';
@@ -293,6 +368,12 @@
         out += Kit.rough.circle(_f(x + rx * w), _f(y + ry * h), 4 + (i % 3) * 2, Object.assign({}, o, { sketch: false, seed: s % 997 + 1 })); }
       return out;
     }
+  };
+
+  /** Full-stage SVG layer for doodles that must sit ON TOP of photos (section <svg>s come before Kit.photo imgs in html()).
+      Put it last in html(): Kit.overlay(Kit.doodle.steam(...) + ...). cls lets you target it. */
+  Kit.overlay = function (markup, cls) {
+    return '<svg class="ovl' + (cls ? ' ' + cls : '') + '" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;pointer-events:none;overflow:visible">' + markup + '</svg>';
   };
 
   /** Photo markup. src under assets/img/…; o: {x,y,w,h?,rot,cls,framed,alt}. Cut-outs are transparent PNGs; framed photos get a card shadow. */
