@@ -31,7 +31,7 @@
 .slide[data-sec="samsung"] .sm-aline { position: absolute; }
 
 /* ---------------------------------------------------------------- read */
-.slide[data-sec="samsung"] .sm-pagek { position: absolute; left: 120px; top: 418px; }
+.slide[data-sec="samsung"] .sm-pagek { position: absolute; left: 120px; top: 386px; }
 .slide[data-sec="samsung"] .sm-lane { position: absolute; color: var(--text-2); }
 .slide[data-sec="samsung"] .sm-fail { position: absolute; text-align: right; }
 .slide[data-sec="samsung"] .sm-jchip { position: absolute; padding: 26px 30px; display: flex; align-items: center; }

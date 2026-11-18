@@ -262,7 +262,7 @@
         '<g class="sm-jbox2">' + Kit.rough.rect(1120, 782, 680, 150, { seed: 73, w: 'fine', stroke: C.text3 }) + '</g>' +
         '<g class="sm-dots">' + dots + '</g>') +
         '<div class="t-caps dim sm-pagek">One page</div>' +
-        Kit.photo(IMG + 'page.jpg', { x: 120, y: 466, w: 230, h: 310, rot: -2, framed: true, cls: 'sm-page', alt: 'A cookbook page' }) +
+        Kit.photo(IMG + 'page.jpg', { x: 120, y: 440, w: 262, h: 357, rot: -2, framed: true, cls: 'sm-page', alt: 'A printed recipe page' }) +
         div('t-caps sm-lane l1', 400, 296, 700, 'Path A · a chain') +
         div('t-caps sm-lane l2', 400, 726, 700, 'Path B · one model') +
         div('t-label sm-fail f1 c-teal', 1100, 298, 700, 'fails by misreading a character') +

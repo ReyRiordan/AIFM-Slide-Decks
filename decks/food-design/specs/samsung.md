@@ -44,8 +44,19 @@
   adds a `confidence` column header; `link` spaces the spelling chips on a 118 px pitch and adds the caption
   "Four spellings, one entity."; `errors` moves the defence strip down to y 848; `dish` grows the photo and the
   closing line. `problem` draws the five feature tiles as rough frames that appear with their labels on the last click.
+- **Readable recipe images (Nov 2026, Rey).** The old generated card, page and cookbook carried fake
+  scribble handwriting and read as illegible manuscripts. Each is now generated **blank** (`design/raw/sm-card-blank.png`,
+  `sm-page-blank.png`, `sm-cookbook-blank.png`, `intro-card-blank.png`) and the recipe is drawn on top with the deck's
+  own fonts by `tools/recipe-text.py` (re-runnable): Caveat in ink blue for the handwritten cards, Fraunces + Figtree
+  for the printed page. The recipe is the same everywhere and matches what the slides teach — "Carrot & Potato Stew",
+  `1 pound carrots, young ones if possible` (the `parse` line) and `½ tsp salt` (the `errors` line), with the stew
+  tying back to the `dish` photo. `assets/img/intro/card.webp` is replaced in place (same filename, transparent
+  background) because the intro agenda and the engine's section-opener toss both use it. `cookbook.jpg` stays
+  text-free: it sits under the takeaways veil, so it is a blank, brightened book. The `read` page photo grew to
+  262 × 357 so its title is readable from the back of the room.
+
 - Notes: 934 words against a 900-word (135 wpm) target; `[click]` count matches `ctx.pause()` on every slide.
-- QA: `qa/restyle/samsung-r5/`.
+- QA: `qa/restyle/samsung-r5/`; image pass `qa/restyle/samsung-r7/` (includes the intro agenda).
 
 ## Story spine (approve before building)
 
