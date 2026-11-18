@@ -37,11 +37,9 @@
         
         '<g class="dd-huge">' + Kit.doodle.circle(1298, 602, 396, 112, { seed: 212, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
         '<g class="dd-test">' + Kit.doodle.underline(1362, 944, 386, { seed: 213 }) + '</g>' +
-        '<g class="dd-spoon">' + Kit.doodle.fork(528, 664, 196, { seed: 214, rot: 14 }) + '</g>' +
       '</svg>';
       return svg +
         Kit.photo(IMG + 'milk.webp', { x: 150, y: 296, w: 250, rot: -4, cls: 'pr-milk', alt: 'glass of milk' }) +
-        Kit.overlay('<g class="dd-fresh">' + Kit.doodle.twinkles(376, 348, 66, { seed: 211, w: 'normal' }) + '</g>') +
         '<div class="t-caps pr-k">A handful of plants</div>' +
         '<div class="pr-n n1"><div class="t-num c-saffron"><span class="v">0</span></div>' +
           '<div class="t-label dim">ingredients in the patent’s example</div></div>' +
@@ -55,7 +53,7 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.pr-n, .pr-test, .pr-arr, .pr-box, .dd-fresh, .dd-huge, .dd-test, .dd-spoon'), { autoAlpha: 0 });
+      gsap.set(qa('.pr-n, .pr-test, .pr-arr, .pr-box, .dd-huge, .dd-test'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.drop(tl, q('.pr-milk'), { at: .15 });
@@ -63,10 +61,6 @@
       Kit.draw(tl, qa('.pr-bowl .rp'), { at: .55, duration: .8 });
       Kit.fade(tl, q('.pr-k'), { at: .6 });
       tl.fromTo(qa('.pr-slot'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .4, stagger: .05, ease: 'power1.out' }, .9);
-      tl.to(q('.dd-fresh'), { autoAlpha: 1, duration: .01 }, .7);
-      Kit.draw(tl, qa('.dd-fresh .rp'), { at: .7, duration: .4, stagger: .03 });
-      tl.to(q('.dd-spoon'), { autoAlpha: 1, duration: .01 }, 1.0);
-      Kit.draw(tl, qa('.dd-spoon .rp'), { at: 1.0, duration: .6 });
 
       // [click 1] the catalog
       ctx.pause();
@@ -127,7 +121,6 @@
         }).join('') +
         '<g class="ap-loop">' + Kit.rough.arrow(APX[3] + APW / 2, 806, APX[1] + APW / 2, 806, { seed: 75, w: 'heavy', stroke: C.saffronT, head: 26, bend: -74 }) + '</g>' +
         '<g class="dd-loop">' + Kit.doodle.underline(1090, 916, 182, { seed: 221 }) + '</g>' +
-        '<g class="dd-whisk">' + Kit.doodle.pot(252, 884, 156, { seed: 222 }) + '</g>' +
       '</svg>';
       var cards = AP.map(function (c, i) {
         return '<div class="ap-card c' + i + '" style="left:' + APX[i] + 'px">' +
@@ -142,13 +135,11 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ap-a, .ap-loop, .ap-loop-l, .dd-loop, .ap-many, .dd-whisk'), { autoAlpha: 0 });
+      gsap.set(qa('.ap-a, .ap-loop, .ap-loop-l, .dd-loop, .ap-many'), { autoAlpha: 0 });
       gsap.set(qa('.c1 > *, .c2 > *, .c3 > *, .b1, .b2, .b3'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.draw(tl, qa('.b0 .rp'), { at: .3, duration: .6 });
-      tl.to(q('.dd-whisk'), { autoAlpha: 1, duration: .01 }, .8);
-      Kit.draw(tl, qa('.dd-whisk .rp'), { at: .8, duration: .7, stagger: .03 });
       Kit.show(tl, qa('.c0 > *'), { at: .5, y: 16, stagger: .07, duration: .45 });
 
       [1, 2, 3].forEach(function (i) {
@@ -276,7 +267,6 @@
         // doodles: loop the one recipe, swoosh it into the encoder, twinkle the in-between point
         '<g class="dd-rec">' + Kit.doodle.circle(186, 402, 296, 296, { seed: 231 }) + '</g>' +
         '<g class="dd-sw">' + Kit.doodle.swoosh(348, 486, 572, 550, { seed: 232, w: 'normal' }) + '</g>' +
-        '<g class="dd-sprig">' + Kit.doodle.sprig(248, 952, 136, { seed: 234, rot: 16 }) + '</g>' +
         '<g class="dd-m">' + Kit.doodle.underline(1400, 918, 392, { seed: 233, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
 
@@ -315,15 +305,13 @@
       }
       render();
 
-      gsap.set(qa('.gp-enc-on, .gp-dec-on, .gp-p, .gp-dots, .gp-clab, .gp-nb, .gp-m, .gp-rows .gp-row, .gp-rb > div, .callout, .gp-cap, .gp-c1a, .gp-c2a, .dd-sw, .dd-m, .dd-sprig'), { autoAlpha: 0 });
+      gsap.set(qa('.gp-enc-on, .gp-dec-on, .gp-p, .gp-dots, .gp-clab, .gp-nb, .gp-m, .gp-rows .gp-row, .gp-rb > div, .callout, .gp-cap, .gp-c1a, .gp-c2a, .dd-sw, .dd-m'), { autoAlpha: 0 });
 
       // entrance
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
       Kit.fade(tl, qa('.gp-k1, .gp-in, .gp-wl, .gp-k2'), { at: .2, stagger: .04 });
       Kit.drop(tl, qa('.gp-cut img'), { at: .15, stagger: .08 });
       Kit.draw(tl, qa('.dd-rec .rp'), { at: .55, duration: .8 });
-      tl.to(q('.dd-sprig'), { autoAlpha: 1, duration: .01 }, .9);
-      Kit.draw(tl, qa('.dd-sprig .rp'), { at: .9, duration: .7, stagger: .03 });
       Kit.draw(tl, qa('.gp-border .rp, .gp-enc .rp, .gp-dec .rp'), { at: .3, duration: .8 });
       tl.fromTo(qa('.gp-out .rp'), { drawSVG: '0%' }, { drawSVG: '0%', duration: .01 }, 0);
       tl.fromTo(qa('.gp-chord .rp'), { drawSVG: '0%' }, { drawSVG: '0%', duration: .01 }, 0);
@@ -406,7 +394,7 @@
   var SC_TICK = [.42, .58, .50, .66, .38];                // where milk sits on each track
   var SC_OFF = [92, -74, 64, -56, 80];                    // the blend's first-guess gap, in px
   var BAR_X = 810, BAR_W = 320, FT_X = 1470, FT_W = 320;
-  var SMP = proj(140, 404, 260);
+  var SMP = proj(140, 404, 300);
 
   var SCORE = {
     id: 'score',
@@ -419,10 +407,10 @@
       var sp = SMP(.33, .74);
       var svg = svgOpen() +
         // left: the point on the map, decoded through the wedge
-        '<g class="sc-map">' + Kit.rough.rect(140, 404, 260, 260, { seed: 80, w: 'normal' }) + '</g>' +
+        '<g class="sc-map">' + Kit.rough.rect(140, 404, 300, 300, { seed: 80, w: 'normal' }) + '</g>' +
         '<g class="sc-dots">' + mapDots(SMP, { rs: .55, op: .5 }) + '</g>' +
         '<circle class="sc-p" cx="' + sp[0] + '" cy="' + sp[1] + '" r="9" fill="' + C.rust + '" stroke="#1E2124" stroke-width="2"/>' +
-        '<g class="sc-dec">' + wedge(438, 534, 498, 70, 200, { seed: 81, w: 'heavy', fill: C.saffron, fillStyle: 'hachure', hachureGap: 18, fillOpacity: .3 }) + '</g>' +
+        '<g class="sc-dec">' + wedge(462, 554, 522, 70, 212, { seed: 81, w: 'heavy', fill: C.saffron, fillStyle: 'hachure', hachureGap: 18, fillOpacity: .3 }) + '</g>' +
         // centre: the solver's proportions
         SC_ING.map(function (n, i) {
           return '<text class="mono sc-n n' + i + '" x="540" y="' + (rowY[i] + 10) + '" font-size="28" fill="' + C.text + '">' + n + '</text>' +
@@ -449,15 +437,13 @@
           '<text class="f-rust" x="1602" y="418" font-size="24">this blend</text>' +
         '</g>' +
         // doodles: loop the target photo, loop the score it is measured against
-        '<g class="dd-pot">' + Kit.doodle.leaf(248, 790, 170, { seed: 243, rot: -18 }) + '</g>' +
-        '<g class="dd-milk">' + Kit.doodle.circle(1294, 276, 76, 140, { seed: 241 }) + '</g>' +
         '<g class="dd-score">' + Kit.doodle.circle(1300, 782, 272, 124, { seed: 242, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
       '</svg>';
       return svg +
         '<div class="t-caps sc-k sc-k1">Decode</div>' +
         '<div class="t-caps sc-k sc-k2">Solver · how much of each</div>' +
         '<div class="t-caps sc-k sc-k3">Target · milk</div>' +
-        Kit.photo(IMG + 'milk.webp', { x: 1294, y: 274, w: 74, rot: -3, cls: 'sc-milk', alt: 'glass of milk' }) +
+        Kit.photo(IMG + 'milk.webp', { x: 1302, y: 268, w: 66, rot: -3, cls: 'sc-milk', alt: 'glass of milk' }) +
         '<div class="sc-score"><div class="t-num c-rust"><span class="v">0.41</span></div>' +
           '<div class="t-label dim sc-sl">leftover distance to the target — lower is closer</div></div>' +
         '<div class="t-body sc-cap">Model picks which. Solver picks how much.</div>';
@@ -481,13 +467,10 @@
       }
       render();
 
-      gsap.set(qa('.sc-tot-l, .sc-tot, .sc-cap, .dd-score, .dd-pot'), { autoAlpha: 0 });
+      gsap.set(qa('.sc-tot-l, .sc-tot, .sc-cap, .dd-score'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
       Kit.fade(tl, qa('.sc-k1, .sc-k2, .sc-k3'), { at: .15, stagger: .04 });
-      Kit.draw(tl, qa('.dd-milk .rp'), { at: .8, duration: .7 });
-      tl.to(q('.dd-pot'), { autoAlpha: 1, duration: .01 }, 1.0);
-      Kit.draw(tl, qa('.dd-pot .rp'), { at: 1.0, duration: .7, stagger: .02 });
       Kit.draw(tl, qa('.sc-map .rp, .sc-dec .rp'), { at: .25, duration: .7 });
       Kit.fade(tl, qa('.sc-dots, .sc-p'), { at: .5 });
       tl.fromTo(qa('.sc-n'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .35, stagger: .1 }, .6);
@@ -578,8 +561,6 @@
           return '<g class="st-b sb' + i + '">' + Kit.rough.rect(1120, 300 + i * 176, 680, 138,
             { seed: 95 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .14, hachureGap: 24 }) + '</g>';
         }).join('') +
-        '<g class="dd-win">' + Kit.doodle.twinkles(STAR[0] - 78, STAR[1] - 64, 48, { seed: 251, color: 'var(--rust-t)', w: 'normal' }) + '</g>' +
-        '<g class="dd-carrot">' + Kit.doodle.carrot(246, 836, 148, { seed: 252 }) + '</g>' +
       '</svg>';
       return svg +
         STEER_CARDS.map(function (c, i) {
@@ -606,12 +587,10 @@
         trail.setAttribute('stroke-dasharray', shown + ' ' + (len + 10));
       }
       render();
-      gsap.set(qa('.st-heat, .st-leg, .st-lk, .st-ll, .st-c3, .st-c3a, .st-cap, .sc1 > *, .sc2 > *, .sb1, .sb2, .dd-win, .dd-carrot'), { autoAlpha: 0 });
+      gsap.set(qa('.st-heat, .st-leg, .st-lk, .st-ll, .st-c3, .st-c3a, .st-cap, .sc1 > *, .sc2 > *, .sb1, .sb2'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
       Kit.draw(tl, qa('.st-border .rp'), { at: .2, duration: .8 });
-      tl.to(q('.dd-carrot'), { autoAlpha: 1, duration: .01 }, .9);
-      Kit.draw(tl, qa('.dd-carrot .rp'), { at: .9, duration: .7, stagger: .02 });
       Kit.fade(tl, q('.st-dots'), { at: .6 });
       tl.fromTo(q('.st-star'), { autoAlpha: 0, scale: 0, transformOrigin: STAR[0] + 'px ' + STAR[1] + 'px' },
         { autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, .7);
@@ -643,8 +622,6 @@
       ctx.pause();
       tl.addLabel('f');
       tl.to(st, { k: 6, duration: 1.1, ease: 'none', onUpdate: render }, 'f');
-      tl.to(q('.dd-win'), { autoAlpha: 1, duration: .01 }, 'f+=1.0');
-      Kit.draw(tl, qa('.dd-win .rp'), { at: 'f+=1.0', duration: .5, stagger: .02 });
       Kit.show(tl, q('.st-cap'), { at: 'f+=.6', y: 14 });
     },
     notes:
@@ -689,7 +666,7 @@
         '<g class="ru-ab">' + Kit.rough.arrow(1218, 758, 1282, 758, { seed: 124, w: 'fine', head: 16, stroke: C.text3 }) + '</g>' +
         '<g class="ru-x">' + Kit.rough.line(1298, 760, 1762, 760, { seed: 125, w: 'heavy', stroke: C.rustT, bow: .4, rough: .7 }) + '</g>' +
         '<g class="dd-ok">' + Kit.doodle.mark(1238, 556, 34, 'check', { seed: 261 }) + '</g>' +
-        '<g class="dd-no">' + Kit.doodle.mark(1238, 910, 28, 'x', { seed: 262, color: 'var(--rust-t)' }) + Kit.doodle.fork(1684, 962, 128, { seed: 263, rot: 16 }) + '</g>' +
+        '<g class="dd-no">' + Kit.doodle.mark(1238, 910, 28, 'x', { seed: 262, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
       return svg +
         '<div class="t-caps ru-k1">Ingredient dictionary · 830 rows</div>' +
@@ -786,9 +763,7 @@
         '</g>' +
         '<g class="rs-ca">' + Kit.doodle.underline(134, 642, 428, { seed: 131, color: 'var(--rust-t)' }) + '</g>' +
         '<g class="rs-cb">' + Kit.rough.arrow(1532, 848, 1436, 708, { seed: 132, w: 'fine', head: 16, stroke: C.rustT, bend: -18 }) + '</g>' +
-        '<g class="dd-pack">' + Kit.doodle.sparkle(1498, 384, 44, { seed: 272, w: 'normal' }) + Kit.doodle.twinkles(1160, 404, 40, { seed: 273 }) + '</g>' +
-        '<g class="dd-spoon">' + Kit.doodle.sprig(272, 886, 158, { seed: 275, rot: -12 }) + '</g>' +
-        '<g class="dd-fast">' + Kit.rough.ellipse(848, 824, 486, 192, { seed: 274, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
+        '<g class="dd-fast">' + Kit.rough.ellipse(848, 822, 480, 178, { seed: 274, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
       '</svg>';
       return svg + cuts +
         '<div class="t-caps rs-k">Giuseppe’s answer for milk</div>' +
@@ -802,14 +777,12 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.rs-pack, .rs-pl, .rs-arr, .rs-c1, .rs-c1l, .rs-ca, .rs-c2, .rs-c2l, .rs-cb, .rs-num, .dd-pack, .dd-fast, .dd-spoon'), { autoAlpha: 0 });
+      gsap.set(qa('.rs-pack, .rs-pl, .rs-arr, .rs-c1, .rs-c1l, .rs-ca, .rs-c2, .rs-c2l, .rs-cb, .rs-num, .dd-fast'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.fade(tl, q('.rs-k'), { at: .2 });
       Kit.drop(tl, qa('.rs-cut'), { at: .3, stagger: .12 });
       tl.fromTo(qa('.rs-lab'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .4, stagger: .12 }, .6);
-      tl.to(q('.dd-spoon'), { autoAlpha: 1, duration: .01 }, 1.0);
-      Kit.draw(tl, qa('.dd-spoon .rp'), { at: 1.0, duration: .6 });
 
       // [click 1] why those two, and what chefs made of it
       ctx.pause();
@@ -823,8 +796,6 @@
       tl.to(q('.rs-pack'), { autoAlpha: 1, duration: .01 }, 'p+=.9');
       Kit.draw(tl, qa('.rs-pack .rp'), { at: 'p+=.9', duration: .7, stagger: .05 });
       Kit.show(tl, q('.rs-pl'), { at: 'p+=1.4', y: 10 });
-      tl.to(q('.dd-pack'), { autoAlpha: 1, duration: .01 }, 'p+=1.5');
-      Kit.draw(tl, qa('.dd-pack .rp'), { at: 'p+=1.5', duration: .45, stagger: .03 });
 
       // [click 2] the speed-up NotCo claims
       ctx.pause();
@@ -874,7 +845,6 @@
           return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="7" fill="' + (i === pts.length - 1 ? C.rust : C.saffron) + '"/>';
         }).join('') +
         '<g class="dd-hit">' + Kit.doodle.circle(pts[pts.length - 1][0] - 28, pts[pts.length - 1][1] - 28, 56, 56, { seed: 281, color: 'var(--rust-t)' }) + '</g>' +
-        '<g class="dd-whisk">' + Kit.doodle.pot(1572, 916, 148, { seed: 284 }) + '</g>' +
         '<g class="dd-u0">' + Kit.doodle.underline(252, 416, 700, { seed: 282 }) + '</g>' +
         '<g class="dd-u1">' + Kit.doodle.underline(252, 672, 692, { seed: 283 }) + '</g>' +
       '</svg>';
@@ -895,7 +865,7 @@
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
       gsap.set(qa('.t0 > *, .t1 > *'), { autoAlpha: 0 });
-      gsap.set(qa('.dd-u0, .dd-u1, .dd-hit, .dd-whisk'), { autoAlpha: 0 });
+      gsap.set(qa('.dd-u0, .dd-u1, .dd-hit'), { autoAlpha: 0 });
       gsap.set(qa('.tk-tok:not(.tk-on) .t-caps'), { color: C.text3 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
@@ -903,8 +873,6 @@
       Kit.fade(tl, q('.tk-strip'), { at: .4 });
       tl.to(q('.dd-hit'), { autoAlpha: 1, duration: .01 }, .7);
       Kit.draw(tl, qa('.dd-hit .rp'), { at: .7, duration: .6 });
-      tl.to(q('.dd-whisk'), { autoAlpha: 1, duration: .01 }, .9);
-      Kit.draw(tl, qa('.dd-whisk .rp'), { at: .9, duration: .7, stagger: .03 });
 
       // [click 1] lesson one
       ctx.pause();
@@ -929,6 +897,11 @@
   Deck.section({
     id: 'giuseppe', order: 3, num: '03', kicker: 'Mix', title: 'NotCo Giuseppe', color: 'saffron',
     toss: 'assets/img/giuseppe/tomato.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section three: Mix. NotCo\'s AI, Giuseppe, works one level up: it designs whole recipes, which plants go in and how much of each.'
+    },
     slides: [PROBLEM, APPROACH, MAP, SCORE, STEER, RULES, RESULTS, TAKEAWAYS]
   });
 })();

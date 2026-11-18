@@ -50,7 +50,7 @@
 .slide[data-sec="giuseppe"] .sc-wl { fill: var(--text-2); font-weight: 700; letter-spacing: .12em; }
 .slide[data-sec="giuseppe"] .sc-score { position: absolute; left: 1300px; top: 778px; width: 500px; }
 .slide[data-sec="giuseppe"] .sc-sl { margin-top: 30px; line-height: 1.25; }
-.slide[data-sec="giuseppe"] .sc-cap { position: absolute; left: 140px; top: 858px; width: 1100px; font-weight: 600; }
+.slide[data-sec="giuseppe"] .sc-cap { position: absolute; left: 140px; top: 800px; width: 1100px; font-weight: 600; }
 
 /* ------------------------------------------------------------------ STEER */
 .slide[data-sec="giuseppe"] .st-card { position: absolute; left: 1120px; width: 680px; padding: 30px 0 0 32px; }
@@ -88,7 +88,7 @@
 .slide[data-sec="giuseppe"] .rs-c2 { left: 1196px; top: 856px; }
 .slide[data-sec="giuseppe"] .rs-c2l { position: absolute; left: 1202px; top: 918px; }
 .slide[data-sec="giuseppe"] .rs-num { position: absolute; left: 644px; top: 756px; }
-.slide[data-sec="giuseppe"] .rs-num .t-label { margin-top: 30px; }
+.slide[data-sec="giuseppe"] .rs-num .t-label { margin-top: 46px; }
 
 /* -------------------------------------------------------------- TAKEAWAYS */
 .slide[data-sec="giuseppe"] .tk-row { position: absolute; left: 120px; width: 1240px; display: flex; gap: 36px; }

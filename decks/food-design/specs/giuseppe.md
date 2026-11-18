@@ -40,22 +40,22 @@ spoken from the notes instead. References still live in `99-refs.js`.)*
   (`problem`), the one-loop arrow (`approach`), the encoder/decoder wedges and the decode path (`map`),
   the decoder wedge (`score`), the map border (`steer`), the masked decoder and the mask (`rules`),
   the carton (`results`). Fine goes on supporting boxes, cards and the dictionary frame.
-- **1–3 `Kit.doodle` marks per slide**, drawn on with `Kit.draw` after the thing they point at, in
-  `var(--sec-t)` (saffron) or `var(--rust-t)`; the diagram itself stays cream chalk. Per slide:
-  `problem` twinkles on the milk, a rust loop round `4 × 10²²`, an underline under "Cook it. Taste it.";
-  `approach` an underline under "One loop" plus the Caveat "hundreds of times";
-  `map` a loop round the three cut-outs (fades as they fly), a swoosh into the encoder, an underline
-  under the rebuilt `M` row; `score` a loop round the milk cut-out and round the `0.04` score;
-  `steer` twinkles beside the star; `rules` a check beside "every try is usable" and an x beside
-  "a wasted try"; `results` a rust loop round the pineapple + cabbage pair and round `10 → 2`, plus a
-  sparkle on the carton; `takeaways` underlines under each rule and a loop round the final point.
+- **A doodle must mark what the speaker is talking about at that moment** (Rey, round 3). Loops and
+  underlines on a key number or phrase, a check or x that carries meaning, a swoosh that shows motion,
+  a Caveat callout with a rough arrow. Nothing decorative: no food doodles in the margins, no twinkles,
+  sparkles or stars on a photo, no loop round a photo that is not the point. Colour must not pull the
+  eye to something that does not help the viewer learn. What each slide keeps:
+  `problem` rust loop round `4 × 10²²`, underline under "Cook it. Taste it. Rate it.";
+  `approach` underline under "One loop" + the Caveat "hundreds of times";
+  `map` a loop round the one recipe that is about to be encoded (it fades as the cut-outs fly),
+  a swoosh behind them into the encoder, a rust underline under the rebuilt `M` row, two Caveat callouts;
+  `score` a rust loop round the `0.04` score; `steer` the "worse — back off" callout and its arrow;
+  `rules` a check beside "every try is usable" and an x beside "a wasted try";
+  `results` an underline under the two ingredients that make lactones, a rust ellipse round `10 → 2`,
+  two Caveat callouts; `takeaways` an underline under each rule and a loop round the point the search landed on.
 - **Hatched focal boxes.** `Kit.rough.rect(..., {hatch:'var(--sec-t)', fillOpacity})` shades the four step
   cards (.16), the three Bayesian-optimization cards (.14), the masked decoder (.13) and the carton's label
   panel (.5); the decoder wedge on `score` carries a saffron hachure fill.
-- **One food doodle per slide in the dead corner**, section saffron unless noted: `fork` (problem),
-  `pot` (approach), `sprig` (map), `leaf` (score), `carrot` (steer), `fork` (rules), `sprig` (results),
-  `pot` (takeaways). `spoon` and `whisk` were tried and cut: at slide scale they read as a lollipop
-  and a hot-air balloon.
 - **Content zone now runs to y 1030** (no footer): the bottom band of every slide was re-laid out to use it.
 
 ---
