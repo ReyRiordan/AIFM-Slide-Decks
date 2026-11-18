@@ -17,6 +17,36 @@ This is the closing section. It teaches no new technique: it spends the two tech
 
 Dark theme throughout. Diagrams are code-drawn SVG with a rough.js cream wobble that draws itself on. Two generated photoreal images, dropped with a slight tilt. No logos in this section: the companies named on `avoid` appear as plain text.
 
+**Restyle (Nov 2026) — matched to the Giuseppe doodle pilot**
+
+- **Stroke weight is hierarchy.** No `sw:` numbers are left. Heavy goes on the focal shape: the cream
+  formula slab (`forces`), the loop arrows and the score box (`engine`), the verdict card (`parity`),
+  the money cross-outs and the Chef Robotics band (`avoid`). Normal carries the column arrows and the
+  callout arrows; fine carries the dead-company cards and the panel divider. Long straight strokes
+  (the cross-outs, the divider) pass `bow: .4, rough: .7` so they stay straight.
+- **Hatched focal boxes.** `hatch` + a low `fillOpacity`: the score box (.15, `--sec-t`), the
+  mid-sized-makers card (.2, `--sec-t`), the formula-insurance wedge (.14, `--rust-t`), the verdict
+  card (.1, `--rust-t`) and the Chef Robotics band (.12, `--rust-t`). The `svg .rp-fill` rule in
+  `css/sections/future.css` only paints solid fills (the formula slab); hatch comes back as
+  `.rp-hatch` strokes and is unaffected.
+- **Doodles must teach.** One per click, marking what the speaker is saying:
+  `forces` a rust arrow and the Caveat `bending under all five` on the sagging slab;
+  `engine` the Caveat `only this changes` with a rust arrow into the score box, and a rust underline
+  under `Same engine. New score.`;
+  `parity` a rust loop round `90%`, the Caveat `barely above chance` with an arrow to the chance rule,
+  and a rust check beside `Will they notice?`;
+  `avoid` the three rust cross-outs through the money raised;
+  `summary` a rust underline under `Would you notice?`. Nothing decorative, no food doodles.
+- **No source text.** Every `Kit.src(...)` call is gone (no provenance chips were used in this
+  section). The caveats they carried are spoken: the GLP-1 share is a market estimate, the gap card is
+  a trade report's reading, and the 90% figure is one study run with a toothpaste maker.
+- **Content zone runs to y 1030** (no footer): the bar on `forces` sits at y 866–928 so the sag and its
+  callout fill the bottom band; `engine`'s loop and caption moved down; `parity`'s verdict card is now
+  806–990; `avoid` gained the rust Chef Robotics band at 700–950; `summary`'s close lines moved to
+  796 / 880. Notes: 135 · 104 · 112 · 69 · 98 = 518 words for 225 s.
+
+---
+
 ## Story spine (approve before building)
 
 1. **The forces.** Five pressures hit food companies at the same time, so formulas are being redesigned across the industry. This is the demand, not a trend line.
