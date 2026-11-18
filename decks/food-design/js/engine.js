@@ -2,10 +2,11 @@
    Lecture deck — slide engine (classic script, no modules, works from file://)
 
    Sections register themselves:
-     Deck.section({ id, order, num, kicker, title, color, toss?, slides: [ slideDef, ... ] })
+     Deck.section({ id, order, num, kicker, title, color, toss?, opener?, slides: [ slideDef, ... ] })
        color: palette token name from css/theme.css ('red' → --red fills, --red-t text) or a hex.
               The engine sets --sec / --sec-t on every slide of the section.
-       toss:  optional image path (a transparent food cut-out) that tumbles across the section-change scribble.
+       toss:  optional image path (a transparent food cut-out) that drops onto the section's opener card.
+       opener: optional { id: 'opener', budgetSec, notes } → an engine-made title-card slide at the section's start.
 
    slideDef = {
      id:        'loss',                  // unique within section → URL #/<section>/<slide>
@@ -61,7 +62,7 @@
   function mount(i, parent, mode) {
     var s = slides[i], def = s.def;
     var el = document.createElement('section');
-    el.className = 'slide' + (def.theme === 'light' ? ' light' : '');
+    el.className = 'slide' + (def.theme === 'light' ? ' light' : '') + (def._opener ? ' opener' : '');
     el.setAttribute('data-sec', s.sec.id);
     el.setAttribute('data-slide', def.id);
     el.style.setProperty('--sec', secColor(s.sec));
@@ -141,11 +142,10 @@
 
   /* ---------------- transitions (deck 2: chalk) ----------------
      One idea throughout: a soft, ragged chalk-eraser edge that sweeps left → right.
-     Within a section (~0.9 s): the old slide is erased off the top of the new one; a faint chalk-dust haze rides the edge.
-     Section change (~2.3 s): a title card. The section color is scribbled on, the kicker is chalk-written stroke by stroke,
-       the section's food cut-out (sec.toss) drops in beside it, then the same eraser edge wipes the card away.
+     Every forward step (~0.9 s): the old slide is erased off the top of the new one; a faint chalk-dust haze rides the edge.
+     Into a section opener slide (see "section openers" below): the opener's own entrance scribbles over the old slide.
      Back navigation and jumps are instant. Pressing → mid-transition skips to the end. */
-  var T_IN = 0.9, T_SEC = 2.3;
+  var T_IN = 0.9;
   function rnd(seed) { seed = seed % 2147483647 || 1; return function () { seed = seed * 16807 % 2147483647; return seed / 2147483647; }; }
   /** Zig-zag stroke path covering the stage left→right. gap: horizontal step; slant: lean of each stroke. */
   function zigzag(seed, gap, slant, jit) {
@@ -203,58 +203,61 @@
     var sw = document.getElementById('sweep');
     sw.innerHTML = ''; clearMask(sw);
 
-    if (!secChange) {
-      // old slide on top, erased away to reveal the new one underneath
-      old.el.style.zIndex = 2; L.el.style.zIndex = 1;
-      var dust = dustTween(sw, T_IN);
-      transitioning = gsap.timeline({ onComplete: function () { unmount(old); L.el.style.zIndex = ''; sw.innerHTML = ''; transitioning = null; } })
-        .add(eraseTween(old.el, T_IN), 0)
-        .add(dust.tween, 0)
-        .add(start, T_IN * .55);
+    if (slides[L.index].def._opener) {
+      // into a section opener: its own entrance scribbles over the old slide, which is dropped once covered
+      L.el.style.zIndex = 2; old.el.style.zIndex = 1;
+      start();
+      transitioning = gsap.timeline({ onComplete: function () { L.el.style.zIndex = ''; transitioning = null; } })
+        .add(function () { unmount(old); }, OPENER_COVER);
       return;
     }
+    // everywhere else: the old slide sits on top and is erased away to reveal the new one underneath
+    old.el.style.zIndex = 2; L.el.style.zIndex = 1;
+    var dust = dustTween(sw, T_IN);
+    transitioning = gsap.timeline({ onComplete: function () { unmount(old); L.el.style.zIndex = ''; sw.innerHTML = ''; transitioning = null; } })
+      .add(eraseTween(old.el, T_IN), 0)
+      .add(dust.tween, 0)
+      .add(start, T_IN * .55);
+  }
 
-    var sec = slides[L.index].sec, col = secColor(sec), tint = secTint(sec), sd = (L.index + 3) * 7919;
-    var svg = svgEl('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H });
-    sw.appendChild(svg);
-    var solid = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: col, opacity: 0 });
-    var base = stroke(zigzag(sd, 46, 260, 60), col, 112);
-    var tex1 = stroke(zigzag(sd + 3, 64, 300, 200), 'rgba(0,0,0,.14)', 6);
-    var tex2 = stroke(zigzag(sd + 5, 90, 220, 260), tint, 4, { opacity: .5 });
-    [solid, base, tex1, tex2].forEach(function (n) { svg.appendChild(n); });
-    var hasToss = !!sec.toss, wx = hasToss ? W / 2 - 170 : W / 2;
-    var num = svgEl('text', { x: wx, y: H / 2 - 150, 'text-anchor': 'middle', fill: '#1E2124', opacity: 0,
-      style: 'font-family:var(--font);font-weight:800;font-size:40px;letter-spacing:.14em;text-transform:uppercase' });
-    num.textContent = (sec.num ? sec.num + ' · ' : '') + (sec.title || '');
-    var word = svgEl('text', { x: wx, y: H / 2 + 90, 'text-anchor': 'middle', fill: 'transparent', stroke: '#1E2124', 'stroke-width': 4,
-      style: 'font-family:var(--hand);font-weight:700;font-size:300px;paint-order:stroke' });
-    word.textContent = sec.kicker || sec.title || '';
-    svg.appendChild(num); svg.appendChild(word);
-    var ul = stroke('M' + (wx - 230) + ' ' + (H / 2 + 150) + ' Q' + wx + ' ' + (H / 2 + 128) + ' ' + (wx + 250) + ' ' + (H / 2 + 140), '#1E2124', 10);
-    svg.appendChild(ul);
-    var toss = null;
-    if (hasToss) { toss = document.createElement('img'); toss.src = sec.toss; toss.className = 'toss'; sw.appendChild(toss); }
-    var dash = 2600;
-    gsap.set(word, { attr: { 'stroke-dasharray': dash, 'stroke-dashoffset': dash } });
-    var sdust = dustTween(sw.parentNode, .8);
-    var T = gsap.timeline({ onComplete: function () { sw.innerHTML = ''; clearMask(sw); sdust.el.remove(); transitioning = null; } });
-    T.fromTo(base, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, 0)
-      .fromTo(tex1, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .08)
-      .fromTo(tex2, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .14)
-      .set(solid, { attr: { opacity: 1 } }, .8)
-      .add(function () { unmount(old); }, .8)
-      .to(num, { attr: { opacity: 1 }, duration: .3 }, .55)
-      .to(word, { attr: { 'stroke-dashoffset': 0 }, duration: .7, ease: 'power1.inOut' }, .5)
-      .to(word, { attr: { fill: '#1E2124' }, duration: .25 }, 1.05)
-      .fromTo(ul, { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power2.out' }, 1.1);
-    if (toss) {
-      T.fromTo(toss, { x: W / 2 + 330, y: -760, rotation: -25, autoAlpha: 1 },
-        { y: H / 2 - 210, rotation: 8, duration: .6, ease: 'back.out(1.5)' }, .7);
-    }
-    T.add(eraseTween(sw, .8), 1.5)
-      .add(sdust.tween, 1.5)
-      .add(start, 1.85);
-    transitioning = T;
+  /* ---------------- section openers ----------------
+     A section with `opener: { id: 'opener', budgetSec, notes }` gets an engine-made first slide: the title card.
+     Entrance: the section color is scribbled over the previous slide, "NN · Title" appears, the kicker is chalk-written
+     stroke by stroke and underlined, and the section's `toss` cut-out drops in beside it. It then HOLDS, so the speaker can
+     introduce the section; the next click erases it into the section's first slide with the normal eraser edge. */
+  var OPENER_COVER = .8;
+  function hashStr(t) { var h = 7; for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 99991; return h + 11; }
+  function openerHtml(ctx) {
+    var sec = ctx.sec, col = secColor(sec), tint = secTint(sec), sd = hashStr(sec.id) * 7919;
+    var hasToss = !!sec.toss, wx = hasToss ? W / 2 - 170 : W / 2, ink = '#1E2124';
+    var p = function (cls, d, c, w, extra) { return '<path class="' + cls + '" d="' + d + '" fill="none" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (extra || '') + '/>'; };
+    return '<svg class="op-svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' +
+      '<rect class="op-solid" x="0" y="0" width="' + W + '" height="' + H + '" fill="' + col + '"/>' +
+      p('op-base', zigzag(sd, 46, 260, 60), col, 112) +
+      p('op-tex1', zigzag(sd + 3, 64, 300, 200), 'rgba(0,0,0,.14)', 6) +
+      p('op-tex2', zigzag(sd + 5, 90, 220, 260), tint, 4, ' opacity=".5"') +
+      '<text class="op-num" x="' + wx + '" y="' + (H / 2 - 150) + '" text-anchor="middle" fill="' + ink + '">' + esc((sec.num ? sec.num + ' · ' : '') + (sec.title || '')) + '</text>' +
+      '<text class="op-word" x="' + wx + '" y="' + (H / 2 + 90) + '" text-anchor="middle" fill="' + ink + '" stroke="' + ink + '" stroke-width="4" stroke-dasharray="2600" stroke-dashoffset="0">' + esc(sec.kicker || sec.title || '') + '</text>' +
+      p('op-ul', 'M' + (wx - 230) + ' ' + (H / 2 + 150) + ' Q' + wx + ' ' + (H / 2 + 128) + ' ' + (wx + 250) + ' ' + (H / 2 + 140), ink, 10) +
+      '</svg>' + (hasToss ? '<img class="op-toss" src="' + sec.toss + '" alt="" style="left:' + (W / 2 + 330) + 'px;top:' + (H / 2 - 210) + 'px">' : '');
+  }
+  function openerBuild(ctx) {
+    var tl = ctx.tl, q = ctx.q, ink = '#1E2124';
+    tl.fromTo(q('.op-base'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, 0)
+      .fromTo(q('.op-tex1'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .08)
+      .fromTo(q('.op-tex2'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .14)
+      .fromTo(q('.op-solid'), { opacity: 0 }, { opacity: 1, duration: .01 }, OPENER_COVER)
+      .fromTo(q('.op-num'), { opacity: 0 }, { opacity: 1, duration: .3 }, .55)
+      .fromTo(q('.op-word'), { attr: { 'stroke-dashoffset': 2600, fill: 'rgba(30,33,36,0)' } }, { attr: { 'stroke-dashoffset': 0 }, duration: .8, ease: 'power1.inOut' }, .5)
+      .to(q('.op-word'), { attr: { fill: ink }, duration: .3 }, 1.15)
+      .fromTo(q('.op-ul'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power2.out' }, 1.25);
+    var toss = q('.op-toss');
+    if (toss) tl.fromTo(toss, { y: -1000, rotation: -25 }, { y: 0, rotation: 8, duration: .6, ease: 'back.out(1.5)' }, .7);
+  }
+  function makeOpener(sec) {
+    var o = sec.opener === true ? {} : sec.opener;
+    return { id: o.id || 'opener', title: o.title || (sec.kicker + ' · ' + (sec.title || '')), budgetSec: o.budgetSec || 10, notes: o.notes || '',
+      html: openerHtml, build: openerBuild, _opener: true };
   }
 
   /* ---------------- chrome ---------------- */
@@ -411,6 +414,7 @@
   /* ---------------- boot ---------------- */
   function collect() {
     sections = Deck._sections.slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+    sections.forEach(function (sec) { if (sec.opener && !(sec.slides[0] && sec.slides[0]._opener)) sec.slides.unshift(makeOpener(sec)); });
     slides = [];
     sections.forEach(function (sec) { sec.slides.forEach(function (def) { slides.push({ def: def, sec: sec, index: slides.length }); }); });
     Deck.slides = slides; Deck.sectionsSorted = sections;

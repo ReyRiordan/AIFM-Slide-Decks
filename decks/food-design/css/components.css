@@ -55,6 +55,12 @@
 #progress .seg > span { position: absolute; inset: 0 auto 0 0; width: 0; }
 #sweep { position: absolute; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
 #sweep svg { position: absolute; inset: 0; }
+/* section opener card (engine-made slide) */
+.slide.opener { background: none; }
+.slide.opener .op-svg { position: absolute; inset: 0; }
+.slide.opener .op-num { font: 800 40px var(--font); letter-spacing: .14em; text-transform: uppercase; }
+.slide.opener .op-word { font-family: var(--hand); font-weight: 700; font-size: 300px; paint-order: stroke; }
+.slide.opener .op-toss { position: absolute; width: 420px; filter: drop-shadow(0 30px 34px rgba(0,0,0,.5)); transform: rotate(8deg); }
 /* chalk-dust haze riding the eraser edge (engine transition) */
 .erase-dust { position: absolute; top: -60px; left: 0; width: 320px; height: 1200px; pointer-events: none; z-index: 41;
   background: radial-gradient(ellipse at 50% 50%, rgba(243,235,221,.10), rgba(243,235,221,0) 65%); filter: blur(10px); }

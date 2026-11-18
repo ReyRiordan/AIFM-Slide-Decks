@@ -338,6 +338,11 @@
   Deck.section({
     id: 'notco', order: 4, num: '04', kicker: 'Sell', title: 'NotCo', color: 'cranberry',
     toss: 'assets/img/giuseppe/milk.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section four: Sell. We have seen what Giuseppe does. Now, what NotCo did with it as a business.'
+    },
     slides: [ORIGIN, PIVOT, TODAY, BRIDGE]
   });
 })();

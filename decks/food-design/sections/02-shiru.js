@@ -613,6 +613,11 @@
   Deck.section({
     id: 'shiru', order: 2, num: '02', kicker: 'Find', title: 'Shiru', color: 'olive',
     toss: 'assets/img/shiru/egg.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section two: Find. Shiru is a startup searching millions of natural proteins for the few that can do an egg\'s or milk\'s job in food.'
+    },
     slides: [
       PROBLEM, APPROACH,
       Kit.withCrumbs(LEARN, STEPS, 0),

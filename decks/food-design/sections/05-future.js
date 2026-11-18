@@ -386,6 +386,11 @@
   Deck.section({
     id: 'future', order: 5, num: '05', kicker: 'Next', title: 'Future', color: 'plum',
     toss: 'assets/img/future/candy.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Last section: Next. Food companies are being pushed to rewrite their recipes, and the techniques we have seen are about to matter much more.'
+    },
     slides: [FORCES, ENGINE, PARITY, AVOID, SUMMARY]
   });
 })();

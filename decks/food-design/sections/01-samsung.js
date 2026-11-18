@@ -625,6 +625,11 @@
   Deck.section({
     id: 'samsung', order: 1, num: '01', kicker: 'Read', title: 'Samsung Food', color: 'teal',
     toss: 'assets/img/intro/card.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section one: Read. A recipe written for people has to become a record a computer can use, and Samsung Food does that from a single photo.'
+    },
     slides: [DEMO, PROBLEM, APPROACH, READ, PARSE, LINK, ERRORS, DISH, TAKE]
   });
 })();
