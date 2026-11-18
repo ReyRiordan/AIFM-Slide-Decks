@@ -311,21 +311,21 @@
       /* The one figure on the slide: of the AI work NotCo is asked for, 90% is no longer plant-based.
          The figure and the bar are one block, so the number can only be read as a share of the bar.
          (No arrow from the photo: that read as "the food business becomes 90%".) */
-      var BX = 1060, BY = 620, BH = 180, BIG = 648, SM = 72, SX = BX + BIG + 14;
+      var BX = 1060, BY = 460, BH = 250, BIG = 648, SM = 72, SX = BX + BIG + 14;
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
         '<g class="nc-b-b1">' + Kit.rough.rect(BX, BY, BIG, BH, { seed: 91, w: 'heavy', rough: .9, overshoot: 6,
-          hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 24 }) + '</g>' +
+          hatch: 'var(--sec-t)', fillOpacity: .5, hachureGap: 13 }) + '</g>' +
         '<g class="nc-b-b2">' + Kit.rough.rect(SX, BY, SM, BH, { seed: 92, w: 'fine', rough: .9, overshoot: 5, stroke: C.text3 }) + '</g>' +
         '<g class="nc-b-tk">' + Kit.rough.line(SX + SM / 2, BY + BH + 14, SX + SM / 2, BY + BH + 58,
           { seed: 93, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
-        '<g class="dd-90">' + Kit.doodle.circle(1060, 372, 250, 110, { seed: 215, color: 'var(--rust-t)', w: 'heavy', rx: 185, ry: 86 }) + '</g>' +
-        '<g class="dd-q">' + Kit.doodle.underline(150, 1000, 596, { seed: 216 }) + '</g>' +
+        '<g class="dd-90">' + Kit.doodle.circle(1060, 226, 250, 110, { seed: 215, color: 'var(--rust-t)', w: 'heavy', rx: 185, ry: 86 }) + '</g>' +
+        '<g class="dd-q">' + Kit.doodle.underline(150, 942, 596, { seed: 216 }) + '</g>' +
       '</svg>';
 
       return svg +
         '<div class="t-h2 nc-b-l1">The food business is almost gone.</div>' +
         '<div class="t-h2 nc-b-l2">The AI it built is the product.</div>' +
-        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 500, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
+        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 360, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
         '<div class="t-label dim nc-b-cap">the food business</div>' +
         '<div class="t-caps faint nc-b-bk">NotCo AI requests \u00b7 2025</div>' +
         '<div class="t-num nc-b-pct"><span class="v">0</span>%</div>' +
