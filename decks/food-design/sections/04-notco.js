@@ -7,10 +7,11 @@
   var C = Kit.color;
   var IMG = 'assets/img/notco/';
 
-  /* a chalk tile: rough rectangle drawn behind HTML text */
+  /* a chalk tile: rough rectangle drawn behind HTML text. w is the stroke weight ('heavy'|'normal'|'fine'). */
   function tileRect(x, y, w, h, seed, o) {
     o = o || {};
-    return Kit.rough.rect(x, y, w, h, { seed: seed, sw: o.sw || 2.6, rough: o.rough || .9, stroke: o.stroke || C.chalk, cls: o.cls });
+    return Kit.rough.rect(x, y, w, h, { seed: seed, w: o.w || 'normal', rough: o.rough || .9, stroke: o.stroke || C.chalk,
+      hatch: o.hatch, fillOpacity: o.fillOpacity, hachureGap: o.hachureGap || 22, cls: o.cls });
   }
 
   /* ---------------------------------------------------------------- ORIGIN */
@@ -21,14 +22,18 @@
     budgetSec: 40,
     html: function () {
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="nc-o-ar">' + Kit.rough.arrow(646, 806, 556, 718, { seed: 31, sw: 2.6, stroke: C.rustT, head: 15, bend: 22 }) + '</g>' +
-        '<g class="nc-o-crd">' + tileRect(1140, 676, 660, 124, 32) + '</g>' +
+        '<g class="nc-o-rl">' +
+          Kit.rough.line(120, 632, 1040, 632, { seed: 21, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) +
+          Kit.rough.line(120, 752, 1040, 752, { seed: 22, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
+        '<g class="nc-o-ar">' + Kit.rough.arrow(646, 806, 556, 718, { seed: 31, w: 'normal', stroke: C.rustT, head: 18, bend: 22 }) + '</g>' +
+        '<g class="nc-o-crd">' + tileRect(1140, 676, 660, 124, 32, { hatch: 'var(--sec-t)', fillOpacity: .14 }) + '</g>' +
+        '<g class="dd-pct">' + Kit.doodle.circle(1140, 846, 194, 80, { seed: 211, color: 'var(--rust-t)', w: 'heavy', rx: 140, ry: 80 }) + '</g>' +
       '</svg>';
 
       /* the chip sits on the photo, so its plate and outline are painted after it */
       var chip = '<div class="nc-o-chipbg"></div>' +
         '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="nc-o-chr">' + tileRect(1456, 292, 344, 124, 33, { stroke: C.cranberryT, sw: 3 }) + '</g>' +
+          '<g class="nc-o-chr">' + tileRect(1456, 292, 344, 124, 33, { stroke: C.cranberryT, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 18 }) + '</g>' +
         '</svg>' +
         '<div class="nc-o-chip">' +
           '<div class="t-h2 c-cranberry">$1.5B</div>' +
@@ -52,17 +57,16 @@
         '<div class="t-num nc-o-pct">0%</div>' +
         '<div class="t-label dim nc-o-pctlab">of Chile\'s mayo market<br>in eight months</div>';
 
-      return svg + left + right + chip +
-        Kit.src('NotMayo took about 8% of Chile\'s mayo market in eight months (IDB). Valuation: $235M Series D, July 2021. Chickpeas: illustration.');
+      return svg + left + right + chip;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-o-ar, .nc-o-c, .nc-o-img, .nc-o-crd, .nc-o-card, .nc-o-pct, .nc-o-pctlab, .nc-o-chr, .nc-o-chipbg, .nc-o-chip'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-o-ar, .nc-o-c, .nc-o-img, .nc-o-crd, .nc-o-card, .nc-o-pct, .nc-o-pctlab, .nc-o-chr, .nc-o-chipbg, .nc-o-chip, .dd-pct'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.rise(tl, qa('.nc-o-place, .nc-o-year'), { at: .15, stagger: .08 });
       Kit.rise(tl, qa('.nc-f1, .nc-f2'), { at: .35, stagger: .08 });
-      Kit.fade(tl, q('.src'), { at: .5 });
+      Kit.draw(tl, qa('.nc-o-rl .rp'), { at: .45, duration: .6, stagger: .08 });
 
       // [click 1] the CTO built the engine the last section explained
       ctx.pause();
@@ -82,6 +86,8 @@
       tl.to(q('.nc-o-pct'), { autoAlpha: 1, duration: .3 }, 'c2+=.8');
       Kit.count(tl, q('.nc-o-pct'), { to: 8, suffix: '%', duration: 1.0, at: 'c2+=.8' });
       Kit.show(tl, q('.nc-o-pctlab'), { at: 'c2+=1.0', y: 14 });
+      tl.to(q('.dd-pct'), { autoAlpha: 1, duration: .01 }, 'c2+=1.3');
+      Kit.draw(tl, qa('.dd-pct .rp'), { at: 'c2+=1.3', duration: .7 });
 
       // [click 3] the money, and the founding year steps back
       ctx.pause();
@@ -96,6 +102,7 @@
       'NotCo starts in Santiago in 2015. Muchnick had already built and sold a plant-based mayo brand. Pichara is a computer scientist. ' +
       '[click] Pichara built the AI and named it Giuseppe, after Arcimboldo, the painter who made portraits out of vegetables. ' +
       '[click] The first product was NotMayo, chickpea and lupin. It took about eight percent of Chile\'s mayo market in eight months. ' +
+      'That share comes from press reports, not from NotCo. ' +
       '[click] Four years later, investors valued the company at one and a half billion dollars. A food brand, with an AI designing its products.'
   };
 
@@ -113,7 +120,7 @@
     { name: 'NotCo AI \u00b7 Concept Quant', date: '2025' },
     { name: 'Barry Callebaut', date: 'Nov 2025' }
   ];
-  var MKX = [120, 402, 684, 966, 1248, 1530], MKW = 268, MKY = 340, MKH = 88;
+  var MKX = [120, 406, 692, 978, 1264, 1550], MKW = 250, MKY = 340, MKH = 88;
   var AIX = [120, 670, 1220], AIW = 520, AIY = 664, AIH = 112;
 
   var PIVOT = {
@@ -128,14 +135,15 @@
       var strikes = MK.map(function (m, i) {
         if (m.keep) return '';
         return '<g class="nc-mk-s s' + i + '">' +
-          Kit.rough.line(MKX[i] + 12, MKY + MKH / 2 + 4, MKX[i] + MKW - 12, MKY + MKH / 2 - 4, { seed: 50 + i, sw: 4, rough: 1.4, stroke: C.text2 }) + '</g>';
+          Kit.rough.line(MKX[i] + 12, MKY + MKH / 2 + 4, MKX[i] + MKW - 12, MKY + MKH / 2 - 4, { seed: 50 + i, w: 'normal', bow: .4, rough: .7, stroke: C.rustT }) + '</g>';
       }).join('');
       var aiRects = AI.map(function (a, i) {
-        return '<g class="nc-ai-r a' + i + '">' + tileRect(AIX[i], AIY, AIW, AIH, 60 + i, { stroke: C.cranberryT }) + '</g>';
+        return '<g class="nc-ai-r a' + i + '">' + tileRect(AIX[i], AIY, AIW, AIH, 60 + i, { stroke: C.cranberryT, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .14 }) + '</g>';
       }).join('');
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
         rects + strikes + aiRects +
-        '<g class="nc-rule">' + Kit.rough.line(120, 582, 1800, 582, { seed: 70, sw: 2.5, rough: .8, stroke: C.line }) + '</g>' +
+        '<g class="nc-rule">' + Kit.rough.line(120, 582, 1800, 582, { seed: 70, w: 'fine', bow: .4, rough: .7, stroke: C.text3 }) + '</g>' +
+        '<g class="dd-cap">' + Kit.doodle.underline(676, 988, 568, { seed: 212 }) + '</g>' +
       '</svg>';
 
       var mk = MK.map(function (m, i) {
@@ -157,19 +165,17 @@
         '<div class="nc-cap">' +
           '<div class="t-h2">One food market left.</div>' +
           '<div class="t-h2 c-cranberry">Giuseppe is the product.</div>' +
-        '</div>' +
-        Kit.src('Dates from company announcements and press, 2022 – Sep 2026. Mexico: reported, not confirmed by NotCo.', 'Press reports');
+        '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-mk-s, .nc-mk-t, .nc-ai-r, .nc-ai, .nc-lane2, .nc-cap > div'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-mk-s, .nc-mk-t, .nc-ai-r, .nc-ai, .nc-lane2, .nc-cap > div, .dd-cap'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.fade(tl, q('.nc-lane1'), { at: .15 });
       Kit.draw(tl, qa('.nc-mk-r .rp'), { at: .25, duration: .6, stagger: .06 });
       Kit.show(tl, qa('.nc-mk-n'), { at: .35, y: 12, stagger: .06 });
       Kit.draw(tl, qa('.nc-rule .rp'), { at: .6, duration: .7 });
-      Kit.fade(tl, q('.src'), { at: .6 });
 
       // [click 1] the first AI deal appears under the line
       ctx.pause();
@@ -209,14 +215,17 @@
 
       // [click 4] what is left
       ctx.pause();
-      Kit.show(tl, qa('.nc-cap > div'), { y: 18, stagger: .12 });
+      tl.addLabel('cap');
+      Kit.show(tl, qa('.nc-cap > div'), { at: 'cap', y: 18, stagger: .12 });
+      tl.to(q('.dd-cap'), { autoAlpha: 1, duration: .01 }, 'cap+=.5');
+      Kit.draw(tl, qa('.dd-cap .rp'), { at: 'cap+=.5', duration: .5 });
     },
     notes:
       'Now watch the company. On top, the markets where NotCo sells its own food. ' +
       '[click] In 2022 it sets up a joint venture with Kraft Heinz. First time the AI works for somebody else. ' +
       '[click] Then it makes that a business: its own AI unit, a portal called Concept Quant, and a chocolate deal with Barry Callebaut. ' +
       '[click] And the food lane empties. Kraft Heinz takes over US sales. Argentina and Uruguay go to Molinos. ' +
-      'Mexico is reportedly closed with no buyer. Brazil goes to Ferrara. Four exits in about eighteen months. ' +
+      'Mexico is reportedly closed with no buyer; that one is press only, NotCo has never confirmed it. Brazil goes to Ferrara. ' +
       '[click] Chile is the only market it still runs. The AI is what is left.'
   };
 
@@ -228,8 +237,9 @@
     budgetSec: 45,
     html: function () {
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="nc-br">' + Kit.rough.path('M120 842 L120 864 L980 864 L980 842', { seed: 80, sw: 2.6, rough: 1, stroke: C.chalk }) + '</g>' +
-        '<g class="nc-t-crd">' + tileRect(1080, 724, 720, 226, 81) + '</g>' +
+        '<g class="nc-t-crd">' + tileRect(1080, 724, 720, 226, 81, { w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .12, hachureGap: 26 }) + '</g>' +
+        '<g class="dd-n1">' + Kit.doodle.underline(124, 514, 392, { seed: 213, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="dd-n2">' + Kit.doodle.underline(124, 848, 304, { seed: 214, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
 
       var left =
@@ -237,9 +247,7 @@
         '<div class="t-num nc-t-n1"><span class="n">0</span> of 20</div>' +
         '<div class="t-label dim nc-t-l1">largest packaged-goods companies</div>' +
         '<div class="t-num nc-t-n2">~half</div>' +
-        '<span class="flag nc-t-est">Estimate</span>' +
-        '<div class="t-label dim nc-t-l2">of revenue, from AI</div>' +
-        '<div class="callout nc-t-c">the AI business</div>';
+        '<div class="t-label dim nc-t-l2">of revenue, from AI</div>';
 
       var right =
         Kit.photo(IMG + 'cocoa.jpg', { x: 1080, y: 300, w: 720, h: 400, rot: -2, framed: true, cls: 'nc-t-img', alt: 'split cocoa pod' }) +
@@ -249,18 +257,16 @@
           '<div class="t-label faint nc-t-cd">after the 2024 cocoa price surge</div>' +
         '</div>';
 
-      return svg + left + right +
-        Kit.src('Client reach and Ferrero: Forbes, March 2026, via FEN U. de Chile. Revenue split: an estimate. Cocoa pod: illustration.', 'Forbes · estimate');
+      return svg + left + right;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-t-img, .nc-t-crd, .nc-t-co, .nc-t-cl, .nc-t-cd, .nc-t-n1, .nc-t-l1, .nc-t-n2, .nc-t-est, .nc-t-l2, .nc-br, .nc-t-c'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-t-img, .nc-t-crd, .nc-t-co, .nc-t-cl, .nc-t-cd, .nc-t-n1, .nc-t-l1, .nc-t-n2, .nc-t-l2, .dd-n1, .dd-n2'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.fade(tl, q('.nc-t-k'), { at: .15 });
       Kit.drop(tl, q('.nc-t-img'), { at: .25 });
       Kit.show(tl, q('.nc-t-co'), { at: .6, y: 14 });
-      Kit.fade(tl, q('.src'), { at: .6 });
 
       // [click 1] one concrete job, before any aggregate. The card is drawn
       // with its lines, so no empty frame ever sits on the slide.
@@ -276,15 +282,16 @@
       tl.to(q('.nc-t-n1'), { autoAlpha: 1, duration: .3 }, 'n1');
       Kit.count(tl, q('.nc-t-n1 .n'), { to: 7, duration: 1.0, at: 'n1' });
       Kit.show(tl, q('.nc-t-l1'), { at: 'n1+=.5', y: 14 });
+      tl.to(q('.dd-n1'), { autoAlpha: 1, duration: .01 }, 'n1+=.9');
+      Kit.draw(tl, qa('.dd-n1 .rp'), { at: 'n1+=.9', duration: .7 });
 
-      // [click 3] how much of the money, and the two numbers grouped
+      // [click 3] how much of the money
       ctx.pause();
       tl.addLabel('n2');
-      Kit.show(tl, qa('.nc-t-n2, .nc-t-est'), { at: 'n2', y: 14, stagger: .1 });
+      Kit.show(tl, q('.nc-t-n2'), { at: 'n2', y: 14 });
       Kit.show(tl, q('.nc-t-l2'), { at: 'n2+=.2', y: 14 });
-      tl.to(q('.nc-br'), { autoAlpha: 1, duration: .01 }, 'n2+=.5');
-      Kit.draw(tl, qa('.nc-br .rp'), { at: 'n2+=.5', duration: .6 });
-      Kit.show(tl, q('.nc-t-c'), { at: 'n2+=.8', y: 12 });
+      tl.to(q('.dd-n2'), { autoAlpha: 1, duration: .01 }, 'n2+=.5');
+      Kit.draw(tl, qa('.dd-n2 .rp'), { at: 'n2+=.5', duration: .6 });
     },
     notes:
       'So who pays for Giuseppe now? The companies NotCo used to compete with. ' +
@@ -301,43 +308,77 @@
     title: 'Bridge',
     budgetSec: 30,
     html: function () {
-      return '' +
-        Kit.photo(IMG + 'glass-milk.jpg', { x: 1230, y: 250, w: 520, h: 582, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
-        '<div class="nc-b-scrim"></div>' +
+      /* The one figure on the slide: of the AI work NotCo is asked for, 90% is no longer plant-based.
+         The figure and the bar are one block, so the number can only be read as a share of the bar.
+         (No arrow from the photo: that read as "the food business becomes 90%".) */
+      var BX = 1060, BY = 460, BH = 250, BIG = 648, SM = 72, SX = BX + BIG + 14;
+      var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+        '<g class="nc-b-b1">' + Kit.rough.rect(BX, BY, BIG, BH, { seed: 91, w: 'heavy', rough: .9, overshoot: 6,
+          hatch: 'var(--sec-t)', fillOpacity: .5, hachureGap: 13 }) + '</g>' +
+        '<g class="nc-b-b2">' + Kit.rough.rect(SX, BY, SM, BH, { seed: 92, w: 'fine', rough: .9, overshoot: 5, stroke: C.text3 }) + '</g>' +
+        '<g class="nc-b-tk">' + Kit.rough.line(SX + SM / 2, BY + BH + 14, SX + SM / 2, BY + BH + 58,
+          { seed: 93, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
+        '<g class="dd-90">' + Kit.doodle.circle(1060, 226, 250, 110, { seed: 215, color: 'var(--rust-t)', w: 'heavy', rx: 185, ry: 86 }) + '</g>' +
+        '<g class="dd-q">' + Kit.doodle.underline(150, 942, 596, { seed: 216 }) + '</g>' +
+      '</svg>';
+
+      return svg +
         '<div class="t-h2 nc-b-l1">The food business is almost gone.</div>' +
         '<div class="t-h2 nc-b-l2">The AI it built is the product.</div>' +
-        '<div class="t-label dim nc-b-sup">90% of its AI requests are no longer plant-based' +
-          '<span class="flag nc-b-flag">Self-reported</span></div>' +
-        '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>' +
-        Kit.src('NotCo executive, 2025, via Mobile Time. Glass of plant milk: illustration, not a NotCo product.', 'Self-reported');
+        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 360, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
+        '<div class="t-label dim nc-b-cap">the food business</div>' +
+        '<div class="t-caps faint nc-b-bk">NotCo AI requests \u00b7 2025</div>' +
+        '<div class="t-num nc-b-pct"><span class="v">0</span>%</div>' +
+        '<div class="t-label dim nc-b-pl">are not plant-based</div>' +
+        '<div class="t-label faint nc-b-bl2">plant-based</div>' +
+        '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-b-img, .nc-b-sup, .nc-b-l3'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-b-b1, .nc-b-b2, .nc-b-tk, .nc-b-bk, .nc-b-pct, .nc-b-pl, .nc-b-bl2, .nc-b-l3, .dd-90, .dd-q'), { autoAlpha: 0 });
 
-      Kit.drop(tl, q('.nc-b-img'), { at: 0 });
-      Kit.rise(tl, qa('.nc-b-l1, .nc-b-l2'), { at: .2, stagger: .12 });
-      Kit.fade(tl, q('.src'), { at: .6 });
+      Kit.rise(tl, qa('.nc-b-l1, .nc-b-l2'), { at: 0, stagger: .12 });
+      Kit.drop(tl, q('.nc-b-img'), { at: .3 });
+      Kit.show(tl, q('.nc-b-cap'), { at: .7, y: 12 });
 
-      // [click 1] the claim behind it, and the product recedes
+      // [click 1] where the work went: name the pool, draw the split, then the share of it
       ctx.pause();
       tl.addLabel('s');
-      Kit.show(tl, q('.nc-b-sup'), { at: 's', y: 14 });
-      tl.to(q('.nc-b-img'), { opacity: .5, duration: .8 }, 's');
+      Kit.show(tl, q('.nc-b-bk'), { at: 's', y: 10 });
+      tl.to(qa('.nc-b-b1, .nc-b-b2'), { autoAlpha: 1, duration: .01 }, 's+=.15');
+      Kit.draw(tl, qa('.nc-b-b1 .rp'), { at: 's+=.15', duration: .7 });
+      Kit.draw(tl, qa('.nc-b-b2 .rp'), { at: 's+=.45', duration: .4 });
+      tl.to(q('.nc-b-tk'), { autoAlpha: 1, duration: .01 }, 's+=.7');
+      Kit.draw(tl, qa('.nc-b-tk .rp'), { at: 's+=.7', duration: .3 });
+      Kit.show(tl, q('.nc-b-bl2'), { at: 's+=.85', y: 10 });
+      tl.to(q('.nc-b-pct'), { autoAlpha: 1, duration: .3 }, 's+=1.0');
+      Kit.count(tl, q('.nc-b-pct .v'), { to: 90, duration: 1.0, at: 's+=1.0' });
+      Kit.show(tl, q('.nc-b-pl'), { at: 's+=1.5', y: 12 });
+      tl.to(q('.dd-90'), { autoAlpha: 1, duration: .01 }, 's+=1.9');
+      Kit.draw(tl, qa('.dd-90 .rp'), { at: 's+=1.9', duration: .7 });
 
       // [click 2] the question the next section answers
       ctx.pause();
-      Kit.show(tl, q('.nc-b-l3'), { y: 20 });
+      tl.addLabel('q');
+      Kit.show(tl, q('.nc-b-l3'), { at: 'q', y: 20 });
+      tl.to(q('.dd-q'), { autoAlpha: 1, duration: .01 }, 'q+=.5');
+      Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=.5', duration: .5 });
     },
     notes:
       'So here is where NotCo lands. The food business is nearly gone, and the engine built to serve it is now the thing it sells. ' +
       '[click] The work has drifted, too. A NotCo executive said in 2025 that ninety percent of their requests are no longer plant-based. ' +
-      '[click] Which leaves one question for the last section. If this engine is worth that much to Ferrero, who else needs one?'
+      'That is their own figure, unchecked. ' +
+      '[click] Which leaves one question. If this engine is worth that much to Ferrero, who else needs one?'
   };
 
   Deck.section({
     id: 'notco', order: 4, num: '04', kicker: 'Sell', title: 'NotCo', color: 'cranberry',
-    sweep: ['cranberry', 'rust', 'cranberry', 'charcoal', 'cranberry', 'plum'],
+    toss: 'assets/img/giuseppe/milk.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section four: Sell. We have seen what Giuseppe does. Now, what NotCo did with it as a business.'
+    },
     slides: [ORIGIN, PIVOT, TODAY, BRIDGE]
   });
 })();

@@ -7,7 +7,6 @@
   var C = Kit.color;
   var IMG = 'assets/img/giuseppe/';
   var STEPS = ['Map', 'Decode', 'Score', 'Steer'];
-  var PATENT = 'Architecture: US 11,164,069 (patented design; production use not confirmed).';
 
   /* deterministic pseudo-random numbers, so dots land in the same place in show, print and preview */
   function rng(seed) { var s = seed; return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
@@ -25,16 +24,19 @@
     budgetSec: 45,
     html: function () {
       var slots = SLOTS.map(function (s, i) {
-        return '<g class="pr-slot s' + i + '">' + Kit.rough.circle(s[0], s[1], 62, { seed: 40 + i, sw: 2.2, stroke: C.text3 }) +
+        return '<g class="pr-slot s' + i + '">' + Kit.rough.circle(s[0], s[1], 62, { seed: 40 + i, w: 'fine', stroke: C.text3, rough: 1.4 }) +
           '<text class="disp f-faint" x="' + s[0] + '" y="' + (s[1] + 13) + '" text-anchor="middle" font-size="36">?</text></g>';
       }).join('');
       var svg = svgOpen() +
-        '<g class="pr-eq">' + Kit.rough.line(470, 472, 548, 472, { seed: 31, sw: 5 }) + Kit.rough.line(470, 516, 548, 516, { seed: 32, sw: 5 }) + '</g>' +
-        '<g class="pr-bowl">' + Kit.rough.ellipse(900, 430, 520, 86, { seed: 34, sw: 3.4 }) +
-          Kit.rough.path('M640 430 L672 600 Q900 702 1128 600 L1160 430', { seed: 33, sw: 3.4 }) + '</g>' +
+        '<g class="pr-eq">' + Kit.rough.line(470, 472, 548, 472, { seed: 31, w: 'normal' }) + Kit.rough.line(470, 516, 548, 516, { seed: 32, w: 'normal' }) + '</g>' +
+        '<g class="pr-bowl">' + Kit.rough.ellipse(900, 430, 520, 86, { seed: 34, w: 'heavy', rough: .9 }) +
+          Kit.rough.path('M640 430 L672 600 Q900 702 1128 600 L1160 430', { seed: 33, w: 'heavy', rough: .9 }) + '</g>' +
         '<g class="pr-slots">' + slots + '</g>' +
-        '<g class="pr-arr">' + Kit.rough.arrow(1352, 506, 1352, 578, { seed: 35, sw: 3, stroke: C.rustT, head: 16 }) + '</g>' +
-        '<g class="pr-box">' + Kit.rough.rect(140, 790, 1660, 170, { seed: 36, sw: 2.6, stroke: C.line }) + '</g>' +
+        '<g class="pr-arr">' + Kit.rough.arrow(1352, 498, 1352, 570, { seed: 35, w: 'normal', stroke: C.rustT, head: 20 }) + '</g>' +
+        '<g class="pr-box">' + Kit.rough.rect(140, 806, 1660, 192, { seed: 36, w: 'normal', stroke: C.text3 }) + '</g>' +
+        
+        '<g class="dd-huge">' + Kit.doodle.circle(1298, 599, 396, 112, { seed: 212, color: 'var(--rust-t)', w: 'heavy', rx: 255, ry: 88 }) + '</g>' +
+        '<g class="dd-test">' + Kit.doodle.underline(1362, 944, 386, { seed: 213 }) + '</g>' +
       '</svg>';
       return svg +
         Kit.photo(IMG + 'milk.webp', { x: 150, y: 296, w: 250, rot: -4, cls: 'pr-milk', alt: 'glass of milk' }) +
@@ -47,13 +49,11 @@
           '<div class="t-caps faint">The real test</div>' +
           '<div class="t-mono pr-mono">20+ chefs · 100+ recipes a month</div>' +
           '<div class="t-body">Cook it. Taste it. Rate it.</div>' +
-        '</div>' +
-        Kit.src('830-ingredient example: US 11,982,661. 4 × 10<sup>22</sup> = 830 choose 10, the report author’s arithmetic. ' +
-          'Kitchen throughput: Tech Brew, 2021 (NotCo).');
+        '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.pr-n, .pr-test, .pr-arr, .pr-box'), { autoAlpha: 0 });
+      gsap.set(qa('.pr-n, .pr-test, .pr-arr, .pr-box, .dd-huge, .dd-test'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.drop(tl, q('.pr-milk'), { at: .15 });
@@ -61,7 +61,6 @@
       Kit.draw(tl, qa('.pr-bowl .rp'), { at: .55, duration: .8 });
       Kit.fade(tl, q('.pr-k'), { at: .6 });
       tl.fromTo(qa('.pr-slot'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .4, stagger: .05, ease: 'power1.out' }, .9);
-      Kit.fade(tl, q('.src'), { at: .3 });
 
       // [click 1] the catalog
       ctx.pause();
@@ -77,6 +76,8 @@
       SLOTS.forEach(function (s, i) {
         tl.to(q('.s' + i), { scale: 1.22, svgOrigin: s[0] + ' ' + s[1], duration: .16, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 'comb+=' + (.5 + i * .06));
       });
+      tl.to(q('.dd-huge'), { autoAlpha: 1, duration: .01 }, 'comb+=.9');
+      Kit.draw(tl, qa('.dd-huge .rp'), { at: 'comb+=.9', duration: .8 });
 
       // [click 3] the real test is a person cooking
       ctx.pause();
@@ -84,13 +85,15 @@
       tl.to(q('.pr-box'), { autoAlpha: 1, duration: .01 }, 'test');
       Kit.draw(tl, qa('.pr-box .rp'), { at: 'test', duration: .6 });
       Kit.show(tl, q('.pr-test'), { at: 'test+=.2', y: 20 });
+      tl.to(q('.dd-test'), { autoAlpha: 1, duration: .01 }, 'test+=.8');
+      Kit.draw(tl, qa('.dd-test .rp'), { at: 'test+=.8', duration: .5 });
     },
     notes:
-      'Here is the problem Giuseppe was built for. Take cow’s milk, and rebuild it out of plants. A handful of them, and the right amount of each. ' +
+      'Here is the problem Giuseppe was built for. Rebuild cow’s milk out of plants: a handful of them, and the right amount of each. ' +
       '[click] One NotCo patent works through an example catalog of eight hundred and thirty ingredients. ' +
-      '[click] Pick ten of those, and there are about forty thousand billion billion possible sets. That is before you choose any amounts. ' +
-      '[click] And you cannot check them on a computer, because the real test is a person cooking it and tasting it. ' +
-      'NotCo’s kitchen gets through about a hundred recipes a month. So the number of tries you get is the bottleneck.'
+      '[click] Pick ten of those, and there are about forty thousand billion billion possible sets. That count is my arithmetic, not a NotCo figure. ' +
+      '[click] And you cannot check them on a computer: the real test is a person cooking it and tasting it. ' +
+      'NotCo’s kitchen gets through about a hundred recipes a month, so the number of tries is the bottleneck.'
   };
 
   /* ------------------------------------------------------------- APPROACH */
@@ -100,7 +103,7 @@
     { step: 'Score', q: 'How much, and how close?', tech: 'Quantity solver' },
     { step: 'Steer', q: 'Where next?', tech: 'Bayesian optimization' }
   ];
-  var APX = [120, 560, 1000, 1440], APW = 360, APY = 330, APH = 400;
+  var APX = [120, 560, 1000, 1440], APW = 360, APY = 322, APH = 436;
 
   var APPROACH = {
     id: 'approach',
@@ -110,12 +113,14 @@
     html: function () {
       var svg = svgOpen() +
         AP.map(function (c, i) {
-          return '<g class="ap-b b' + i + '">' + Kit.rough.rect(APX[i], APY, APW, APH, { seed: 60 + i, sw: 2.8, stroke: C.line }) + '</g>';
+          return '<g class="ap-b b' + i + '">' + Kit.rough.rect(APX[i], APY, APW, APH,
+            { seed: 60 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .16, hachureGap: 22 }) + '</g>';
         }).join('') +
         [1, 2, 3].map(function (i) {
-          return '<g class="ap-a a' + i + '">' + Kit.rough.arrow(APX[i - 1] + APW + 8, 530, APX[i] - 8, 530, { seed: 70 + i, sw: 3, head: 18 }) + '</g>';
+          return '<g class="ap-a a' + i + '">' + Kit.rough.arrow(APX[i - 1] + APW + 2, 540, APX[i] - 2, 540, { seed: 70 + i, w: 'heavy', head: 26 }) + '</g>';
         }).join('') +
-        '<g class="ap-loop">' + Kit.rough.arrow(APX[3] + APW / 2, 762, APX[1] + APW / 2, 762, { seed: 75, sw: 3, stroke: C.saffronT, head: 18, bend: -80 }) + '</g>' +
+        '<g class="ap-loop">' + Kit.rough.arrow(APX[3] + APW / 2, 806, APX[1] + APW / 2, 806, { seed: 75, w: 'heavy', stroke: C.saffronT, head: 26, bend: -74 }) + '</g>' +
+        '<g class="dd-loop">' + Kit.doodle.underline(1090, 916, 182, { seed: 221 }) + '</g>' +
       '</svg>';
       var cards = AP.map(function (c, i) {
         return '<div class="ap-card c' + i + '" style="left:' + APX[i] + 'px">' +
@@ -126,15 +131,14 @@
         '</div>';
       }).join('');
       return svg + cards + '<div class="t-caps ap-loop-l">One loop</div>' +
-        Kit.src('Structure: US 11,164,069 (patented design; production use not confirmed).');
+        '<div class="callout ap-many">hundreds of times</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ap-a, .ap-loop, .ap-loop-l'), { autoAlpha: 0 });
+      gsap.set(qa('.ap-a, .ap-loop, .ap-loop-l, .dd-loop, .ap-many'), { autoAlpha: 0 });
       gsap.set(qa('.c1 > *, .c2 > *, .c3 > *, .b1, .b2, .b3'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.src'), { at: .2 });
       Kit.draw(tl, qa('.b0 .rp'), { at: .3, duration: .6 });
       Kit.show(tl, qa('.c0 > *'), { at: .5, y: 16, stagger: .07, duration: .45 });
 
@@ -150,14 +154,18 @@
           tl.to(q('.ap-loop'), { autoAlpha: 1, duration: .01 }, 's3+=1.0');
           Kit.draw(tl, qa('.ap-loop .rp'), { at: 's3+=1.0', duration: .7 });
           Kit.show(tl, q('.ap-loop-l'), { at: 's3+=1.3', y: 12 });
+          tl.to(q('.dd-loop'), { autoAlpha: 1, duration: .01 }, 's3+=1.6');
+          Kit.draw(tl, qa('.dd-loop .rp'), { at: 's3+=1.6', duration: .45 });
+          Kit.show(tl, q('.ap-many'), { at: 's3+=1.5', y: 10 });
         }
       });
     },
     notes:
-      'Giuseppe does four things. First, map: learn where recipes live, and move through them in small steps. ' +
-      '[click] Second, decode: read any point on that map back out as an ingredient list. ' +
-      '[click] Third, score: a solver picks how much of each, and says how far the blend lands from milk. ' +
-      '[click] Fourth, steer: that score chooses where to try next. The last three repeat, hundreds of times, with no cooking.'
+      'Giuseppe does four things. Everything here is from NotCo’s patents; they have never confirmed it is what runs today. ' +
+      'First, map: learn where recipes live. ' +
+      '[click] Second, decode: read any point back out as an ingredient list. ' +
+      '[click] Third, score: a solver picks how much of each, and how far it lands from milk. ' +
+      '[click] Fourth, steer: that score chooses where to try next. Those three repeat, hundreds of times, no cooking.'
   };
 
   /* ------------------------------------------------------------------ MAP */
@@ -222,12 +230,12 @@
       }).join('');
       var svg = '<svg class="gp-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
         // map border
-        '<g class="gp-border">' + Kit.rough.rect(MX, MY, MS, MS, { seed: 7, sw: 3, rough: .9 }) + '</g>' +
+        '<g class="gp-border">' + Kit.rough.rect(MX, MY, MS, MS, { seed: 7, w: 'normal', rough: .9 }) + '</g>' +
         // encoder / decoder wedges: cream outline + saffron overlay that lights up when data passes through
-        '<g class="gp-enc">' + wedge(586, ENC[1], 672, 230, 70, { seed: 8, sw: 3 }) + '</g>' +
-        '<g class="gp-enc-on">' + wedge(586, ENC[1], 672, 230, 70, { seed: 8, sw: 4, stroke: C.saffron, fill: C.saffron, fillStyle: 'hachure', hachureGap: 12, fillWeight: 2 }) + '</g>' +
-        '<g class="gp-dec">' + wedge(1268, DEC[1], 1354, 70, 230, { seed: 9, sw: 3 }) + '</g>' +
-        '<g class="gp-dec-on">' + wedge(1268, DEC[1], 1354, 70, 230, { seed: 9, sw: 4, stroke: C.saffron, fill: C.saffron, fillStyle: 'hachure', hachureGap: 12, fillWeight: 2 }) + '</g>' +
+        '<g class="gp-enc">' + wedge(586, ENC[1], 672, 230, 70, { seed: 8, w: 'heavy' }) + '</g>' +
+        '<g class="gp-enc-on">' + wedge(586, ENC[1], 672, 230, 70, { seed: 8, w: 'heavy', stroke: C.saffron, fill: C.saffron, fillStyle: 'hachure', hachureGap: 12, fillWeight: 2 }) + '</g>' +
+        '<g class="gp-dec">' + wedge(1268, DEC[1], 1354, 70, 230, { seed: 9, w: 'heavy' }) + '</g>' +
+        '<g class="gp-dec-on">' + wedge(1268, DEC[1], 1354, 70, 230, { seed: 9, w: 'heavy', stroke: C.saffron, fill: C.saffron, fillStyle: 'hachure', hachureGap: 12, fillWeight: 2 }) + '</g>' +
         '<text class="t-caps gp-wl" x="690" y="716" text-anchor="end" font-size="24">ENCODER</text>' +
         '<text class="t-caps gp-wl" x="1252" y="716" font-size="24">DECODER</text>' +
         // map interior
@@ -236,10 +244,10 @@
           return '<text class="gp-clab k' + i + '" x="' + c.lab[0] + '" y="' + c.lab[1] + '" font-size="28" font-weight="600">' + c.name + '</text>';
         }).join('') +
         // decode path: P → decoder → rebuilt list
-        '<g class="gp-out">' + Kit.rough.curve([[P[0] + 16, P[1] - 4], [1010, 690], [1160, 640], [1300, 566]], { seed: 14, sw: 3, stroke: C.saffronT }) +
-          Kit.rough.arrow(1356, 560, 1392, 470, { seed: 15, sw: 3, stroke: C.saffronT, head: 16, bend: -14 }) + '</g>' +
+        '<g class="gp-out">' + Kit.rough.curve([[P[0] + 16, P[1] - 4], [1010, 690], [1160, 640], [1300, 566]], { seed: 14, w: 'heavy', stroke: C.saffronT }) +
+          Kit.rough.arrow(1356, 560, 1392, 470, { seed: 15, w: 'heavy', stroke: C.saffronT, head: 22, bend: -14 }) + '</g>' +
         // neighbours A, B and the chord between them
-        '<g class="gp-chord">' + Kit.rough.line(A[0], A[1], B[0], B[1], { seed: 16, sw: 2.5, stroke: C.text2 }) + '</g>' +
+        '<g class="gp-chord">' + Kit.rough.line(A[0], A[1], B[0], B[1], { seed: 16, w: 'fine', stroke: C.text2 }) + '</g>' +
         '<g class="gp-nb">' +
           '<circle cx="' + A[0] + '" cy="' + A[1] + '" r="11" fill="' + C.saffron + '" stroke="#1E2124" stroke-width="3"/>' +
           '<circle cx="' + B[0] + '" cy="' + B[1] + '" r="11" fill="' + C.saffron + '" stroke="#1E2124" stroke-width="3"/>' +
@@ -248,14 +256,20 @@
         '</g>' +
         '<g class="gp-m">' +
           '<circle cx="' + M[0] + '" cy="' + M[1] + '" r="11" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
-          '<text class="gp-pl" x="' + M[0] + '" y="' + (M[1] - 22) + '" text-anchor="middle" font-size="30" font-weight="800" fill="' + C.rustT + '">M</text>' +
+          // M sits below its dot: A and B label from above, so the space over the chord stays free for the callout arrow
+          '<text class="gp-pl" x="' + M[0] + '" y="' + (M[1] + 46) + '" text-anchor="middle" font-size="30" font-weight="800" fill="' + C.rustT + '">M</text>' +
         '</g>' +
         // our recipe's point P
         '<g class="gp-p"><circle cx="' + P[0] + '" cy="' + P[1] + '" r="13" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
           '<text class="gp-pl" x="' + (P[0] + 20) + '" y="' + (P[1] + 34) + '" font-size="30" font-weight="800" fill="' + C.rustT + '">P</text></g>' +
         // doodle callouts' arrows
-        '<g class="gp-c1a">' + Kit.rough.arrow(770, 392, (A[0] + M[0]) / 2 - 4, (A[1] + M[1]) / 2 - 14, { seed: 17, sw: 2.6, stroke: C.rustT, head: 15, bend: 16 }) + '</g>' +
-        '<g class="gp-c2a">' + Kit.rough.arrow(990, 566, M[0] + 20, M[1] + 12, { seed: 18, sw: 2.6, stroke: C.rustT, head: 15, bend: -18 }) + '</g>' +
+        // "one swap apart" points at the A–B chord, left of M, so it never shares a target with "no holes"
+        '<g class="gp-c1a">' + Kit.rough.arrow(770, 392, (A[0] + M[0]) / 2 - 2, (A[1] + M[1]) / 2 - 12, { seed: 17, w: 'normal', stroke: C.rustT, head: 18, bend: 16 }) + '</g>' +
+        '<g class="gp-c2a">' + Kit.rough.arrow(990, 566, M[0] + 20, M[1] + 12, { seed: 18, w: 'normal', stroke: C.rustT, head: 18, bend: -18 }) + '</g>' +
+        // doodles: loop the one recipe, swoosh it into the encoder, twinkle the in-between point
+        '<g class="dd-rec">' + Kit.doodle.circle(186, 402, 296, 296, { seed: 231 }) + '</g>' +
+        '<g class="dd-sw">' + Kit.doodle.swoosh(348, 486, 572, 550, { seed: 232, w: 'normal' }) + '</g>' +
+        '<g class="dd-m">' + Kit.doodle.underline(1400, 918, 392, { seed: 233, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
 
       var left = '<div class="t-caps gp-k gp-k1">One recipe</div>' + ghosts + cuts +
@@ -272,9 +286,7 @@
       return svg + left + right +
         '<div class="callout gp-c1">one swap apart</div>' +
         '<div class="callout gp-c2">no holes</div>' +
-        caps.map(function (t, i) { return '<div class="t-body gp-cap cap' + i + '">' + t + '</div>'; }).join('') +
-        '<div class="t-label faint gp-note">Drawn in 2-D. The real space has more dimensions.</div>' +
-        Kit.src(PATENT + ' Clusters, recipes and positions are illustrative.');
+        caps.map(function (t, i) { return '<div class="t-body gp-cap cap' + i + '">' + t + '</div>'; }).join('');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -295,12 +307,13 @@
       }
       render();
 
-      gsap.set(qa('.gp-enc-on, .gp-dec-on, .gp-p, .gp-dots, .gp-clab, .gp-nb, .gp-m, .gp-rows .gp-row, .gp-rb > div, .callout, .gp-cap, .gp-c1a, .gp-c2a'), { autoAlpha: 0 });
+      gsap.set(qa('.gp-enc-on, .gp-dec-on, .gp-p, .gp-dots, .gp-clab, .gp-nb, .gp-m, .gp-rows .gp-row, .gp-rb > div, .callout, .gp-cap, .gp-c1a, .gp-c2a, .dd-sw, .dd-m'), { autoAlpha: 0 });
 
       // entrance
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.gp-k1, .gp-in, .gp-wl, .gp-k2, .gp-note, .src'), { at: .2, stagger: .04 });
+      Kit.fade(tl, qa('.gp-k1, .gp-in, .gp-wl, .gp-k2'), { at: .2, stagger: .04 });
       Kit.drop(tl, qa('.gp-cut img'), { at: .15, stagger: .08 });
+      Kit.draw(tl, qa('.dd-rec .rp'), { at: .55, duration: .8 });
       Kit.draw(tl, qa('.gp-border .rp, .gp-enc .rp, .gp-dec .rp'), { at: .3, duration: .8 });
       tl.fromTo(qa('.gp-out .rp'), { drawSVG: '0%' }, { drawSVG: '0%', duration: .01 }, 0);
       tl.fromTo(qa('.gp-chord .rp'), { drawSVG: '0%' }, { drawSVG: '0%', duration: .01 }, 0);
@@ -308,6 +321,10 @@
       // [click 1] squeeze: the recipe travels through the encoder and becomes point P
       ctx.pause();
       tl.to(qa('.gp-enc-on'), { autoAlpha: 1, duration: .3 }, 'sq');
+      tl.to(q('.dd-rec'), { autoAlpha: 0, duration: .3 }, 'sq');
+      tl.to(q('.dd-sw'), { autoAlpha: 1, duration: .01 }, 'sq+=.1');
+      Kit.draw(tl, qa('.dd-sw .rp'), { at: 'sq+=.1', duration: .4, stagger: .04 });
+      tl.to(q('.dd-sw'), { autoAlpha: 0, duration: .5 }, 'sq+=1.0');
       tl.to(st, { sq: 1, duration: 1.1, ease: 'power2.inOut', onUpdate: render }, 'sq');
       tl.to(qa('.gp-in > div'), { color: C.saffronT, duration: .3, stagger: .05 }, 'sq');
       tl.fromTo(q('.gp-p'), { autoAlpha: 0, scale: 0, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: .35, ease: 'back.out(2)' }, 'sq+=1.0');
@@ -356,16 +373,19 @@
       tl.fromTo(q('.gp-c2'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .4 }, 'm+=.5');
       tl.fromTo(q('.gp-c2a'), { autoAlpha: 0 }, { autoAlpha: 1, duration: .01 }, 'm+=.5');
       Kit.draw(tl, qa('.gp-c2a .rp'), { at: 'm+=.5', duration: .5 });
+      tl.to(q('.dd-m'), { autoAlpha: 1, duration: .01 }, 'm+=.7');
+      Kit.draw(tl, qa('.dd-m .rp'), { at: 'm+=.7', duration: .4, stagger: .03 });
       Kit.show(tl, q('.cap4'), { at: 'm+=.4', y: 12 });
     },
     notes:
       'First step: the map. The model behind this is called an autoencoder: two networks joined at a narrow waist. ' +
-      '[click] The encoder takes one recipe, here tomato, garlic and basil, and squeezes the whole ingredient list into a single point. Call it P. ' +
-      '[click] The decoder does the reverse. It reads P back out as an ingredient list, one ingredient at a time, and training rewards it for getting the same list back. ' +
-      '[click] Train that on thousands of recipes people have actually cooked, and similar recipes end up near each other. Sauces sit together, dairy sits together. ' +
-      '[click] So points close together decode to nearly the same list. A is tomato and onion, B is tomato and cream. One swap apart. ' +
-      '[click] And here is the property the search needs. The training keeps the map evenly filled, so a point between A and B, like M, still decodes into a sensible recipe: tomato, onion and cream. No holes. ' +
-      'What the map knows is which ingredients go together. It does not know whether anything tastes like milk. That\'s the next step.'
+      '[click] The encoder takes one recipe — tomato, garlic, basil — and squeezes the whole list into one point. Call it P. ' +
+      '[click] The decoder does the reverse: it reads P back out as a list, one ingredient at a time, and training rewards getting the same list back. ' +
+      '[click] Train that on thousands of recipes people have cooked, and similar recipes end up near each other. Sauces together, dairy together. ' +
+      'I am drawing this flat; the real map has far more dimensions, and these clusters are made up. ' +
+      '[click] Points close together decode to nearly the same list. A is tomato and onion, B is tomato and cream. One swap apart. ' +
+      '[click] Training keeps the map evenly filled, so a point between A and B, like M, still decodes into a sensible recipe: tomato, onion and cream. No holes. ' +
+      'The map knows which ingredients go together. It does not know what tastes like milk.'
   };
   Kit.withCrumbs(MAP, STEPS, 0);
 
@@ -376,7 +396,7 @@
   var SC_TICK = [.42, .58, .50, .66, .38];                // where milk sits on each track
   var SC_OFF = [92, -74, 64, -56, 80];                    // the blend's first-guess gap, in px
   var BAR_X = 810, BAR_W = 320, FT_X = 1470, FT_W = 320;
-  var SMP = proj(140, 350, 240);
+  var SMP = proj(140, 404, 300);
 
   var SCORE = {
     id: 'score',
@@ -384,15 +404,15 @@
     heading: 'Scoring a candidate',
     budgetSec: 50,
     html: function () {
-      var rowY = [380, 455, 530, 605];
+      var rowY = [404, 484, 564, 644];
       var ftY = [452, 516, 580, 644, 708];
       var sp = SMP(.33, .74);
       var svg = svgOpen() +
         // left: the point on the map, decoded through the wedge
-        '<g class="sc-map">' + Kit.rough.rect(140, 350, 240, 240, { seed: 80, sw: 2.4 }) + '</g>' +
+        '<g class="sc-map">' + Kit.rough.rect(140, 404, 300, 300, { seed: 80, w: 'normal' }) + '</g>' +
         '<g class="sc-dots">' + mapDots(SMP, { rs: .55, op: .5 }) + '</g>' +
         '<circle class="sc-p" cx="' + sp[0] + '" cy="' + sp[1] + '" r="9" fill="' + C.rust + '" stroke="#1E2124" stroke-width="2"/>' +
-        '<g class="sc-dec">' + wedge(424, 470, 484, 70, 190, { seed: 81, sw: 2.8 }) + '</g>' +
+        '<g class="sc-dec">' + wedge(462, 554, 522, 70, 212, { seed: 81, w: 'heavy', fill: C.saffron, fillStyle: 'hachure', hachureGap: 18, fillOpacity: .3 }) + '</g>' +
         // centre: the solver's proportions
         SC_ING.map(function (n, i) {
           return '<text class="mono sc-n n' + i + '" x="540" y="' + (rowY[i] + 10) + '" font-size="28" fill="' + C.text + '">' + n + '</text>' +
@@ -400,8 +420,8 @@
             '<rect class="sc-fill f' + i + '" x="' + BAR_X + '" y="' + (rowY[i] - 14) + '" width="0" height="28" rx="6" fill="' + C.saffron + '"/>' +
             '<text class="mono sc-pct f-saffron p' + i + '" x="1250" y="' + (rowY[i] + 10) + '" text-anchor="end" font-size="28">0%</text>';
         }).join('') +
-        '<text class="t-caps sc-tot-l f-faint" x="810" y="672" font-size="24">TOTAL</text>' +
-        '<text class="mono sc-tot f-dim" x="1250" y="674" text-anchor="end" font-size="28">100%</text>' +
+        '<text class="t-caps sc-tot-l f-faint" x="810" y="712" font-size="24">TOTAL</text>' +
+        '<text class="mono sc-tot f-dim" x="1250" y="714" text-anchor="end" font-size="28">100%</text>' +
         // right: the target's measured profile, and the gap to it
         SC_FEAT.map(function (f, i) {
           var tx = FT_X + FT_W * SC_TICK[i];
@@ -418,17 +438,17 @@
           '<circle cx="1584" cy="409" r="9" fill="' + C.rustT + '"/>' +
           '<text class="f-rust" x="1602" y="418" font-size="24">this blend</text>' +
         '</g>' +
+        // doodles: loop the target photo, loop the score it is measured against
+        '<g class="dd-score">' + Kit.doodle.circle(1300, 782, 272, 124, { seed: 242, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
       '</svg>';
       return svg +
         '<div class="t-caps sc-k sc-k1">Decode</div>' +
         '<div class="t-caps sc-k sc-k2">Solver · how much of each</div>' +
         '<div class="t-caps sc-k sc-k3">Target · milk</div>' +
-        Kit.photo(IMG + 'milk.webp', { x: 1300, y: 276, w: 80, rot: -3, cls: 'sc-milk', alt: 'glass of milk' }) +
+        Kit.photo(IMG + 'milk.webp', { x: 1302, y: 268, w: 66, rot: -3, cls: 'sc-milk', alt: 'glass of milk' }) +
         '<div class="sc-score"><div class="t-num c-rust"><span class="v">0.41</span></div>' +
           '<div class="t-label dim sc-sl">leftover distance to the target — lower is closer</div></div>' +
-        '<div class="t-body sc-cap">Model picks which. Solver picks how much.</div>' +
-        Kit.src('Solver and score: US 11,164,069. Score band 0.02–0.05 from the patent example in US 11,205,101. ' +
-          'Patented design; production use not confirmed. The proportions and the 0.41 start are illustrative.');
+        '<div class="t-body sc-cap">Model picks which. Solver picks how much.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -449,10 +469,10 @@
       }
       render();
 
-      gsap.set(qa('.sc-tot-l, .sc-tot, .sc-cap'), { autoAlpha: 0 });
+      gsap.set(qa('.sc-tot-l, .sc-tot, .sc-cap, .dd-score'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.sc-k1, .sc-k2, .sc-k3, .src'), { at: .15, stagger: .04 });
+      Kit.fade(tl, qa('.sc-k1, .sc-k2, .sc-k3'), { at: .15, stagger: .04 });
       Kit.draw(tl, qa('.sc-map .rp, .sc-dec .rp'), { at: .25, duration: .7 });
       Kit.fade(tl, qa('.sc-dots, .sc-p'), { at: .5 });
       tl.fromTo(qa('.sc-n'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .35, stagger: .1 }, .6);
@@ -471,21 +491,24 @@
       // [click 2] the gap to milk closes, and what is left is the score
       ctx.pause();
       tl.to(st, { gap: .1, duration: 1.2, ease: 'power2.inOut', onUpdate: render }, 'g');
+      tl.to(q('.dd-score'), { autoAlpha: 1, duration: .01 }, 'g+=1.1');
+      Kit.draw(tl, qa('.dd-score .rp'), { at: 'g+=1.1', duration: .8 });
 
       // [click 3] the division of labour
       ctx.pause();
       Kit.show(tl, q('.sc-cap'), { y: 16 });
     },
     notes:
-      'Steps two and three. Our point on the map goes through the decoder and comes back as four ingredients. ' +
-      '[click] A solver then picks how much of each. The proportions have to be positive and add up to one hundred percent. The model picks which; the solver picks how much. ' +
-      '[click] Milk is described by the same measured features as every ingredient, so how close is this to milk is a distance. The solver shrinks it, and what is left over is the score. Lower is closer. ' +
-      '[click] One warning: this assumes a blend behaves like the average of its parts. True for protein grams, false for taste. So a second model, trained on chefs’ ratings, scores flavour.'
+      'Steps two and three. Our point goes through the decoder and comes back as four ingredients. ' +
+      '[click] A solver picks how much of each. The proportions must be positive and add up to one hundred percent. ' +
+      'The percentages on screen are made up. ' +
+      '[click] Milk is described by the same measured features as every ingredient, so how close this is to milk is a distance. The solver shrinks it; what is left is the score. Lower is closer. ' +
+      '[click] One warning: this assumes a blend behaves like the average of its parts. True for protein, false for taste. So a second model, trained on chefs’ ratings, scores flavour.'
   };
   Kit.withCrumbs(SCORE, STEPS, [1, 2]);
 
   /* ---------------------------------------------------------------- STEER */
-  var TMX = 440, TMY = 285, TMS = 560;
+  var TMX = 420, TMY = 282, TMS = 580;
   var tmp = proj(TMX, TMY, TMS);
   var TRY = [
     { u: .30, v: .70, s: '0.41', off: [-108, 12] },
@@ -521,11 +544,11 @@
       var svg = svgOpen() +
         '<defs><radialGradient id="gpHeat"><stop offset="0%" stop-color="' + C.saffron + '" stop-opacity=".55"/>' +
           '<stop offset="100%" stop-color="' + C.saffron + '" stop-opacity="0"/></radialGradient></defs>' +
-        '<g class="st-border">' + Kit.rough.rect(TMX, TMY, TMS, TMS, { seed: 7, sw: 3, rough: .9 }) + '</g>' +
-        '<circle class="st-heat" cx="' + (STAR[0] - 10) + '" cy="' + (STAR[1] + 30) + '" r="150" fill="url(#gpHeat)"/>' +
-        '<g class="st-leg"><circle cx="252" cy="418" r="62" fill="url(#gpHeat)"/></g>' +
+        '<g class="st-border">' + Kit.rough.rect(TMX, TMY, TMS, TMS, { seed: 7, w: 'heavy', rough: .9 }) + '</g>' +
+        '<circle class="st-heat" cx="' + (STAR[0] - 10) + '" cy="' + (STAR[1] + 30) + '" r="156" fill="url(#gpHeat)"/>' +
+        '<g class="st-leg"><circle cx="236" cy="430" r="62" fill="url(#gpHeat)"/></g>' +
         '<g class="st-dots">' + mapDots(tmp, { rs: .9, op: .45 }) + '</g>' +
-        '<path class="st-trail" d="' + trail + '" fill="none" stroke="' + C.text2 + '" stroke-width="2.5" stroke-dasharray="6 7"/>' +
+        '<path class="st-trail" d="' + trail + '" fill="none" stroke="' + C.text2 + '" stroke-width="3" stroke-dasharray="6 7"/>' +
         '<g class="st-star"><path d="' + star + '" fill="' + C.rust + '" stroke="#1E2124" stroke-width="2"/>' +
           '<text class="f-rust" x="' + (STAR[0] + 34) + '" y="' + (STAR[1] + 10) + '" font-size="28" font-weight="700">milk</text></g>' +
         TRY.map(function (t, i) {
@@ -535,23 +558,21 @@
             '<text class="mono st-badge ' + (i === TRY.length - 1 ? 'f-rust' : 'f-dim') + '" x="' + (p[0] + t.off[0]).toFixed(1) +
               '" y="' + (p[1] + t.off[1]).toFixed(1) + '" font-size="28">' + t.s + '</text></g>';
         }).join('') +
-        '<g class="st-c3a">' + Kit.rough.arrow(700, 806, tmp(.32, .82)[0] + 18, tmp(.32, .82)[1] + 16, { seed: 91, sw: 2.6, stroke: C.rustT, head: 15, bend: 14 }) + '</g>' +
+        '<g class="st-c3a">' + Kit.rough.arrow(676, 884, tmp(.32, .82)[0] + 22, tmp(.32, .82)[1] + 20, { seed: 91, w: 'normal', stroke: C.rustT, head: 22, bend: 16, bow: .8 }) + '</g>' +
         STEER_CARDS.map(function (c, i) {
-          return '<g class="st-b sb' + i + '">' + Kit.rough.rect(1120, 300 + i * 150, 680, 118, { seed: 95 + i, sw: 2.6, stroke: C.line }) + '</g>';
+          return '<g class="st-b sb' + i + '">' + Kit.rough.rect(1120, 300 + i * 176, 680, 138,
+            { seed: 95 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .14, hachureGap: 24 }) + '</g>';
         }).join('') +
       '</svg>';
       return svg +
         STEER_CARDS.map(function (c, i) {
-          return '<div class="st-card sc' + i + '" style="top:' + (300 + i * 150) + 'px">' +
+          return '<div class="st-card sc' + i + '" style="top:' + (300 + i * 176) + 'px">' +
             '<div class="t-caps c-saffron">' + c[0] + '</div><div class="t-label dim">' + c[1] + '</div></div>';
         }).join('') +
         '<div class="callout st-c3">worse — back off</div>' +
         '<div class="t-caps st-lk">Its guess</div>' +
         '<div class="t-label dim st-ll">where good scores probably are</div>' +
-        '<div class="t-body st-cap">Bayesian optimization:<br>learn where to try next.</div>' +
-        '<div class="t-label faint st-note">Drawn in 2-D. The real space has more dimensions.</div>' +
-        Kit.src('Bayesian optimization in US 11,164,069; definition from Frazier, 2018. Patented design; production use not confirmed. ' +
-          'The six tries, their positions and scores are illustrative.');
+        '<div class="t-body st-cap">Bayesian optimization:<br>learn where to try next.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -571,7 +592,6 @@
       gsap.set(qa('.st-heat, .st-leg, .st-lk, .st-ll, .st-c3, .st-c3a, .st-cap, .sc1 > *, .sc2 > *, .sb1, .sb2'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.st-note, .src'), { at: .2 });
       Kit.draw(tl, qa('.st-border .rp'), { at: .2, duration: .8 });
       Kit.fade(tl, q('.st-dots'), { at: .6 });
       tl.fromTo(q('.st-star'), { autoAlpha: 0, scale: 0, transformOrigin: STAR[0] + 'px ' + STAR[1] + 'px' },
@@ -607,10 +627,11 @@
       Kit.show(tl, q('.st-cap'), { at: 'f+=.6', y: 14 });
     },
     notes:
-      'Step four. The star is where milk sits on the map. The search does not know that; it only gets a score back for each point it tries. ' +
-      '[click] Try three scores worse than try two, so the search backs away from that direction. This is the part that makes it a search and not a straight line. ' +
-      '[click] Underneath, the method keeps a guess about where good scores live across the whole map, and every result reshapes that guess. That is Bayesian optimization: predict, pick, update. ' +
-      '[click] It picks the next point by trading off promising against unexplored, and closes in. No cooking so far. Only when a formula scores well do chefs make it.'
+      'Step four. The star is where milk sits. The search does not know that; it only gets a score back for each point it tries. ' +
+      'Flat drawing again, and these six tries are invented. ' +
+      '[click] Try three scores worse than try two, so the search backs away from that direction. That is what makes it a search and not a straight line. ' +
+      '[click] Underneath, it keeps a guess about where good scores live, and every result reshapes it. That is Bayesian optimization: predict, pick, update. ' +
+      '[click] It picks the next point by trading promising against unexplored, and closes in. No cooking yet: only when a formula scores well do chefs make it.'
   };
   Kit.withCrumbs(STEER, STEPS, 3);
 
@@ -629,23 +650,25 @@
     heading: 'Diet rules',
     budgetSec: 40,
     html: function () {
-      var rowY = DICT.map(function (d, i) { return 400 + i * 58; });
+      var rowY = DICT.map(function (d, i) { return 418 + i * 64; });
       var svg = svgOpen() +
-        '<g class="ru-box">' + Kit.rough.rect(130, 352, 700, 500, { seed: 100, sw: 2.6, stroke: C.line }) + '</g>' +
+        '<g class="ru-box">' + Kit.rough.rect(130, 364, 700, 556, { seed: 100, w: 'normal', stroke: C.text3 }) + '</g>' +
         DICT.map(function (d, i) {
           return '<text class="mono ru-n r' + i + '" x="160" y="' + rowY[i] + '" font-size="28">' + d.n + '</text>' +
             '<text class="mono ru-v f-dim v' + i + '" x="372" y="' + rowY[i] + '" font-size="28">' + VEC[i] + '</text>' +
-            (d.a ? '<g class="ru-strike k' + i + '">' + Kit.rough.line(152, rowY[i] - 9, 812, rowY[i] - 9, { seed: 110 + i, sw: 2.6, stroke: C.rustT }) + '</g>' : '');
+            (d.a ? '<g class="ru-strike k' + i + '">' + Kit.rough.line(152, rowY[i] - 9, 812, rowY[i] - 9, { seed: 110 + i, w: 'normal', stroke: C.rustT, bow: .4, rough: .7 }) + '</g>' : '');
         }).join('') +
-        '<text class="mono ru-more f-faint" x="160" y="' + (400 + 7 * 58) + '" font-size="28">… 823 more</text>' +
+        '<text class="mono ru-more f-faint" x="160" y="' + (418 + 7 * 64) + '" font-size="28">… 823 more</text>' +
         // lane A: masked decoder
-        '<g class="ru-mask">' + Kit.rough.rect(922, 332, 34, 112, { seed: 120, sw: 2.6, stroke: C.rustT, fill: C.rust, fillStyle: 'hachure', hachureGap: 8 }) + '</g>' +
-        '<g class="ru-ba">' + Kit.rough.rect(966, 332, 230, 112, { seed: 121, sw: 2.8 }) + '</g>' +
-        '<g class="ru-aa">' + Kit.rough.arrow(1206, 388, 1272, 388, { seed: 122, sw: 2.8, head: 16 }) + '</g>' +
+        '<g class="ru-mask">' + Kit.rough.rect(918, 362, 38, 128, { seed: 120, w: 'heavy', stroke: C.rustT, fill: C.rust, fillStyle: 'hachure', hachureGap: 8 }) + '</g>' +
+        '<g class="ru-ba">' + Kit.rough.rect(966, 362, 240, 128, { seed: 121, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .13, hachureGap: 22 }) + '</g>' +
+        '<g class="ru-aa">' + Kit.rough.arrow(1218, 426, 1282, 426, { seed: 122, w: 'normal', head: 20 }) + '</g>' +
         // lane B: no mask
-        '<g class="ru-bb">' + Kit.rough.rect(966, 650, 230, 112, { seed: 123, sw: 2.8, stroke: C.text3 }) + '</g>' +
-        '<g class="ru-ab">' + Kit.rough.arrow(1206, 706, 1272, 706, { seed: 124, sw: 2.8, head: 16, stroke: C.text3 }) + '</g>' +
-        '<g class="ru-x">' + Kit.rough.line(1292, 708, 1750, 708, { seed: 125, sw: 3, stroke: C.rustT }) + '</g>' +
+        '<g class="ru-bb">' + Kit.rough.rect(966, 694, 240, 128, { seed: 123, w: 'fine', stroke: C.text3 }) + '</g>' +
+        '<g class="ru-ab">' + Kit.rough.arrow(1218, 758, 1282, 758, { seed: 124, w: 'fine', head: 16, stroke: C.text3 }) + '</g>' +
+        '<g class="ru-x">' + Kit.rough.line(1298, 760, 1762, 760, { seed: 125, w: 'heavy', stroke: C.rustT, bow: .4, rough: .7 }) + '</g>' +
+        '<g class="dd-ok">' + Kit.doodle.mark(1238, 556, 34, 'check', { seed: 261 }) + '</g>' +
+        '<g class="dd-no">' + Kit.doodle.mark(1238, 910, 28, 'x', { seed: 262, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
       return svg +
         '<div class="t-caps ru-k1">Ingredient dictionary · 830 rows</div>' +
@@ -657,16 +680,14 @@
         '<div class="chip ru-chip ru-ca"><span class="dot"></span>every try is usable</div>' +
         '<div class="t-caps faint ru-k2">Without the mask</div>' +
         '<div class="t-mono ru-out ru-ob">cabbage · <b class="c-rust">chicken</b> · coconut</div>' +
-        '<div class="chip ru-chip ru-cb"><span class="dot"></span>a wasted try</div>' +
-        Kit.src('Decoder mask: US 11,164,069 and US 11,205,101. 830-row example: US 11,982,661. Patented design; production use not confirmed. ' +
-          'Why mask rather than filter afterwards is the report’s reasoning (inferred).');
+        '<div class="chip ru-chip ru-cb"><span class="dot"></span>a wasted try</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ru-strike, .ru-mask, .ru-mk, .ru-aa, .ru-cap, .ru-oa, .ru-ca, .ru-k2, .ru-bb, .ru-ab, .ru-db, .ru-ob, .ru-x, .ru-cb'), { autoAlpha: 0 });
+      gsap.set(qa('.ru-strike, .ru-mask, .ru-mk, .ru-aa, .ru-cap, .ru-oa, .ru-ca, .ru-k2, .ru-bb, .ru-ab, .ru-db, .ru-ob, .ru-x, .ru-cb, .dd-ok, .dd-no'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.ru-k1, .src'), { at: .15, stagger: .05 });
+      Kit.fade(tl, q('.ru-k1'), { at: .15 });
       Kit.draw(tl, qa('.ru-box .rp'), { at: .25, duration: .8 });
       tl.fromTo(qa('.ru-n, .ru-v'), { autoAlpha: 0, x: -10 }, { autoAlpha: 1, x: 0, duration: .3, stagger: .03 }, .4);
       Kit.fade(tl, q('.ru-more'), { at: .9 });
@@ -691,6 +712,8 @@
       Kit.show(tl, q('.ru-mk'), { at: 'm+=.6', y: 10 });
       Kit.show(tl, q('.ru-oa'), { at: 'm+=.8', y: 12 });
       Kit.show(tl, q('.ru-ca'), { at: 'm+=1.0', y: 12 });
+      tl.to(q('.dd-ok'), { autoAlpha: 1, duration: .01 }, 'm+=1.2');
+      Kit.draw(tl, qa('.dd-ok .rp'), { at: 'm+=1.2', duration: .35 });
 
       // [click 2] what the alternative costs
       ctx.pause();
@@ -702,11 +725,14 @@
       tl.to(q('.ru-x'), { autoAlpha: 1, duration: .01 }, 'b+=.8');
       Kit.draw(tl, qa('.ru-x .rp'), { at: 'b+=.8', duration: .4, stagger: .1 });
       Kit.show(tl, q('.ru-cb'), { at: 'b+=1.1', y: 12 });
+      tl.to(q('.dd-no'), { autoAlpha: 1, duration: .01 }, 'b+=1.3');
+      Kit.draw(tl, qa('.dd-no .rp'), { at: 'b+=1.3', duration: .35, stagger: .05 });
     },
     notes:
-      'NotMilk has to be plant-only, and that rule is not applied at the end. Every ingredient in the dictionary is a row of numbers. ' +
-      '[click] For a vegan product, the animal rows are set to zero before the decoder chooses. It picks the row closest to its state, and a row of zeros can never win, so chicken is unreachable. Language models use the same trick to stay inside a format. ' +
-      '[click] The alternative is to propose anything and throw away whatever has chicken in it. But every thrown-away candidate costs one of your few tries.'
+      'NotMilk has to be plant-only, and that rule is not applied at the end. Every ingredient is a row of numbers. ' +
+      '[click] For a vegan product, the animal rows are zeroed before the decoder chooses. It picks the row closest to its state, and zeros can never win, so chicken is unreachable. Language models use the same trick. ' +
+      '[click] The alternative is to propose anything and throw away whatever has chicken in it. Every thrown-away candidate costs one of your few tries. ' +
+      'Masking rather than filtering afterwards is my reading of the patents.'
   };
   Kit.withCrumbs(RULES, STEPS, 1);   // the mask acts at the decoder
 
@@ -729,16 +755,18 @@
           '<div class="t-label rs-lab l' + i + '" style="left:' + (130 + i * 235) + 'px">' + c.n + '</div>';
       }).join('');
       var svg = svgOpen() +
-        '<g class="rs-arr">' + Kit.rough.arrow(1052, 470, 1150, 470, { seed: 130, sw: 3, head: 18, stroke: C.saffronT }) + '</g>' +
+        '<g class="rs-arr">' + Kit.rough.arrow(1046, 470, 1152, 470, { seed: 130, w: 'heavy', head: 28, stroke: C.saffronT }) + '</g>' +
         // the product, drawn rather than photographed: a plain gable-top carton, no brand marks
         '<g class="rs-pack">' +
-          Kit.rough.path('M1212 440 L1212 700 L1428 700 L1428 440 Z', { seed: 133, sw: 3 }) +
-          Kit.rough.path('M1212 440 L1258 378 L1382 378 L1428 440', { seed: 134, sw: 3 }) +
-          Kit.rough.line(1258, 378, 1382, 378, { seed: 136, sw: 3 }) +
-          Kit.rough.rect(1240, 512, 160, 96, { seed: 135, sw: 2.4, stroke: C.saffronT, fill: C.saffron, fillStyle: 'hachure', hachureGap: 13, fillWeight: 1.6 }) +
+          Kit.rough.path('M1212 440 L1212 700 L1428 700 L1428 440 Z', { seed: 133, w: 'heavy' }) +
+          Kit.rough.path('M1212 440 L1258 378 L1382 378 L1428 440', { seed: 134, w: 'heavy' }) +
+          Kit.rough.line(1258, 378, 1382, 378, { seed: 136, w: 'heavy' }) +
+          Kit.rough.rect(1240, 512, 160, 96, { seed: 135, w: 'normal', stroke: C.saffronT, overshoot: 8, hatch: C.saffron, fillOpacity: .5, hachureGap: 15 }) +
         '</g>' +
-        '<g class="rs-ca">' + Kit.rough.arrow(560, 658, 420, 620, { seed: 131, sw: 2.6, head: 14, stroke: C.rustT, bend: 14 }) + '</g>' +
-        '<g class="rs-cb">' + Kit.rough.arrow(1520, 762, 1432, 694, { seed: 132, sw: 2.6, head: 14, stroke: C.rustT, bend: -12 }) + '</g>' +
+        '<g class="rs-ca">' + Kit.doodle.underline(134, 642, 428, { seed: 131, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="rs-cb">' + Kit.rough.arrow(1532, 848, 1436, 708, { seed: 132, w: 'fine', head: 16, stroke: C.rustT, bend: -18 }) + '</g>' +
+        // loop the figure, same grammar as the score loop: explicit radii that clear the glyph box
+        '<g class="dd-fast">' + Kit.doodle.circle(587, 725, 500, 190, { seed: 274, color: 'var(--rust-t)', w: 'heavy', rx: 250, ry: 95 }) + '</g>' +
       '</svg>';
       return svg + cuts +
         '<div class="t-caps rs-k">Giuseppe’s answer for milk</div>' +
@@ -748,17 +776,14 @@
         '<div class="callout rs-c2">the first batch came out green</div>' +
         '<div class="t-label dim rs-c2l">the score does not model colour</div>' +
         '<div class="rs-num"><div class="t-num c-saffron">10 → <span class="v">10</span></div>' +
-          '<div class="t-label dim">months to develop a milk product</div></div>' +
-        '<div class="chip rs-chip"><span class="dot"></span>NotCo’s own figure</div>' +
-        Kit.src('Formula: The Batch, 2020. Lactones: FoodNavigator, 2022. 10 → 2 months: NotCo via Tech Brew, 2021. ' +
-          'Green first batch: Food Processing, 2022. Carton: illustration, not a product photo.', 'Self-reported');
+          '<div class="t-label dim">months to develop a milk product</div></div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.rs-pack, .rs-pl, .rs-arr, .rs-c1, .rs-c1l, .rs-ca, .rs-c2, .rs-c2l, .rs-cb, .rs-num, .rs-chip'), { autoAlpha: 0 });
+      gsap.set(qa('.rs-pack, .rs-pl, .rs-arr, .rs-c1, .rs-c1l, .rs-ca, .rs-c2, .rs-c2l, .rs-cb, .rs-num, .dd-fast'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.rs-k, .src'), { at: .2, stagger: .05 });
+      Kit.fade(tl, q('.rs-k'), { at: .2 });
       Kit.drop(tl, qa('.rs-cut'), { at: .3, stagger: .12 });
       tl.fromTo(qa('.rs-lab'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .4, stagger: .12 }, .6);
 
@@ -780,7 +805,8 @@
       tl.addLabel('n');
       Kit.show(tl, q('.rs-num'), { at: 'n', y: 16 });
       Kit.count(tl, q('.rs-num .v'), { from: 10, to: 2, duration: 1.0, at: 'n+=.2' });
-      Kit.show(tl, q('.rs-chip'), { at: 'n+=.9', y: 12 });
+      tl.to(q('.dd-fast'), { autoAlpha: 1, duration: .01 }, 'n+=1.1');
+      Kit.draw(tl, qa('.dd-fast .rp'), { at: 'n+=1.1', duration: .8 });
 
       // [click 3] what the score could not see
       ctx.pause();
@@ -791,10 +817,11 @@
       Kit.show(tl, q('.rs-c2l'), { at: 'g+=.35', y: 10 });
     },
     notes:
-      'So: they gave Giuseppe the measured profile of cow’s milk, and this is what came back. Pineapple juice, cabbage juice, chicory root and coconut. Nobody would have written that down. ' +
-      '[click] NotCo says the first two were picked to make lactones, the aroma compounds that make dairy smell like dairy. Chefs then refined the formula into the product you can buy. ' +
-      '[click] NotCo also says the second time they made a milk, it took two months instead of ten. That is their own figure, with no control group, and their own experience grew over those years too. ' +
-      '[click] And the honest part: the first batch came out green. Colour is not in the score at all. The search optimised what it could measure, and a person had to catch the rest.'
+      'They gave Giuseppe the measured profile of cow’s milk, and this is what came back. Pineapple juice, cabbage juice, chicory root and coconut. Nobody would have written that down. ' +
+      '[click] NotCo says the first two were picked to make lactones, the aroma compounds that make dairy smell like dairy. Chefs refined it into the product you can buy. ' +
+      '[click] NotCo also says the second time they made a milk, it took two months instead of ten. That is their own figure, with no control group. ' +
+      'The carton is my drawing, not their packaging. ' +
+      '[click] And the honest part: the first batch came out green. Colour is not in the score. The search optimised what it could measure, and a person had to catch the rest.'
   };
 
   /* ------------------------------------------------------------ TAKEAWAYS */
@@ -803,7 +830,7 @@
     ['02', 'Put the rules inside the search', 'constrained decoding', 'Block a choice before it is made, not after.']
   ];
   var MARKS = [['Read', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
-  var TKP = proj(1400, 326, 372);
+  var TKP = proj(1348, 352, 448);
 
   var TAKEAWAYS = {
     id: 'takeaways',
@@ -814,15 +841,18 @@
       var pts = TRY.map(function (t) { return TKP(t.u, t.v); });
       var trail = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L');
       var svg = svgOpen('tk-svg') +
-        '<g class="tk-map">' + Kit.rough.rect(1400, 326, 372, 372, { seed: 7, sw: 2.4, rough: .9 }) + '</g>' +
-        mapDots(TKP, { rs: .62, op: .7 }) +
-        '<path d="' + trail + '" fill="none" stroke="' + C.saffronT + '" stroke-width="2" stroke-dasharray="5 6"/>' +
+        '<g class="tk-map">' + Kit.rough.rect(1348, 352, 448, 448, { seed: 7, w: 'normal', rough: 1.1 }) + '</g>' +
+        mapDots(TKP, { rs: .7, op: .7 }) +
+        '<path d="' + trail + '" fill="none" stroke="' + C.saffronT + '" stroke-width="2.5" stroke-dasharray="5 6"/>' +
         pts.map(function (p, i) {
-          return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="6" fill="' + (i === pts.length - 1 ? C.rust : C.saffron) + '"/>';
+          return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="7" fill="' + (i === pts.length - 1 ? C.rust : C.saffron) + '"/>';
         }).join('') +
+        '<g class="dd-hit">' + Kit.doodle.circle(pts[pts.length - 1][0] - 28, pts[pts.length - 1][1] - 28, 56, 56, { seed: 281, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="dd-u0">' + Kit.doodle.underline(252, 416, 700, { seed: 282 }) + '</g>' +
+        '<g class="dd-u1">' + Kit.doodle.underline(252, 672, 692, { seed: 283 }) + '</g>' +
       '</svg>';
       var rows = TK.map(function (r, i) {
-        return '<div class="tk-row t' + i + '" style="top:' + (348 + i * 236) + 'px">' +
+        return '<div class="tk-row t' + i + '" style="top:' + (344 + i * 256) + 'px">' +
           '<div class="t-h2 tk-n">' + r[0] + '</div>' +
           '<div class="tk-body"><div class="t-h2 tk-rule">' + r[1] + '</div>' +
             '<div class="t-caps c-saffron tk-tag">' + r[2] + '</div>' +
@@ -833,25 +863,31 @@
         return (i ? '<span class="tk-sep">·</span>' : '') +
           '<span class="tk-tok k' + i + (i === 2 ? ' tk-on' : '') + '"><span class="t-caps">' + m[0] + '</span></span>';
       }).join('');
-      return svg + rows + '<div class="tk-strip">' + strip + '</div>' +
-        Kit.src('Lessons: report section 10. Molecule-design comparison: Gómez-Bombarelli et al., 2018.');
+      return svg + rows + '<div class="tk-strip">' + strip + '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
       gsap.set(qa('.t0 > *, .t1 > *'), { autoAlpha: 0 });
+      gsap.set(qa('.dd-u0, .dd-u1, .dd-hit'), { autoAlpha: 0 });
       gsap.set(qa('.tk-tok:not(.tk-on) .t-caps'), { color: C.text3 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.tk-svg, .src'), { at: .2 });
+      Kit.fade(tl, q('.tk-svg'), { at: .2 });
       Kit.fade(tl, q('.tk-strip'), { at: .4 });
+      tl.to(q('.dd-hit'), { autoAlpha: 1, duration: .01 }, .7);
+      Kit.draw(tl, qa('.dd-hit .rp'), { at: .7, duration: .6 });
 
       // [click 1] lesson one
       ctx.pause();
       Kit.show(tl, qa('.t0 > *'), { y: 18, stagger: .08, duration: .5 });
+      tl.to(q('.dd-u0'), { autoAlpha: 1, duration: .01 }, '>-.2');
+      Kit.draw(tl, qa('.dd-u0 .rp'), { at: '<', duration: .5 });
 
       // [click 2] lesson two, and the hand-off to the next section
       ctx.pause();
       Kit.show(tl, qa('.t1 > *'), { y: 18, stagger: .08, duration: .5 });
+      tl.to(q('.dd-u1'), { autoAlpha: 1, duration: .01 }, '>-.2');
+      Kit.draw(tl, qa('.dd-u1 .rp'), { at: '<', duration: .5 });
       tl.to(q('.k3 .t-caps'), { color: C.cranberryT, duration: .5 }, '>-.1');
     },
     notes:
@@ -863,7 +899,12 @@
 
   Deck.section({
     id: 'giuseppe', order: 3, num: '03', kicker: 'Mix', title: 'NotCo Giuseppe', color: 'saffron',
-    sweep: ['saffron', 'rust', 'saffron', 'charcoal', 'saffron', 'olive'],
+    toss: 'assets/img/giuseppe/tomato.webp',
+    opener: {
+      id: 'opener', budgetSec: 10,
+      notes:
+        'Section three: Mix. NotCo\'s AI, Giuseppe, works one level up: it designs whole recipes, which plants go in and how much of each.'
+    },
     slides: [PROBLEM, APPROACH, MAP, SCORE, STEER, RULES, RESULTS, TAKEAWAYS]
   });
 })();

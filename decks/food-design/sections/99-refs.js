@@ -1,7 +1,8 @@
 /* ==========================================================================
    — · References   (untimed appendix, budgetSec 0)
    Light-theme slides, two columns, grouped by section. Never presented; exported with the PDF.
-   Lists only the sources actually cited on a slide (Kit.src footers or slide text).
+   Slides carry no source marks (KIT §2.5), so this appendix is the whole citation trail: every source
+   behind a number, a claim or a mechanism anywhere in the deck, plus the image and figure caveats.
    ========================================================================== */
 (function () {
   'use strict';
@@ -20,7 +21,7 @@
       id: id, title: 'References', heading: 'References', theme: 'light', budgetSec: 0,
       html: function () { return cols.map(function (c) { return column(c[0], c[1], c[2]); }).join(''); },
       build: function (ctx) { Kit.fade(ctx.tl, ctx.qa('.hd > *, .rf-col'), { duration: .4, stagger: .05 }); },
-      notes: 'Appendix, not presented. Every source cited on a slide, grouped by section.'
+      notes: 'Appendix, not presented. Every source behind the deck, grouped by section, plus the image and figure caveats.'
     };
   }
 
@@ -52,7 +53,7 @@
     'Milling MEA, <i>Shiru plant proteins</i>, 2025',
     'Protein Production Technology, <i>OleoPro</i>, Apr 2025',
     'Rives et al., <i>Protein language models</i>, PNAS 2021',
-    'Schütze et al., <i>Nearest-neighbour search</i>, 2022',
+    'Schütze et al., <i>Nearest-neighbour embedding search</i>, Frontiers in Bioinformatics, 2022',
     'Rost, <i>Twilight zone of alignments</i>, 1999',
     'NVIDIA, <i>BioNeMo ESM-2 overview</i>'
   ];
@@ -74,6 +75,7 @@
   var SELL = [
     'IDB, <i>Not Company profile</i> (NotMayo share)',
     'multiples.vc, <i>NotCo funding and investors</i>',
+    'BusinessWire, <i>NotCo $235M Series D</i>, Jul 2021',
     'Food Dive, <i>Kraft Heinz JV</i>, Feb 2022',
     'Bloomberg Línea, <i>North America handover</i>, Feb 2025',
     'FoodNavigator, <i>NotCo opens up its AI</i>, Apr 2025',
@@ -109,17 +111,19 @@
     'Each report lists its own sources in full.'
   ];
   var NOTES = [
-    'Every food photo is a generated illustration.',
+    'Every food photo in this deck is a generated illustration, not a product shot.',
     'OleoPro product photo: Shiru, via AgFunderNews.',
     'The NotMilk carton is a drawing, not a photo.',
     'No logos, brand packs or real people appear.',
     'Every diagram is drawn in code with rough.js.',
-    'Values marked illustrative are not measurements.'
+    'Figures from Samsung, Shiru and NotCo are self-reported and not independently checked.',
+    'Values called illustrative are made up to show the shape of a result; they are not measurements.',
+    'Mechanisms read off patents are inferred: the companies have not confirmed what runs today.',
+    'The combination count and the revenue split are the report author’s own arithmetic.'
   ];
 
   Deck.section({
     id: 'refs', order: 99, num: '—', kicker: 'References', title: '', color: 'teal',
-    sweep: ['teal', 'charcoal', 'teal', 'charcoal', 'teal', 'charcoal'],
     slides: [
       refSlide('refs-1', [
         [COL_X[0], '01 · Read · Samsung Food', READ_A],
@@ -135,7 +139,7 @@
       ]),
       refSlide('refs-4', [
         [COL_X[0], 'Research reports, Nov 2026', REPORTS],
-        [COL_X[1], 'Images and diagrams', NOTES]
+        [COL_X[1], 'Images, diagrams and figures', NOTES]
       ])
     ]
   });

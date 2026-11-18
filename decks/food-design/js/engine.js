@@ -2,10 +2,11 @@
    Lecture deck — slide engine (classic script, no modules, works from file://)
 
    Sections register themselves:
-     Deck.section({ id, order, num, kicker, title, color, sweep?, slides: [ slideDef, ... ] })
+     Deck.section({ id, order, num, kicker, title, color, toss?, opener?, slides: [ slideDef, ... ] })
        color: palette token name from css/theme.css ('red' → --red fills, --red-t text) or a hex.
               The engine sets --sec / --sec-t on every slide of the section.
-       sweep: optional list of 6 token names or hexes for the section-change panel sweep.
+       toss:  optional image path (a transparent food cut-out) that drops onto the section's opener card.
+       opener: optional { id: 'opener', budgetSec, notes } → an engine-made title-card slide at the section's start.
 
    slideDef = {
      id:        'loss',                  // unique within section → URL #/<section>/<slide>
@@ -36,17 +37,12 @@
   Deck.section = function (def) { Deck._sections.push(def); };
 
   /* Section colors come from each section def, never from this file:
-       Deck.section({ id, color: 'red', sweep?: ['red', 'orange', ...], ... })
-     `color` (and each `sweep` entry) is a palette token name from css/theme.css (--red, --red-t) or a raw hex.
-     Without `sweep`, the section-change sweep alternates the section color with --orange and --charcoal. */
+       Deck.section({ id, color: 'teal', ... })
+     `color` is a palette token name from css/theme.css (--teal, --teal-t) or a raw hex. */
   function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim(); }
   function hexOf(c) { return !c ? '#888' : c.charAt(0) === '#' ? c : (cssVar(c) || '#888'); }
   function secColor(sec) { return hexOf(sec.color); }
   function secTint(sec) { var c = sec.color; return !c ? '#bbb' : c.charAt(0) === '#' ? c : (cssVar(c + '-t') || hexOf(c)); }
-  function secSweep(sec) {
-    var c = sec.color || 'orange';
-    return (sec.sweep || [c, 'orange', c, 'charcoal', c, 'orange']).map(hexOf);
-  }
   function secColors() { var m = {}; sections.forEach(function (s) { m[s.id] = secColor(s); }); return m; }
 
   var slides = [];       // { def, sec, index }
@@ -66,7 +62,7 @@
   function mount(i, parent, mode) {
     var s = slides[i], def = s.def;
     var el = document.createElement('section');
-    el.className = 'slide' + (def.theme === 'light' ? ' light' : '');
+    el.className = 'slide' + (def.theme === 'light' ? ' light' : '') + (def._opener ? ' opener' : '');
     el.setAttribute('data-sec', s.sec.id);
     el.setAttribute('data-slide', def.id);
     el.style.setProperty('--sec', secColor(s.sec));
@@ -144,31 +140,124 @@
     updateHash(); updateProgress(); emit();
   }
 
+  /* ---------------- transitions (deck 2: chalk) ----------------
+     One idea throughout: a soft, ragged chalk-eraser edge that sweeps left → right.
+     Every forward step (~0.9 s): the old slide is erased off the top of the new one; a faint chalk-dust haze rides the edge.
+     Into a section opener slide (see "section openers" below): the opener's own entrance scribbles over the old slide.
+     Back navigation and jumps are instant. Pressing → mid-transition skips to the end. */
+  var T_IN = 0.9;
+  function rnd(seed) { seed = seed % 2147483647 || 1; return function () { seed = seed * 16807 % 2147483647; return seed / 2147483647; }; }
+  /** Zig-zag stroke path covering the stage left→right. gap: horizontal step; slant: lean of each stroke. */
+  function zigzag(seed, gap, slant, jit) {
+    var r = rnd(seed), pad = 120, x = -pad - slant, top = true, d = 'M' + x + ' ' + (-pad);
+    while (x < W + pad + slant) {
+      x += gap * (0.8 + r() * 0.4); top = !top;
+      var y = top ? -pad + (r() - .5) * jit : H + pad + (r() - .5) * jit;
+      d += ' L' + Math.round(top ? x : x - slant) + ' ' + Math.round(y);
+    }
+    return d;
+  }
+  var XL = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, at) { var e = document.createElementNS(XL, tag); for (var k in at) e.setAttribute(k, at[k]); return e; }
+  function stroke(d, col, w, extra) {
+    var at = { d: d, fill: 'none', stroke: col, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+    for (var k in extra || {}) at[k] = extra[k];
+    return svgEl('path', at);
+  }
+  /* Eraser mask: an image 3 stages wide. Left third transparent, right third opaque, a ragged, blurred edge in the middle
+     (slanted, like an eraser dragged at an angle). Sliding mask-position moves the edge across the element. */
+  var ERASE = null, EW = W * 3, EDGE = W * 1.5;
+  function eraserMask() {
+    if (ERASE) return ERASE;
+    var r = rnd(4242), pts = [], y, x;
+    for (y = -40; y <= H + 40; y += 26) { x = EDGE + (y - H / 2) * -0.18 + (r() - .5) * 70 + Math.sin(y / 90) * 26; pts.push(Math.round(x) + ',' + y); }
+    var poly = pts.join(' ') + ' ' + EW + ',' + (H + 40) + ' ' + EW + ',-40';
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + EW + "' height='" + H + "'><filter id='b' x='-5%' y='-5%' width='110%' height='110%'>" +
+      "<feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='2' seed='7'/><feDisplacementMap in='SourceGraphic' scale='60'/><feGaussianBlur stdDeviation='14'/></filter>" +
+      "<polygon points='" + poly + "' fill='white' filter='url(%23b)'/></svg>";
+    ERASE = 'url("data:image/svg+xml;utf8,' + svg.replace(/"/g, "'").replace(/</g, '%3C').replace(/>/g, '%3E') + '")';
+    return ERASE;
+  }
+  /** Tween that erases `el` left → right with the chalk edge. Returns a timeline-ready tween; cleans its mask at the end. */
+  function eraseTween(el, dur, ease) {
+    var st = el.style, m = eraserMask(), o = { x: -(EW - W) };
+    var apply = function () { st.webkitMaskPosition = st.maskPosition = o.x + 'px 0'; };
+    st.webkitMaskImage = st.maskImage = m; st.webkitMaskSize = st.maskSize = EW + 'px ' + H + 'px';
+    st.webkitMaskRepeat = st.maskRepeat = 'no-repeat'; apply();
+    return gsap.to(o, { x: 0, duration: dur, ease: ease || 'power1.inOut', onUpdate: apply });
+  }
+  function clearMask(el) { var st = el.style; st.webkitMaskImage = st.maskImage = ''; st.webkitMaskPosition = st.maskPosition = ''; }
+  /** A faint chalk-dust haze that rides the eraser edge (same timing as eraseTween). */
+  function dustTween(parent, dur, ease) {
+    var d = document.createElement('div'); d.className = 'erase-dust'; parent.appendChild(d);
+    var o = { x: -(EW - W) };
+    var apply = function () { d.style.transform = 'translateX(' + (o.x + EDGE - 160) + 'px) skewX(10deg)'; };
+    apply();
+    return { el: d, tween: gsap.to(o, { x: 0, duration: dur, ease: ease || 'power1.inOut', onUpdate: apply }) };
+  }
+
   function transition(old, L, secChange, dir, playEntrance) {
     var start = function () { if (playEntrance && live === L) playTo(0); };
     if (!old) { start(); return; }
-    if (dir !== 'fwd') { unmount(old); start(); return; }   // back + navigator jumps are instant
-    if (secChange) {
-      var sw = document.getElementById('sweep');
-      var cols = secSweep(slides[L.index].sec);
-      sw.innerHTML = cols.map(function (c, k) {
-        return '<div class="panel" style="left:' + (k * 330 - 120) + 'px;background:' + c + '"></div>';
-      }).join('');
-      var ps = sw.querySelectorAll('.panel');
-      gsap.set(L.el, { autoAlpha: 0 });
-      transitioning = gsap.timeline({ onComplete: function () { sw.innerHTML = ''; transitioning = null; } })
-        .fromTo(ps, { x: 2300 }, { x: 0, duration: .5, ease: 'power3.in', stagger: .035 })
-        .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); })
-        .to(ps, { x: -2600, duration: .6, ease: 'power3.out', stagger: .035 })
-        .add(start, '-=.45');
+    if (dir !== 'fwd' || MODE !== 'show' || !window.DrawSVGPlugin) { unmount(old); start(); return; }
+    var sw = document.getElementById('sweep');
+    sw.innerHTML = ''; clearMask(sw);
+
+    if (slides[L.index].def._opener) {
+      // into a section opener: its own entrance scribbles over the old slide, which is dropped once covered
+      L.el.style.zIndex = 2; old.el.style.zIndex = 1;
+      start();
+      transitioning = gsap.timeline({ onComplete: function () { L.el.style.zIndex = ''; transitioning = null; } })
+        .add(function () { unmount(old); }, OPENER_COVER);
       return;
     }
-    gsap.set(L.el, { autoAlpha: 0 });
-    transitioning = gsap.timeline({ onComplete: function () { transitioning = null; } })
-      .to(old.el, { autoAlpha: 0, duration: .3, ease: 'power1.in' })
-      .add(function () { unmount(old); })
-      .to(L.el, { autoAlpha: 1, duration: .35, ease: 'power1.out' })
-      .add(start, '-=.3');
+    // everywhere else: the old slide sits on top and is erased away to reveal the new one underneath
+    old.el.style.zIndex = 2; L.el.style.zIndex = 1;
+    var dust = dustTween(sw, T_IN);
+    transitioning = gsap.timeline({ onComplete: function () { unmount(old); L.el.style.zIndex = ''; sw.innerHTML = ''; transitioning = null; } })
+      .add(eraseTween(old.el, T_IN), 0)
+      .add(dust.tween, 0)
+      .add(start, T_IN * .55);
+  }
+
+  /* ---------------- section openers ----------------
+     A section with `opener: { id: 'opener', budgetSec, notes }` gets an engine-made first slide: the title card.
+     Entrance: the section color is scribbled over the previous slide, "NN · Title" appears, the kicker is chalk-written
+     stroke by stroke and underlined, and the section's `toss` cut-out drops in beside it. It then HOLDS, so the speaker can
+     introduce the section; the next click erases it into the section's first slide with the normal eraser edge. */
+  var OPENER_COVER = .8;
+  function hashStr(t) { var h = 7; for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 99991; return h + 11; }
+  function openerHtml(ctx) {
+    var sec = ctx.sec, col = secColor(sec), tint = secTint(sec), sd = hashStr(sec.id) * 7919;
+    var hasToss = !!sec.toss, wx = hasToss ? W / 2 - 170 : W / 2, ink = '#1E2124';
+    var p = function (cls, d, c, w, extra) { return '<path class="' + cls + '" d="' + d + '" fill="none" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (extra || '') + '/>'; };
+    return '<svg class="op-svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' +
+      '<rect class="op-solid" x="0" y="0" width="' + W + '" height="' + H + '" fill="' + col + '"/>' +
+      p('op-base', zigzag(sd, 46, 260, 60), col, 112) +
+      p('op-tex1', zigzag(sd + 3, 64, 300, 200), 'rgba(0,0,0,.14)', 6) +
+      p('op-tex2', zigzag(sd + 5, 90, 220, 260), tint, 4, ' opacity=".5"') +
+      '<text class="op-num" x="' + wx + '" y="' + (H / 2 - 150) + '" text-anchor="middle" fill="' + ink + '">' + esc((sec.num ? sec.num + ' · ' : '') + (sec.title || '')) + '</text>' +
+      '<text class="op-word" x="' + wx + '" y="' + (H / 2 + 90) + '" text-anchor="middle" fill="' + ink + '" stroke="' + ink + '" stroke-width="4" stroke-dasharray="2600" stroke-dashoffset="0">' + esc(sec.kicker || sec.title || '') + '</text>' +
+      p('op-ul', 'M' + (wx - 230) + ' ' + (H / 2 + 150) + ' Q' + wx + ' ' + (H / 2 + 128) + ' ' + (wx + 250) + ' ' + (H / 2 + 140), ink, 10) +
+      '</svg>' + (hasToss ? '<img class="op-toss" src="' + sec.toss + '" alt="" style="left:' + (W / 2 + 330) + 'px;top:' + (H / 2 - 210) + 'px">' : '');
+  }
+  function openerBuild(ctx) {
+    var tl = ctx.tl, q = ctx.q, ink = '#1E2124';
+    tl.fromTo(q('.op-base'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, 0)
+      .fromTo(q('.op-tex1'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .08)
+      .fromTo(q('.op-tex2'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .14)
+      .fromTo(q('.op-solid'), { opacity: 0 }, { opacity: 1, duration: .01 }, OPENER_COVER)
+      .fromTo(q('.op-num'), { opacity: 0 }, { opacity: 1, duration: .3 }, .55)
+      .fromTo(q('.op-word'), { attr: { 'stroke-dashoffset': 2600, fill: 'rgba(30,33,36,0)' } }, { attr: { 'stroke-dashoffset': 0 }, duration: .8, ease: 'power1.inOut' }, .5)
+      .to(q('.op-word'), { attr: { fill: ink }, duration: .3 }, 1.15)
+      .fromTo(q('.op-ul'), { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power2.out' }, 1.25);
+    var toss = q('.op-toss');
+    if (toss) tl.fromTo(toss, { y: -1500, rotation: -25, autoAlpha: 0 }, { y: 0, rotation: 8, autoAlpha: 1, duration: .6, ease: 'back.out(1.5)' }, .7);   // hidden until it drops (no corner peeking in early)
+  }
+  function makeOpener(sec) {
+    var o = sec.opener === true ? {} : sec.opener;
+    return { id: o.id || 'opener', title: o.title || (sec.kicker + ' · ' + (sec.title || '')), budgetSec: o.budgetSec || 10, notes: o.notes || '',
+      html: openerHtml, build: openerBuild, _opener: true };
   }
 
   /* ---------------- chrome ---------------- */
@@ -325,6 +414,7 @@
   /* ---------------- boot ---------------- */
   function collect() {
     sections = Deck._sections.slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+    sections.forEach(function (sec) { if (sec.opener && !(sec.slides[0] && sec.slides[0]._opener)) sec.slides.unshift(makeOpener(sec)); });
     slides = [];
     sections.forEach(function (sec) { sec.slides.forEach(function (def) { slides.push({ def: def, sec: sec, index: slides.length }); }); });
     Deck.slides = slides; Deck.sectionsSorted = sections;
@@ -334,6 +424,7 @@
     viewport = document.getElementById('viewport');
     stage = document.getElementById('stage');
     buildProgress();
+    sections.forEach(function (sec) { if (sec.toss) { var im = new Image(); im.src = sec.toss; } });   // preload transition cut-outs
     fit(); window.addEventListener('resize', fit);
     document.addEventListener('keydown', onKey);
     go(indexFromHash(), 'start', 'fwd');
@@ -373,6 +464,7 @@
   // test/automation hooks
   Deck.next = function () { next(); };
   Deck.prev = function () { prev(); };
+  Deck._transition = function () { return transitioning; };   // QA hook: seek a running transition
   Deck.go = function (i) { go(i, 'start', i > cur ? 'fwd' : 'back'); };
   Deck.state = function () { return { index: cur, step: step, steps: live ? nSteps(live) : 0, id: live ? slides[cur].sec.id + '/' + slides[cur].def.id : null, animating: !!pending || !!transitioning }; };
   Deck.finishStep = function () { settle(); if (transitioning) transitioning.progress(1); };

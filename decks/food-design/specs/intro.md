@@ -6,6 +6,25 @@
 **Kicker:** none on the title slide; `Agenda` is a plain heading.
 **Sources:** no facts and no numbers. Product names only: Samsung Food, Shiru, NotCo Giuseppe, NotCo.
 
+**Restyle (Nov 2026) — matched to the Giuseppe pilot (`specs/giuseppe.md`)**
+
+- **No source text on slides.** Both `Kit.src(...)` footers are gone and the content zone runs to y 1030.
+  The "food photos are generated illustrations" caveat moved into the title slide's notes and into References.
+- **Stroke weight is hierarchy.** Nothing uses `sw:`. `title` carries one heavy doodle; `agenda` draws its
+  structure with `Kit.rough.line` (`w: 'normal'` for the four product rows, `'fine'` for the muted row) and a
+  hatched, overshooting `Kit.rough.rect` tile per row number (`hatch: <section tint>`, `fillOpacity: .3`).
+- **Doodles must teach.** Two marks in the whole section, both sanctioned by Rey:
+  `title` a heavy rust underline under the promise (`Food, Decoded.`);
+  `agenda` no doodle (Rey removed the moving loop: unnecessary). The tinted tiles and rules carry the rows.
+  The old title sparkles and the flat rust rule under the byline are deleted: they decorated, they did not teach.
+- **Layout.** Rows at y 566, step 92 (last rule at y 1006). The product name column sits at x 844 so the row
+  spans the slide instead of bunching on the left.
+
+**References appendix (owned by this unit).** Slides carry no source marks, so `99-refs.js` is the whole
+citation trail: every source that used to appear in a footer, grouped by section, plus one short line each for
+generated food photos, self-reported company figures, illustrative values, inferred mechanisms and the report
+author's own arithmetic. Items are 26 px (≥ 22 px is allowed in the appendix, KIT §8) and column heads carry a rule.
+
 ---
 
 ## Story spine (approve before building)
@@ -35,7 +54,7 @@ The intro is not a section with a technique, so the five-part spine applies only
 
 If the three props do not cut cleanly, fall back to three separate generations into the same folder: `card.jpg`, `protein.jpg`, `bowl.jpg`. Decide from the screenshot, not in advance.
 
-Cream line doodles are GPT line art traced to SVG with potrace, drawn on with `stroke-dashoffset`. Caveat is used only for doodle callouts.
+Every stroke is `Kit.rough` / `Kit.doodle` (rough.js), drawn on with `Kit.draw`.
 
 ---
 
@@ -50,7 +69,7 @@ Cream line doodles are GPT line art traced to SVG with potrace, drawn on with `s
 - Headline, Fraunces heavy, two lines, x 120, y 300, `font-size` 132, `line-height` 1.0: `Food,` / `Decoded` with the period in rust.
 - Subtitle `t-h2` at x 120, y 560, w 900, `--text-2`: `How AI reads, finds and mixes what we eat`.
 - Byline `t-label` at x 120, y 720: `Rey Riordan`.
-- Four cream doodles around the dish, traced SVG, 2 px: a steam curl above the bowl, a fork to its left, a small circling arrow lower right, and three seed ticks. They draw themselves on. No doodle crosses the headline column.
+- One doodle: a heavy rust `Kit.doodle.underline` under `Decoded.`, drawn on last. Nothing else is marked.
 
 Body text on screen: 11 words, plus the title and the byline.
 
@@ -59,12 +78,12 @@ Body text on screen: 11 words, plus the title and the byline.
 2. The dish photo drops onto the slate: `y −30 → 0`, `rotate −1.5° → 0`, `scale 1.03 → 1`, shadow deepening, .9 s.
 3. The two headline lines rise from a clipped mask, 120 ms apart.
 4. Subtitle, then byline.
-5. The four doodles draw on, 150 ms apart, last.
+5. The underline draws on last.
 Ambient drift is allowed here (image-led slide, KIT §2.4): in `ctx.mode === 'show'` only, drift the photo 10 px over 14 s, yoyo. Nothing loops behind teaching content anywhere else in the deck.
 
 **Spoken only.** Who Rey is, and the one-line frame: four real products, four real techniques, one question each. No hook sentence and no definition slide (deck 1 cut both).
 
-**Source.** None. The dish is generated, so the footer carries `Kit.src('Illustration', 'Generated')`.
+**Source.** None. No footer: the dish is generated, and the notes say so once for the whole deck.
 
 ---
 
@@ -98,7 +117,7 @@ Each "lock in" is one motion: the row rule brightens to the section colour and t
 
 **Spoken only.** What each marker means in one clause: reading a recipe off a page, finding a new protein, mixing a new product, and selling the software that did it. That the order is a progression — a recipe card becomes a record, a protein becomes a vector, a recipe becomes a point on a map — and that the last row is deliberately unnamed.
 
-**Source.** None. No numbers. The cut-outs are generated: footer `Kit.src('Illustration', 'Generated')`.
+**Source.** None. No numbers, no footer. The cut-outs are generated; References says so.
 
 ---
 
@@ -128,4 +147,6 @@ Each "lock in" is one motion: the row rule brightens to the section colour and t
 - [ ] No ML vocabulary, no numbers, no claims anywhere in this section.
 - [ ] Ambient drift exists only on `title` and only in `ctx.mode === 'show'`.
 - [ ] All CSS scoped under `.slide[data-sec="intro"]`.
+- [ ] No `Kit.src` call and no provenance chip anywhere in the section.
+- [ ] Every source from an old footer appears in `99-refs.js`.
 - [ ] Every build step screenshotted at 1920×1080; print mode checked; `agent-browser errors` empty.

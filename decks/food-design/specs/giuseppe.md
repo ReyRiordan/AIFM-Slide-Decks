@@ -18,15 +18,45 @@ ingredient embedding matrix *before* the decoder's argmax; and the draft puts "3
 center of the problem slide, while the report attributes that figure to NotCo's CEO in a press interview and
 gives the patent's own 830-ingredient example as the only vocabulary size in the patents.
 
-**Honesty labels that apply to the whole section**
+**Honesty labels that apply to the whole section** *(rewritten Nov 2026: no source text on slides.
+`Kit.src` is a no-op, provenance chips and the "Drawn in 2-D" lines are gone, and every caveat below is
+spoken from the notes instead. References still live in `99-refs.js`.)*
 
-1. The architecture comes from patents filed in 2020 and 2021. Every technique slide (`map`, `score`,
-   `steer`, `rules`) carries the same footer clause: `Patented design (US 11,164,069); production use not
-   confirmed.` Never say "Giuseppe runs" on a mechanism slide; say "the patent describes".
-2. The NotMilk speed-up is a NotCo claim. `results` uses `Kit.src(text, 'Self-reported')`.
-3. The recipe map is drawn in 2-D. Every slide that draws it carries the on-screen line
-   `Drawn in 2-D. The real space has more dimensions.`
-4. Illustrative values (scores, proportions, dot positions) are marked as illustrative in the footer.
+1. The architecture comes from patents filed in 2020 and 2021. `approach` says it once, out loud:
+   "Everything here is from NotCo's patents; they have never confirmed it is what runs today."
+   Never say "Giuseppe runs" on a mechanism slide; say "the patent describes".
+2. The NotMilk speed-up is a NotCo claim: `results` notes say "their own figure, with no control group",
+   and that the carton is a drawing, not their packaging.
+3. The recipe map is drawn in 2-D: `map` and `steer` notes say so ("I am drawing this flat…",
+   "Flat drawing again, and these six tries are invented").
+4. Illustrative values (scores, proportions, dot positions) are called out in the notes:
+   `problem` ("that count is my arithmetic"), `score` ("the percentages on screen are made up"),
+   `rules` ("masking rather than filtering afterwards is my reading of the patents").
+
+**Restyle (Nov 2026) — this section is the deck-wide doodle pilot**
+
+- **Stroke weight is hierarchy.** Every diagram uses at least two of `w: 'heavy'` (9) / `'normal'` (5) /
+  `'fine'` (2.5); no `sw:` numbers are left in the section. Heavy goes on the focal shape: the bowl
+  (`problem`), the one-loop arrow (`approach`), the encoder/decoder wedges and the decode path (`map`),
+  the decoder wedge (`score`), the map border (`steer`), the masked decoder and the mask (`rules`),
+  the carton (`results`). Fine goes on supporting boxes, cards and the dictionary frame.
+- **A doodle must mark what the speaker is talking about at that moment** (Rey, round 3). Loops and
+  underlines on a key number or phrase, a check or x that carries meaning, a swoosh that shows motion,
+  a Caveat callout with a rough arrow. Nothing decorative: no food doodles in the margins, no twinkles,
+  sparkles or stars on a photo, no loop round a photo that is not the point. Colour must not pull the
+  eye to something that does not help the viewer learn. What each slide keeps:
+  `problem` rust loop round `4 × 10²²`, underline under "Cook it. Taste it. Rate it.";
+  `approach` underline under "One loop" + the Caveat "hundreds of times";
+  `map` a loop round the one recipe that is about to be encoded (it fades as the cut-outs fly),
+  a swoosh behind them into the encoder, a rust underline under the rebuilt `M` row, two Caveat callouts;
+  `score` a rust loop round the `0.04` score; `steer` the "worse — back off" callout and its arrow;
+  `rules` a check beside "every try is usable" and an x beside "a wasted try";
+  `results` an underline under the two ingredients that make lactones, a rust ellipse round `10 → 2`,
+  two Caveat callouts; `takeaways` an underline under each rule and a loop round the point the search landed on.
+- **Hatched focal boxes.** `Kit.rough.rect(..., {hatch:'var(--sec-t)', fillOpacity})` shades the four step
+  cards (.16), the three Bayesian-optimization cards (.14), the masked decoder (.13) and the carton's label
+  panel (.5); the decoder wedge on `score` carries a saffron hachure fill.
+- **Content zone now runs to y 1030** (no footer): the bottom band of every slide was re-laid out to use it.
 
 ---
 
@@ -650,11 +680,13 @@ tilt, mono for every number, and Caveat for short callouts only.
       `The recipe map`, `Scoring a candidate`, `Steering the search`, `Diet rules`, `Results`, `Takeaways`.
 - [x] `STEPS = ['Map', 'Decode', 'Score', 'Steer']`, identical to the roadmap cards, and every slide after
       `approach` is wrapped in `Kit.withCrumbs`.
-- [x] Every number has a `Kit.src` footer. The `10 → 2` months figure carries `'Self-reported'`.
-- [x] `4 × 10²²` is footnoted as the report author's arithmetic (830 choose 10), not a company figure.
-- [x] Every technique slide's footer says `patented design; production use not confirmed`.
-- [x] Every slide that draws the map to be read as a space (`map`, `steer`) carries `Drawn in 2-D. The real space has more dimensions.`
-      The 240 px thumbnail on `score` and the 372 px closing image on `takeaways` only locate a point, so they do not repeat the line.
+- [x] No source text on any slide: no `Kit.src` call, no provenance chip, no "Drawn in 2-D" line.
+      Every number still traces to `sources/giuseppe.md` and is cited in `99-refs.js`.
+- [x] `4 × 10²²` is spoken as my arithmetic (830 choose 10), not a company figure.
+- [x] The patents caveat is spoken once, on `approach`; `results` speaks the self-reported `10 → 2`
+      and the drawn carton; `map` and `steer` speak the 2-D drawing and the invented points.
+- [x] Every diagram uses at least two stroke weights, and every slide carries 1–3 doodles that point at
+      its focal thing, none of them across teaching text.
 - [x] `[click]` count equals `ctx.pause()` count: 3 / 3 / 5 / 3 / 3 / 2 / 3 / 2.
 - [x] `budgetSec` sums to 390, and each slide's notes run about 135 words per minute.
 - [x] `map`, `score` and `steer` each use one state object and one pure `render()` with `onUpdate: render`.

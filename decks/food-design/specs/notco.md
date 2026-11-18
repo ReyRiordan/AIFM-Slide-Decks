@@ -33,6 +33,46 @@ Dark theme throughout. Diagrams are code-drawn SVG with a rough.js wobble in cre
 11. `today` notes gain one sentence (NotCo's largest contract, $30M over 18 months) to bring the section's script closer to the 135 wpm target.
 12. The four exits run left to right by geography, not strictly by date (Mexico's month is deliberately unstated on screen), so nothing on the slide claims date order.
 
+**Restyle (Nov 2026) — matched to the `giuseppe` doodle pilot**
+
+- **Stroke weight is hierarchy.** No `sw:` numbers are left; the local `tileRect` helper now takes
+  `w` / `hatch` / `fillOpacity`. Heavy goes on what the slide is about: the `$1.5B` chip (`origin`),
+  the AI lane's three cards (`pivot`), the Ferrero card (`today`). Normal carries the supporting
+  structure (the NotMayo card, the Giuseppe arrow, the food-market tiles, the exit strike-throughs,
+  the grouping bracket). Fine is detail only: the two founder rules and the lane divider, in `--text-3`.
+  Long straight strokes — the strike-throughs, the founder rules and the divider — pass `bow: .4, rough: .7`.
+- **Hatched focal boxes.** `hatch: 'var(--sec-t)'` shades the NotMayo card (.14), the `$1.5B` chip (.2,
+  a small panel), the three AI cards (.14) and the Ferrero card (.12).
+- **Doodles must teach.** Each one marks what the speaker says at that click, in rust or the section
+  tint, and nothing else is drawn: `origin` a rust ellipse round `8%` (click 2) and the existing Caveat
+  callout + arrow to `Giuseppe` (click 1); `pivot` a cranberry underline under `Giuseppe is the product.`
+  (click 4) — the market exits are already carried by the rust strike-throughs; `today` a rust underline
+  under `7 of 20` (click 2) and one under `~half` (click 3); `bridge` a rust ellipse round `90%` (click 1)
+  and a cranberry underline under `Who else needs it?` (click 2). No food doodles, no sparkles, no loops round photos.
+- **No source text.** Every `Kit.src` call is deleted, as are the `ESTIMATE` chip on `today` and the
+  `SELF-REPORTED` chip on `bridge` (and their CSS). The caveats are now spoken: the 8% share comes from
+  press, not NotCo (`origin`); Mexico is a press report NotCo has never confirmed (`pivot`); the revenue
+  split is an estimate (`today`, already in the notes); the 90% figure is NotCo's own and unchecked (`bridge`).
+- **Content zone runs to y 1030** (no footer): `pivot`'s closing caption carries its underline at y 988,
+  and `today`'s two numbers are spaced down the full column (352 / 686) so it ends level with the Ferrero card.
+
+**Round 2 (Rey, after the first restyle):**
+
+- `today`: the `the AI business` bracket and its Caveat are **cut** — Rey read the bracket as floating,
+  with nothing clearly grouped above it. Each number now carries its own rust underline and its own plain
+  label, which is the grouping. Click 3 still reveals `~half`, so the pause count is unchanged (3).
+- `bridge` was "quite empty and boring", so the 90% figure became the slide's visual: the milk photo
+  (280 px, captioned `the food business`) → a heavy chalk arrow → `90%` in cranberry with a rust ellipse,
+  → a split bar for `NOTCO AI REQUESTS · 2025`: a heavy, sec-tint-hatched segment labelled `not plant-based`
+  (90%) and a fine `--text-3` sliver labelled `plant-based` through a fine leader tick. The scrim and the
+  full-height dim photo are gone. Beats unchanged: entrance = the two statement lines + the photo,
+  click 1 = the whole split (the number counts up), click 2 = `Who else needs it?` with its underline.
+  The 90/10 split is the source figure; no other number was invented.
+- **Layout fixes found in QA:** the six food tiles are 250 px on a 286 px pitch (was 268 on 282), so the
+  overshooting corners no longer merge into one bar; the `8%` label moved to x 1384 to clear its ellipse;
+  `7 of 20` takes an underline rather than a loop, because an ellipse round a wide, short number at the
+  x 120 margin always breaks the margin or crosses the glyphs.
+
 ## Story spine (approve before building)
 
 The arc is **the AI outlived the milk**.
@@ -310,10 +350,10 @@ No engine heading (`heading` is omitted). This is a statement slide, like deck 1
 
 - [x] Headings match the plan's heading map: `Where NotCo came from`, `From food to software`, `NotCo today`, and no heading on `bridge`.
 - [x] No roadmap and no `Kit.withCrumbs` in this section (by design; the plan lists no crumbs for Sell).
-- [x] Every number has a `Kit.src` footer: 8% (IDB), $1.5B (Series D), 7 of 20 (Forbes, March 2026), 30,000+ recipes (Forbes via FEN), about half of revenue (estimate), 90% of AI requests (self-reported).
+- [x] No source text on screen: no `Kit.src` call and no provenance chip. Every number is still cited in the References appendix, and its caveat is spoken in the notes.
 - [x] `[click]` count equals `ctx.pause()` count: 3 / 4 / 3 / 2.
-- [x] `budgetSec` sums to 165, and the notes run about 135 words per minute (≈ 371 words total).
-- [x] All three generated images are photoreal generic food on slate, carry no text, and are labeled as illustrations in the footer.
+- [x] `budgetSec` sums to 165, and the notes run about 135 words per minute (376 words ≈ 167 s).
+- [x] All three generated images are photoreal generic food on slate and carry no text. They are credited as generated in the References appendix.
 - [x] No logo is used. `Ferrero` is set in the deck's own type and the Ferrero work is credited in the `today` footer.
 - [x] All CSS scoped under `.slide[data-sec="notco"]`.
 - [x] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` / `Kit.rise`.
