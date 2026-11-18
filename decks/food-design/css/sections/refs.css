@@ -1,0 +1,7 @@
+/* references appendix — light theme, never presented */
+.slide[data-sec="refs"] .rf-head { color: var(--sec-t); margin-bottom: 24px; }
+.slide[data-sec="refs"] .rf-item {
+  font-size: var(--fs-label); font-weight: 450; line-height: 1.26;
+  color: var(--text-2); margin-bottom: 16px; text-indent: -20px; padding-left: 20px;
+}
+.slide[data-sec="refs"] .rf-item i { font-style: italic; color: var(--text); }

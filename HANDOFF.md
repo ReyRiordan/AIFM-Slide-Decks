@@ -23,7 +23,7 @@ Each numbered step ends at a gate or a commit. Rey approves the plan of every mu
 
 1. **Interview** with `/grill-me`. Ask one question at a time, with a recommended answer.
 2. **Research reports** in `sources/`. They are the only allowed source of facts.
-3. **Story spine and heading map** (gate 1). This step was missing in deck 1. The slides came first and the story was repaired on day 13. Settle the problem, why the technique fits, the N steps, the results and the two takeaways before anyone draws a slide.
+3. **Story spine and heading map** (gate 1). This step was missing in deck 1. The slides came first and the story was repaired on day 13. Settle the problem, why the technique fits, the N steps, the results and the 2-3 takeaways before anyone draws a slide.
 4. **Design kit and 2 approval slides** (gate 2): one title slide and one hard teaching slide, screenshotted at every build step.
 5. **Multi-agent build.** One agent per section, each owning disjoint files (KIT §4), so they run in parallel without worktrees. Each agent uses its own `--session` and screenshots and fixes every build step (KIT §11).
 6. **Review run.** It is the deck 1 plan `plans/03-review-pass.md`, and it worked well:

@@ -26,6 +26,7 @@ A deck is static HTML/CSS/JS built on GSAP. It has no build step and opens direc
 - Every number traces to a report in `sources/` and has a `Kit.src(...)` footer. Never invent stats or quotes.
 - On-screen text and speaker notes follow `.claude/skills/technical-writing` and `.claude/skills/anti-slop`.
 - Speaker notes mark each `ctx.pause()` with `[click]`. Length is about 135 words per minute of `budgetSec`. Rey owns the script: match slides to his notes.
+- Free reign over GPT image generation until all images are perfect (use GPT image bridge skill).
 
 ## Run and check (from a deck folder)
 - Open `index.html`. Use `#/<section>/<slideId>` to jump to a slide and `?print` to see every slide in its final state.
