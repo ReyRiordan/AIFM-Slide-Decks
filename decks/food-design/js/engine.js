@@ -140,10 +140,12 @@
   }
 
   /* ---------------- transitions (deck 2: chalk) ----------------
-     Section change: a scribble in the new section's color fills the screen, the section's food cut-out (sec.toss)
-     tumbles across, its kicker is chalked big in the middle, then an eraser wipes the scribble away (~1.25 s).
-     Within a section: slate-colored eraser strokes smear over the old slide, then rub away to show the new one (~0.5 s).
-     Back navigation is instant. */
+     One idea throughout: a soft, ragged chalk-eraser edge that sweeps left → right.
+     Within a section (~0.9 s): the old slide is erased off the top of the new one; a faint chalk-dust haze rides the edge.
+     Section change (~2.3 s): a title card. The section color is scribbled on, the kicker is chalk-written stroke by stroke,
+       the section's food cut-out (sec.toss) drops in beside it, then the same eraser edge wipes the card away.
+     Back navigation and jumps are instant. Pressing → mid-transition skips to the end. */
+  var T_IN = 0.9, T_SEC = 2.3;
   function rnd(seed) { seed = seed % 2147483647 || 1; return function () { seed = seed * 16807 % 2147483647; return seed / 2147483647; }; }
   /** Zig-zag stroke path covering the stage left→right. gap: horizontal step; slant: lean of each stroke. */
   function zigzag(seed, gap, slant, jit) {
@@ -162,76 +164,97 @@
     for (var k in extra || {}) at[k] = extra[k];
     return svgEl('path', at);
   }
-  var tseed = 1;
+  /* Eraser mask: an image 3 stages wide. Left third transparent, right third opaque, a ragged, blurred edge in the middle
+     (slanted, like an eraser dragged at an angle). Sliding mask-position moves the edge across the element. */
+  var ERASE = null, EW = W * 3, EDGE = W * 1.5;
+  function eraserMask() {
+    if (ERASE) return ERASE;
+    var r = rnd(4242), pts = [], y, x;
+    for (y = -40; y <= H + 40; y += 26) { x = EDGE + (y - H / 2) * -0.18 + (r() - .5) * 70 + Math.sin(y / 90) * 26; pts.push(Math.round(x) + ',' + y); }
+    var poly = pts.join(' ') + ' ' + EW + ',' + (H + 40) + ' ' + EW + ',-40';
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + EW + "' height='" + H + "'><filter id='b' x='-5%' y='-5%' width='110%' height='110%'>" +
+      "<feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='2' seed='7'/><feDisplacementMap in='SourceGraphic' scale='60'/><feGaussianBlur stdDeviation='14'/></filter>" +
+      "<polygon points='" + poly + "' fill='white' filter='url(%23b)'/></svg>";
+    ERASE = 'url("data:image/svg+xml;utf8,' + svg.replace(/"/g, "'").replace(/</g, '%3C').replace(/>/g, '%3E') + '")';
+    return ERASE;
+  }
+  /** Tween that erases `el` left → right with the chalk edge. Returns a timeline-ready tween; cleans its mask at the end. */
+  function eraseTween(el, dur, ease) {
+    var st = el.style, m = eraserMask(), o = { x: -(EW - W) };
+    var apply = function () { st.webkitMaskPosition = st.maskPosition = o.x + 'px 0'; };
+    st.webkitMaskImage = st.maskImage = m; st.webkitMaskSize = st.maskSize = EW + 'px ' + H + 'px';
+    st.webkitMaskRepeat = st.maskRepeat = 'no-repeat'; apply();
+    return gsap.to(o, { x: 0, duration: dur, ease: ease || 'power1.inOut', onUpdate: apply });
+  }
+  function clearMask(el) { var st = el.style; st.webkitMaskImage = st.maskImage = ''; st.webkitMaskPosition = st.maskPosition = ''; }
+  /** A faint chalk-dust haze that rides the eraser edge (same timing as eraseTween). */
+  function dustTween(parent, dur, ease) {
+    var d = document.createElement('div'); d.className = 'erase-dust'; parent.appendChild(d);
+    var o = { x: -(EW - W) };
+    var apply = function () { d.style.transform = 'translateX(' + (o.x + EDGE - 160) + 'px) skewX(10deg)'; };
+    apply();
+    return { el: d, tween: gsap.to(o, { x: 0, duration: dur, ease: ease || 'power1.inOut', onUpdate: apply }) };
+  }
 
   function transition(old, L, secChange, dir, playEntrance) {
     var start = function () { if (playEntrance && live === L) playTo(0); };
     if (!old) { start(); return; }
     if (dir !== 'fwd' || MODE !== 'show' || !window.DrawSVGPlugin) { unmount(old); start(); return; }
     var sw = document.getElementById('sweep');
-    sw.innerHTML = '';
-    var svg = svgEl('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H });
-    var id = 'swm' + (tseed++), sd = tseed * 7919;
-    var mask = svgEl('mask', { id: id, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H });
-    mask.appendChild(svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: '#fff' }));
-    var g = svgEl('g', { mask: 'url(#' + id + ')' });
-    var defs = svgEl('defs', {}); defs.appendChild(mask); svg.appendChild(defs); svg.appendChild(g);
-    sw.appendChild(svg);
-    var finish = function () { sw.innerHTML = ''; transitioning = null; };
-    gsap.set(L.el, { autoAlpha: 0 });
+    sw.innerHTML = ''; clearMask(sw);
 
-    if (secChange) {
-      var sec = slides[L.index].sec, col = secColor(sec), tint = secTint(sec);
-      var solid = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: col, opacity: 0 });
-      var base = stroke(zigzag(sd, 46, 260, 60), col, 112);
-      var tex1 = stroke(zigzag(sd + 3, 70, 300, 200), 'rgba(0,0,0,.16)', 7);
-      var tex2 = stroke(zigzag(sd + 5, 95, 220, 260), tint, 5, { opacity: .55 });
-      var eraser = stroke(zigzag(sd + 9, 92, 200, 80), '#000', 210);
-      mask.appendChild(eraser);
-      [solid, base, tex1, tex2].forEach(function (n) { g.appendChild(n); });
-      var word = svgEl('text', { x: W / 2, y: H / 2 + 70, 'text-anchor': 'middle', fill: '#1E2124',
-        style: 'font-family:var(--hand);font-weight:700;font-size:250px' });
-      word.textContent = sec.kicker || sec.title || '';
-      g.appendChild(word);
-      var toss = null;
-      if (sec.toss) {
-        toss = document.createElement('img'); toss.src = sec.toss; toss.className = 'toss';
-        sw.appendChild(toss);
-      }
-      var T = gsap.timeline({ onComplete: finish });
-      T.fromTo(base, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, 0)
-        .fromTo(tex1, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, .06)
-        .fromTo(tex2, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, .1)
-        .set(solid, { attr: { opacity: 1 } }, .52)
-        .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); }, .52)
-        .fromTo(word, { opacity: 0, scale: .5, rotation: -14, svgOrigin: (W / 2) + ' ' + (H / 2) },
-          { opacity: 1, scale: 1, rotation: -4, duration: .4, ease: 'back.out(2)' }, .3)
-        .fromTo(eraser, { drawSVG: '0%' }, { drawSVG: '100%', duration: .55, ease: 'power2.inOut' }, .82)
-        .to(word, { opacity: 0, duration: .2 }, .82)
-        .add(start, .95);
-      if (toss) {
-        T.fromTo(toss, { x: -420, y: 760, rotation: -60, autoAlpha: 1 },
-          { duration: 1.0, ease: 'power1.inOut', rotation: 300,
-            motionPath: { path: [{ x: 260, y: 160 }, { x: 900, y: -60 }, { x: 1500, y: 260 }, { x: 2050, y: 820 }], curviness: 1.4 } }, .05);
-      }
-      transitioning = T;
+    if (!secChange) {
+      // old slide on top, erased away to reveal the new one underneath
+      old.el.style.zIndex = 2; L.el.style.zIndex = 1;
+      var dust = dustTween(sw, T_IN);
+      transitioning = gsap.timeline({ onComplete: function () { unmount(old); L.el.style.zIndex = ''; sw.innerHTML = ''; transitioning = null; } })
+        .add(eraseTween(old.el, T_IN), 0)
+        .add(dust.tween, 0)
+        .add(start, T_IN * .55);
       return;
     }
-    // within a section: eraser smear
-    var bg = cssVar('bg') || '#2A2E31';
-    var cover = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: bg, opacity: 0 });
-    var smear = stroke(zigzag(sd, 150, 340, 40), bg, 250);
-    var dust = stroke(zigzag(sd + 2, 150, 340, 140), 'rgba(243,235,221,.07)', 60);
-    var rub = stroke(zigzag(sd + 4, 160, -300, 60), '#000', 270);
-    mask.appendChild(rub);
-    [cover, smear, dust].forEach(function (n) { g.appendChild(n); });
-    transitioning = gsap.timeline({ onComplete: finish })
-      .fromTo(smear, { drawSVG: '0%' }, { drawSVG: '100%', duration: .24, ease: 'power1.in' }, 0)
-      .fromTo(dust, { drawSVG: '0%' }, { drawSVG: '100%', duration: .24, ease: 'power1.in' }, .02)
-      .set(cover, { attr: { opacity: 1 } }, .25)
-      .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); }, .25)
-      .fromTo(rub, { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power1.out' }, .27)
-      .add(start, .3);
+
+    var sec = slides[L.index].sec, col = secColor(sec), tint = secTint(sec), sd = (L.index + 3) * 7919;
+    var svg = svgEl('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H });
+    sw.appendChild(svg);
+    var solid = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: col, opacity: 0 });
+    var base = stroke(zigzag(sd, 46, 260, 60), col, 112);
+    var tex1 = stroke(zigzag(sd + 3, 64, 300, 200), 'rgba(0,0,0,.14)', 6);
+    var tex2 = stroke(zigzag(sd + 5, 90, 220, 260), tint, 4, { opacity: .5 });
+    [solid, base, tex1, tex2].forEach(function (n) { svg.appendChild(n); });
+    var hasToss = !!sec.toss, wx = hasToss ? W / 2 - 170 : W / 2;
+    var num = svgEl('text', { x: wx, y: H / 2 - 150, 'text-anchor': 'middle', fill: '#1E2124', opacity: 0,
+      style: 'font-family:var(--font);font-weight:800;font-size:40px;letter-spacing:.14em;text-transform:uppercase' });
+    num.textContent = (sec.num ? sec.num + ' · ' : '') + (sec.title || '');
+    var word = svgEl('text', { x: wx, y: H / 2 + 90, 'text-anchor': 'middle', fill: 'transparent', stroke: '#1E2124', 'stroke-width': 4,
+      style: 'font-family:var(--hand);font-weight:700;font-size:300px;paint-order:stroke' });
+    word.textContent = sec.kicker || sec.title || '';
+    svg.appendChild(num); svg.appendChild(word);
+    var ul = stroke('M' + (wx - 230) + ' ' + (H / 2 + 150) + ' Q' + wx + ' ' + (H / 2 + 128) + ' ' + (wx + 250) + ' ' + (H / 2 + 140), '#1E2124', 10);
+    svg.appendChild(ul);
+    var toss = null;
+    if (hasToss) { toss = document.createElement('img'); toss.src = sec.toss; toss.className = 'toss'; sw.appendChild(toss); }
+    var dash = 2600;
+    gsap.set(word, { attr: { 'stroke-dasharray': dash, 'stroke-dashoffset': dash } });
+    var sdust = dustTween(sw.parentNode, .8);
+    var T = gsap.timeline({ onComplete: function () { sw.innerHTML = ''; clearMask(sw); sdust.el.remove(); transitioning = null; } });
+    T.fromTo(base, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, 0)
+      .fromTo(tex1, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .08)
+      .fromTo(tex2, { drawSVG: '0%' }, { drawSVG: '100%', duration: .75, ease: 'power2.inOut' }, .14)
+      .set(solid, { attr: { opacity: 1 } }, .8)
+      .add(function () { unmount(old); }, .8)
+      .to(num, { attr: { opacity: 1 }, duration: .3 }, .55)
+      .to(word, { attr: { 'stroke-dashoffset': 0 }, duration: .7, ease: 'power1.inOut' }, .5)
+      .to(word, { attr: { fill: '#1E2124' }, duration: .25 }, 1.05)
+      .fromTo(ul, { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power2.out' }, 1.1);
+    if (toss) {
+      T.fromTo(toss, { x: W / 2 + 330, y: -760, rotation: -25, autoAlpha: 1 },
+        { y: H / 2 - 210, rotation: 8, duration: .6, ease: 'back.out(1.5)' }, .7);
+    }
+    T.add(eraseTween(sw, .8), 1.5)
+      .add(sdust.tween, 1.5)
+      .add(start, 1.85);
+    transitioning = T;
   }
 
   /* ---------------- chrome ---------------- */
