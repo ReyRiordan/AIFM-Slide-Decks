@@ -9,6 +9,31 @@
 **Sources:** `sources/shiru.md` only. Sections used: "The problem: a search problem disguised as a food problem", "How the solution works, at a high level", "Deep dive 1: reading proteins as a language", "Deep dive 2: embeddings and similarity search", "Deep dive 3: predicting function from a few hundred labels", "Deep dive 4: can we make it, and is it safe?", "What has actually come out of it", "Confirmed, inferred, or unknown", "Limitations and open questions".
 `sources/drafts/app2-shiru-draft.pdf` is a secondary teammate draft and is not cited. Where it differs, the report wins (see "Draft corrections" at the end).
 
+## Restyle (Nov 2026) — matched to the `giuseppe` doodle pilot
+
+- **Stroke weight is hierarchy.** No `sw:` numbers are left in the section; every diagram uses at least
+  two of `w: 'heavy'` / `'normal'` / `'fine'`. Heavy goes on the focal shape: the cost box (`problem`),
+  the step arrows (`approach`), the masked boxes (`learn`), the map frame (`embed`, `search`), the funnel
+  walls (`filter`), the 2026 bar (`results`). Fine goes on the two panels (`learn`), the "plotted as a
+  point" arrow (`embed`) and the empty step outlines (`approach`); fine strokes use `--text-3`, never `--line`.
+- **Hatched focal boxes** (`hatch:'var(--sec-t)'`): the four step cards (.16), the two masked boxes on
+  `learn` (.2), the benchmark card on `search` (.17), the lab card on `filter` (.18) and the two growth
+  bars on `results` (.3). The cost box on `problem` is hatched rust (.15), since it is the rust accent.
+- **Every doodle marks what the speaker is saying at that click.** `problem` underline under "Millions
+  more proteins…", rust arrow from the cost box to the untested pile; `approach` Caveat "only this one is
+  expensive" with a rough arrow at card 1; `learn` underline under "the letter you hid"; `embed` loop
+  round A and B, underline under "neighbourhood"; `search` rust loop round `24`, underline under the
+  winning benchmark row; `filter` Caveat "every result, failures included" on the loop arrow, underline
+  under the payoff; `results` rust loop round `>90%` (dimmed on the last click), underline under "AI
+  picked the proteins"; `takeaways` an underline under each rule. No food doodles, sparkles or margin marks.
+- **No source text.** Every `Kit.src` call and every `Inferred / Illustrative / Self-reported` chip is
+  gone, with the dead CSS. Each caveat now lives in that slide's notes: the ~15% masking and the made-up
+  fragment (`learn`), the ~1,000 dimensions and the invented sequences (`embed`), the 77M company figure
+  and the illustrative `24` (`search`), the few-hundred labels (`filter`), the patent's "weeks" (`problem`).
+  `results` already said the >90% is the company's own number.
+- **Content zone now runs to y 1030** (no footer): the bottom bands of `learn`, `filter` and `results`
+  were re-laid out into it. Notes run ~914 words (was ~915); `[click]` counts and budgets are unchanged.
+
 ## Story spine (approve before building)
 
 1. **Problem.** Food leans on a handful of animal proteins; nature has made millions more that nobody has tested in food, and one physical test takes weeks, so you cannot screen them all.
@@ -281,11 +306,11 @@ Three, all photoreal food or props on the matching slate under warm side light, 
 
 - [x] Headings match the plan's heading map: `The protein problem`, `How Shiru searches`, `Proteins as language`, `Proteins as vectors`, `Nearest-neighbor search`, `Three filters`, `Results`, `Takeaways`.
 - [x] `learn`, `embed`, `search` and `filter` are wrapped with `Kit.withCrumbs(def, ['Learn','Embed','Search','Filter'], n)`, and the four names match `approach`'s card titles character for character.
-- [x] Every number has a `Kit.src` footer. `77M+`, `33M+` and `>90%` carry `'Self-reported'` (the "50 scientists" line was cut from the notes).
-- [x] Every inferred claim is marked on screen or in the footer: the ~15% masking (`learn`), the ~1,000 numbers (`embed`), the approximate index (`search`, footer), the few-hundred labels (`filter`).
-- [x] Illustrative values are labelled: the sequence fragments, the 18% and 73% letter overlaps, the map layouts, the point clouds, the `24`.
+- [x] No source text on slides: no `Kit.src`, no provenance chips. Sources live in `99-refs.js`; `77M+`, `33M+` and `>90%` are said aloud as company figures.
+- [x] Every inferred claim is spoken in the notes: the ~15% masking (`learn`), the ~1,000 numbers (`embed`), the `24` (`search`), the few-hundred labels (`filter`).
+- [x] Illustrative values are called out aloud: the sequence fragments, the 18% and 73% letter overlaps, the map layouts and the point clouds.
 - [x] `[click]` count equals `ctx.pause()` count: 2 / 4 / 4 / 3 / 3 / 4 / 2 / 2.
-- [x] `budgetSec` sums to 390. Notes run ~915 words against the 878-word target (+4%) after the review pass.
+- [x] `budgetSec` sums to 390. Notes run ~914 words against the 878-word target (+4%); every slide sits in the 115–150 wpm band.
 - [x] All CSS scoped under `.slide[data-sec="shiru"]`.
 - [x] Hidden-by-default elements revealed with `Kit.show` or `tl.to`, never `tl.from` or `Kit.rise`.
 - [x] Right-hand columns on `filter` and `results` clear the footer.

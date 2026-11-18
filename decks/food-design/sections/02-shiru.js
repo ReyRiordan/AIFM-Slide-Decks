@@ -21,7 +21,10 @@
     html: function () {
       return '' +
         '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="pb-arrow">' + Kit.rough.arrow(742, 876, 1120, 804, { seed: 31, sw: 3, stroke: C.rustT, head: 18, bend: 46 }) + '</g>' +
+          '<g class="pb-costbox">' + Kit.rough.rect(120, 828, 620, 156,
+            { seed: 21, w: 'heavy', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .15, hachureGap: 20 }) + '</g>' +
+          '<g class="pb-arrow">' + Kit.rough.arrow(776, 884, 1160, 812, { seed: 31, w: 'normal', stroke: C.rustT, head: 18, bend: 46 }) + '</g>' +
+          '<g class="dd-many">' + Kit.doodle.underline(1000, 948, 756, { seed: 41 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint pb-k pb-k1">What food leans on</div>' +
         '<div class="pb-animal">' +
@@ -33,18 +36,17 @@
         '<div class="t-caps faint pb-k pb-k2">What nobody has tested</div>' +
         Kit.photo(IMG + 'legumes.webp', { x: 1110, y: 336, w: 500, cls: 'pb-many', alt: 'beans, peas and lentils' }) +
         '<div class="t-body c-olive pb-line">Millions more proteins. Almost none tried in food.</div>' +
-        '<div class="tile pb-cost">' +
+        '<div class="pb-cost">' +
           '<div class="t-h2 c-rust">One lab test: weeks</div>' +
           '<div class="t-label faint pb-cost-s">express · purify · assay in a recipe</div>' +
-        '</div>' +
-        Kit.src('Shiru report: the problem; cost of one test from US 11,439,159 B2. Food photos are illustrations.');
+        '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.pb-many, .pb-line, .pb-cost, .pb-arrow, .pb-k2'), { autoAlpha: 0 });
+      gsap.set(qa('.pb-many, .pb-line, .pb-cost, .pb-costbox, .pb-arrow, .pb-k2, .dd-many'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.pb-k1, .src'), { at: .2, stagger: .06 });
+      Kit.fade(tl, qa('.pb-k1'), { at: .2, stagger: .06 });
       Kit.drop(tl, qa('.pb-animal .photo'), { at: .3, stagger: .45 });
       Kit.show(tl, qa('.pb-l1'), { at: .55, y: 14 });
       Kit.show(tl, qa('.pb-l2'), { at: 1.0, y: 14 });
@@ -56,20 +58,24 @@
       Kit.drop(tl, q('.pb-many'), { at: 'm' });
       tl.to(qa('.pb-animal'), { autoAlpha: .55, duration: .5 }, 'm+=.2');
       Kit.show(tl, q('.pb-line'), { at: 'm+=.45', y: 16 });
+      tl.to(q('.dd-many'), { autoAlpha: 1, duration: .01 }, 'm+=.9');
+      Kit.draw(tl, qa('.dd-many .rp'), { at: 'm+=.9', duration: .5 });
 
       // [click 2] the price of touching any one of them
       ctx.pause();
       tl.addLabel('c');
-      tl.fromTo(q('.pb-cost'), { autoAlpha: 0, scale: .9, transformOrigin: '0% 50%' },
-        { autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(1.6)' }, 'c');
-      tl.to(q('.pb-arrow'), { autoAlpha: 1, duration: .01 }, 'c+=.3');
-      Kit.draw(tl, qa('.pb-arrow .rp'), { at: 'c+=.3', duration: .6 });
+      tl.to(q('.pb-costbox'), { autoAlpha: 1, duration: .01 }, 'c');
+      Kit.draw(tl, qa('.pb-costbox .rp'), { at: 'c', duration: .6 });
+      Kit.show(tl, q('.pb-cost'), { at: 'c+=.2', y: 14 });
+      tl.to(q('.pb-arrow'), { autoAlpha: 1, duration: .01 }, 'c+=.6');
+      Kit.draw(tl, qa('.pb-arrow .rp'), { at: 'c+=.6', duration: .6 });
     },
     notes:
       'Almost everything food does with protein rests on a tiny cast of animals. Egg white binds and sets. Milk casein makes things creamy. What ' +
       'you buy a protein for is behaviour: does it foam, does it gel. [click] Nature made millions of others, and almost none have ever been tried ' +
       'in food. Plant proteins are cheap, but worse at these jobs. [click] And testing one means growing it in a microbe, purifying it, baking it ' +
-      'into a recipe. Weeks. Only about a quarter even survive that purification step, so you cannot screen millions. This is a search problem.'
+      'into a recipe. Weeks — that one is from Shiru\'s patent. Only about a quarter even survive purification, so you cannot screen millions. ' +
+      'This is a search problem.'
   };
 
   /* --------------------------------------------------------------- APPROACH */
@@ -79,39 +85,63 @@
     { q: 'Which proteins behave like this one?', tech: 'Nearest-neighbor search' },
     { q: 'Which few are worth testing?', tech: 'Learned filters, then the lab' }
   ];
+  var APX = [120, 560, 1000, 1440], APW = 360, APY = 348, APH = 452;
+
   var APPROACH = {
     id: 'approach',
     title: 'How Shiru searches',
     heading: 'How Shiru searches',
     budgetSec: 30,
     html: function () {
-      return CARDS.map(function (c, i) {
-        var x = 120 + i * 432;
-        return '<div class="ap-card a' + i + '" style="left:' + x + 'px">' +
+      var svg = '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+        CARDS.map(function (c, i) {
+          return '<g class="ap-empty e' + i + '">' + Kit.rough.rect(APX[i], APY, APW, APH, { seed: 50 + i, w: 'fine', stroke: C.text3 }) + '</g>';
+        }).join('') +
+        CARDS.map(function (c, i) {
+          return '<g class="ap-box b' + i + '">' + Kit.rough.rect(APX[i], APY, APW, APH,
+            { seed: 60 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .16, hachureGap: 22 }) + '</g>';
+        }).join('') +
+        [1, 2, 3].map(function (i) {
+          return '<g class="ap-arr a' + i + '">' + Kit.rough.arrow(APX[i - 1] + APW + 4, 574, APX[i] - 4, 574, { seed: 70 + i, w: 'heavy', head: 26 }) + '</g>';
+        }).join('') +
+        '<g class="ap-ca">' + Kit.rough.arrow(360, 880, 300, 816, { seed: 77, w: 'normal', stroke: C.rustT, head: 18, bend: 14 }) + '</g>' +
+      '</svg>';
+      return svg + CARDS.map(function (c, i) {
+        return '<div class="ap-card a' + i + '" style="left:' + APX[i] + 'px">' +
             '<div class="t-mono ap-n">0' + (i + 1) + '</div>' +
             '<div class="t-h2 ap-t">' + STEPS[i] + '</div>' +
             '<div class="t-label ap-q">' + c.q + '</div>' +
             '<div class="t-label ap-tech">' + c.tech + '</div>' +
           '</div>';
       }).join('') +
-      Kit.src('Shiru report: how the solution works, four stages with one feedback loop.');
+      '<div class="callout ap-cost">only this one is expensive</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ap-card > *'), { autoAlpha: 0 });
+      gsap.set(qa('.ap-card > *, .ap-box, .ap-arr, .ap-ca, .ap-cost'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.ap-card, .src'), { at: .2, stagger: .06 });
+      Kit.draw(tl, qa('.ap-empty .rp'), { at: .2, duration: .7, stagger: .06 });
       for (var i = 0; i < 4; i++) {
         ctx.pause();
         tl.addLabel('c' + i);
-        tl.to(q('.a' + i), { borderColor: C.olive, backgroundColor: 'rgba(0,0,0,.16)', duration: .4 }, 'c' + i);
-        Kit.show(tl, qa('.a' + i + ' > *'), { at: 'c' + i, stagger: .07, y: 18, duration: .45 });
+        if (i) {
+          tl.to(q('.a' + i + '.ap-arr'), { autoAlpha: 1, duration: .01 }, 'c' + i);
+          Kit.draw(tl, qa('.a' + i + '.ap-arr .rp'), { at: 'c' + i, duration: .35 });
+        }
+        tl.to(q('.b' + i), { autoAlpha: 1, duration: .01 }, 'c' + i + '+=' + (i ? .3 : 0));
+        Kit.draw(tl, qa('.b' + i + ' .rp'), { at: 'c' + i + '+=' + (i ? .3 : 0), duration: .5 });
+        Kit.show(tl, qa('.a' + i + '.ap-card > *'), { at: 'c' + i + '+=' + (i ? .45 : .15), stagger: .07, y: 18, duration: .45 });
+        if (i === 0) {
+          Kit.show(tl, q('.ap-cost'), { at: 'c0+=.8', y: 10 });
+          tl.to(q('.ap-ca'), { autoAlpha: 1, duration: .01 }, 'c0+=.8');
+          Kit.draw(tl, qa('.ap-ca .rp'), { at: 'c0+=.8', duration: .4 });
+        }
       }
     },
     notes:
-      'Four steps. Only the first one is expensive. [click] Learn. With no lab data, the model trains on raw sequences by filling in letters we ' +
-      'hide. [click] Embed. Every protein becomes a list of numbers, so we compare points, not strings. [click] Search. Hand it a protein that ' +
-      'works, get the nearest points back. [click] Filter. Models cut the shortlist, then the lab decides. The marker top right tracks the step.'
+      'Four steps. [click] Learn. With no lab data, the model trains on raw sequences by filling in letters we hide. That is the one expensive ' +
+      'step, and it is paid once. [click] Embed. Every protein becomes a list of numbers, so we compare points, not strings. [click] Search. Hand ' +
+      'it a protein that works, get the nearest points back. [click] Filter. Models cut the shortlist, then the lab decides.'
   };
 
   /* ------------------------------------------------------------------ LEARN */
@@ -130,44 +160,44 @@
         var x = LN_X + i * LN_STEP, m = MASK_I.indexOf(i);
         if (m < 0) return '<div class="t-mono ln-r" style="left:' + x + 'px">' + ch + '</div>';
         return '<div class="ln-m m' + m + '" style="left:' + (x - 10) + 'px">' +
-          '<svg width="52" height="70" viewBox="0 0 52 70">' + Kit.rough.rect(3, 3, 46, 64, { seed: 61 + m, sw: 2.6 }) + '</svg>' +
+          '<svg width="72" height="90" viewBox="-10 -10 72 90" style="overflow:visible">' +
+            Kit.rough.rect(3, 3, 46, 64, { seed: 61 + m, w: 'heavy', stroke: C.oliveT, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 11 }) + '</svg>' +
           '<div class="t-mono ln-a c-olive">' + ch + '</div></div>';
       }).join('');
 
       var sentence = ['Egg', 'white', '@sets', 'when', 'you', '@heat', 'it.'].map(function (w) {
         if (w.charAt(0) !== '@') return '<span class="ln-w">' + w + '</span>';
-        return '<span class="ln-sm"><svg width="150" height="76" viewBox="0 0 150 76">' +
-          Kit.rough.rect(3, 3, 144, 70, { seed: 71 + w.length, sw: 2.6 }) + '</svg>' +
+        return '<span class="ln-sm"><svg width="170" height="96" viewBox="-10 -10 170 96" style="overflow:visible">' +
+          Kit.rough.rect(3, 3, 144, 70, { seed: 71 + w.length, w: 'heavy', stroke: C.oliveT, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 13 }) + '</svg>' +
           '<span class="ln-sa">' + w.slice(1) + '</span></span>';
       }).join(' ');
 
       return '' +
         '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="ln-box1">' + Kit.rough.rect(120, 330, 1560, 170, { seed: 81, sw: 2.6, rough: .9, stroke: C.line }) + '</g>' +
-          '<g class="ln-box2">' + Kit.rough.rect(120, 582, 1560, 210, { seed: 82, sw: 2.6, rough: .9, stroke: C.line }) + '</g>' +
+          '<g class="ln-box1">' + Kit.rough.rect(120, 330, 1560, 170, { seed: 81, w: 'fine', rough: .9, stroke: C.text3 }) + '</g>' +
+          '<g class="ln-box2">' + Kit.rough.rect(120, 582, 1560, 210, { seed: 82, w: 'fine', rough: .9, stroke: C.text3 }) + '</g>' +
           '<g class="ln-arc">' +
-            Kit.rough.curve([[680, 736], [928, 760], [1176, 736]], { seed: 83, sw: 2.6, stroke: C.rustT }) +
-            Kit.rough.curve([[432, 736], [928, 786], [1424, 736]], { seed: 84, sw: 2.2, stroke: C.rustT }) +
+            Kit.rough.curve([[680, 736], [928, 762], [1176, 736]], { seed: 83, w: 'normal', stroke: C.rustT }) +
+            Kit.rough.curve([[432, 736], [928, 790], [1424, 736]], { seed: 84, w: 'fine', stroke: C.rustT }) +
           '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(752, 918, 424, { seed: 85 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint ln-k ln-k1">A sentence</div>' +
         '<div class="t-h2 ln-sent">' + sentence + '</div>' +
         '<div class="t-caps faint ln-k ln-k2">A protein</div>' +
-        '<div class="ln-chip"><span class="t-label dim">~15% of positions hidden</span><span class="flag">inferred</span></div>' +
+        '<div class="ln-chip"><span class="t-label dim">~15% of positions hidden</span></div>' +
         '<div class="ln-seq">' + res + '</div>' +
-        '<div class="t-label faint ln-note">alphabet of 20 · a few hundred long · illustrative fragment</div>' +
+        '<div class="t-label faint ln-note">alphabet of 20 · a few hundred long</div>' +
         '<div class="t-h2 c-olive ln-p1">No lab labels. The answer is the letter you hid.</div>' +
-        '<div class="t-body dim ln-p2">The arcs mark letters that touch once the chain folds.</div>' +
-        Kit.src('Rives et al., <em>PNAS</em> 2021; masking share from the ESM-2 reference (NVIDIA BioNeMo). ' +
-          'Shiru has not published its model, so masked pre-training at ~15% is inferred standard practice. Sequence is illustrative.');
+        '<div class="t-body dim ln-p2">The arcs mark letters that touch once the chain folds.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ln-sa, .ln-a, .ln-chip, .ln-arc, .ln-p1, .ln-p2'), { autoAlpha: 0 });
+      gsap.set(qa('.ln-sa, .ln-a, .ln-chip, .ln-arc, .ln-p1, .ln-p2, .dd-pay'), { autoAlpha: 0 });
       gsap.set(qa('.ln-box2 .rp, .ln-r, .ln-m, .ln-note'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.ln-k1, .ln-k2, .src'), { at: .2, stagger: .06 });
+      Kit.fade(tl, qa('.ln-k1, .ln-k2'), { at: .2, stagger: .06 });
       Kit.draw(tl, qa('.ln-box1 .rp'), { at: .25, duration: .8 });
       Kit.show(tl, qa('.ln-sent .ln-w'), { at: .4, stagger: .06, y: 14 });
       tl.fromTo(qa('.ln-sm'), { autoAlpha: 0, scale: .9 }, { autoAlpha: 1, scale: 1, duration: .4, stagger: .1 }, .5);
@@ -192,6 +222,8 @@
       tl.addLabel('g');
       tl.fromTo(qa('.ln-a'), { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .25, ease: Kit.ease.out }, 'g');
       Kit.show(tl, q('.ln-p1'), { at: 'g+=.5', y: 16 });
+      tl.to(q('.dd-pay'), { autoAlpha: 1, duration: .01 }, 'g+=.9');
+      Kit.draw(tl, qa('.dd-pay .rp'), { at: 'g+=.9', duration: .5 });
 
       // [click 4] why filling a blank forces the model to learn structure
       ctx.pause();
@@ -202,11 +234,12 @@
     },
     notes:
       'Step one. No lab measurements, so we train on the sequences themselves. Here is a sentence with two words hidden. You can fill those in, and ' +
-      'nobody labelled anything. [click] A protein is also a string. Twenty letters, the amino acids, a few hundred of them in a row. Same ' +
-      'exercise: hide about fifteen in a hundred and ask the model to put them back. [click] You read the sentence and you say: sets, heat. You got ' +
-      'that from the words around the gap. [click] The model does the same thing on the protein, and this is the trick. The supervision is free, ' +
-      'because the answer is the letter we hid. The model is a transformer, and this is how the first big text models were trained. [click] And ' +
-      'here is why it works. Two letters far apart in the string can touch once the chain folds, so they change together over evolution. To guess a ' +
+      'nobody labelled anything. [click] A protein is also a string. Twenty letters, the amino acids, hundreds in a row. Same ' +
+      'exercise: hide fifteen letters in a hundred and ask the model to put them back. Shiru has never published its model, so the fifteen per cent ' +
+      'is my inference, and this fragment is made up. [click] You read it and say: sets, heat — from the words around the gap. ' +
+      '[click] The model does the same thing on the protein, and this is the trick. The supervision is free, ' +
+      'because the answer is the letter we hid. The model is a transformer, trained the way the first big text models were. [click] And here is ' +
+      'why it works. Two letters far apart in the string can touch once the chain folds, so they change together over evolution. To guess a ' +
       'hidden letter, the model has to pick up those pairs. Structure falls out of a spelling exercise.'
   };
 
@@ -248,7 +281,8 @@
 
       return '' +
         '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="em-frame">' + Kit.rough.rect(EM.x, EM.y, EM.w, EM.h, { seed: 91, sw: 3, rough: .9 }) + '</g>' +
+          '<g class="em-frame">' + Kit.rough.rect(EM.x, EM.y, EM.w, EM.h, { seed: 91, w: 'heavy', rough: .9 }) + '</g>' +
+          '<g class="em-into">' + Kit.rough.arrow(902, 452, 1136, 634, { seed: 92, w: 'fine', stroke: C.text3, head: 16, bend: 70 }) + '</g>' +
           '<text class="t-caps em-ttl" x="' + (EM.x + 30) + '" y="' + (EM.y + 44) + '" font-size="24">A FLAT PICTURE OF A 1,000-NUMBER SPACE</text>' +
           '<g class="em-cloud">' + cloud + '</g>' +
           '<g class="em-ab">' +
@@ -261,24 +295,24 @@
             '<circle cx="' + PT_C[0] + '" cy="' + PT_C[1] + '" r="13" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
             '<text class="em-pl" x="' + (PT_C[0] - 22) + '" y="' + (PT_C[1] + 48) + '" text-anchor="end" font-size="28" font-weight="700" fill="' + C.rustT + '">C · 73% of letters match A</text>' +
           '</g>' +
+          '<g class="dd-ab">' + Kit.doodle.circle(1152, 572, 152, 122, { seed: 93, pad: 10 }) + '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(124, 912, 392, { seed: 94 }) + '</g>' +
         '</svg>' +
         '<div class="t-caps faint em-k em-k1">Two sequences</div>' +
         row('A', C.oliveT, SEQ_A, null, 0) +
         row('B', C.oliveT, SEQ_B, sharedB, 1) +
-        '<div class="em-read"><span class="t-mono c-rust">A vs B: 18% of letters</span><span class="flag em-f">illustrative</span></div>' +
-        '<div class="em-note"><span class="t-label dim">one protein → about 1,000 numbers</span><span class="flag em-f">inferred</span></div>' +
+        '<div class="em-read"><span class="t-mono c-rust">A vs B: 18% of letters</span></div>' +
+        '<div class="em-note"><span class="t-label dim">one protein → about 1,000 numbers</span></div>' +
         '<div class="t-caps faint em-k em-k2">A third sequence</div>' +
         row('C', C.rustT, SEQ_C, sharedC, 2) +
-        '<div class="t-h2 c-olive em-pay">Different letters. Same neighbourhood.</div>' +
-        Kit.src('US 11,439,159 B2 (fixed-size embeddings from models trained on unlabelled data) · Rost 1999, the twilight zone · ' +
-          '~1,000 dimensions inferred from public models (1,024 ProtT5, 1,280 ESM-1b). Sequences and map are illustrative.');
+        '<div class="t-h2 c-olive em-pay">Different letters. Same neighbourhood.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.em-strip, .em-note, .em-ab, .em-c, .em-k2, .r2, .em-pay'), { autoAlpha: 0 });
+      gsap.set(qa('.em-strip, .em-note, .em-ab, .em-c, .em-k2, .r2, .em-pay, .em-into, .dd-ab, .dd-pay'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.em-k1, .src'), { at: .2, stagger: .06 });
+      Kit.fade(tl, qa('.em-k1'), { at: .2, stagger: .06 });
       Kit.show(tl, qa('.r0, .r1'), { at: .3, stagger: .12, y: 16 });
       Kit.show(tl, q('.em-read'), { at: .6, y: 12 });
       Kit.draw(tl, qa('.em-frame .rp'), { at: .35, duration: .9 });
@@ -295,8 +329,12 @@
       // [click 2] A and B land next to each other
       ctx.pause();
       tl.addLabel('ab');
+      tl.to(q('.em-into'), { autoAlpha: 1, duration: .01 }, 'ab');
+      Kit.draw(tl, qa('.em-into .rp'), { at: 'ab', duration: .5 });
       tl.fromTo(q('.em-ab'), { autoAlpha: 0, scale: .6, transformOrigin: PT_A[0] + 'px ' + PT_A[1] + 'px' },
-        { autoAlpha: 1, scale: 1, duration: .6, ease: 'back.out(1.8)' }, 'ab');
+        { autoAlpha: 1, scale: 1, duration: .6, ease: 'back.out(1.8)' }, 'ab+=.35');
+      tl.to(q('.dd-ab'), { autoAlpha: 1, duration: .01 }, 'ab+=.9');
+      Kit.draw(tl, qa('.dd-ab .rp'), { at: 'ab+=.9', duration: .6 });
 
       // [click 3] C: lots of letters in common, nowhere near
       ctx.pause();
@@ -305,13 +343,15 @@
       tl.fromTo(q('.em-c'), { autoAlpha: 0, scale: .6, transformOrigin: PT_C[0] + 'px ' + PT_C[1] + 'px' },
         { autoAlpha: 1, scale: 1, duration: .55, ease: 'back.out(1.8)' }, 'c+=.35');
       Kit.show(tl, q('.em-pay'), { at: 'c+=.7', y: 16 });
+      tl.to(q('.dd-pay'), { autoAlpha: 1, duration: .01 }, 'c+=1.1');
+      Kit.draw(tl, qa('.dd-pay .rp'), { at: 'c+=1.1', duration: .45 });
     },
     notes:
-      'Step two. Two proteins, as letters. They share about one letter in five, and by the old method that means nothing: below about a quarter ' +
-      'matching, letter alignment cannot tell a relative from a stranger. [click] So we stop comparing letters. Each protein goes through the model ' +
-      'once and comes out as about a thousand numbers, worked out once and stored. [click] Plot them, and A ' +
-      'and B land next to each other, though their spelling barely overlaps. [click] Here is C. It shares nearly three quarters of its letters ' +
-      'with A, and sits over there. Overlap and distance disagree, which is the reason to change what similar means.'
+      'Step two. Two proteins, as letters. They share one letter in five, and by the old method that means nothing: below a quarter ' +
+      'matching, letters cannot tell a relative from a stranger. [click] So we stop comparing letters. Each protein goes through the model ' +
+      'once and comes out as about a thousand numbers — that size is my estimate from public models. [click] Plot them, and A and B land ' +
+      'side by side, though their spelling barely overlaps. [click] C shares nearly three quarters of its letters with A, and sits over ' +
+      'there. I made these sequences up, but the disagreement is real, and it is why we change what similar means.'
   };
 
   /* ----------------------------------------------------------------- SEARCH */
@@ -340,7 +380,11 @@
       }
       return '' +
         '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="sr-frame">' + Kit.rough.rect(SM.x, SM.y, SM.w, SM.h, { seed: 101, sw: 3, rough: .9 }) + '</g>' +
+          '<g class="sr-frame">' + Kit.rough.rect(SM.x, SM.y, SM.w, SM.h, { seed: 101, w: 'heavy', rough: .9 }) + '</g>' +
+          '<g class="sr-cmpbox">' + Kit.rough.rect(1340, 740, 460, 248,
+            { seed: 102, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .17, hachureGap: 22 }) + '</g>' +
+          '<g class="dd-24">' + Kit.doodle.circle(1336, 530, 168, 118, { seed: 103, color: 'var(--rust-t)', w: 'heavy', pad: 4 }) + '</g>' +
+          '<g class="dd-win">' + Kit.doodle.underline(1370, 860, 412, { seed: 104 }) + '</g>' +
           '<g class="sr-far">' + far + '</g>' + '<g class="sr-near">' + near + '</g>' +
           '<circle class="sr-ring" cx="' + QP[0] + '" cy="' + QP[1] + '" r="10" fill="none" stroke="' + C.rustT + '" stroke-width="3" stroke-dasharray="10 12"/>' +
           '<g class="sr-q"><circle cx="' + QP[0] + '" cy="' + QP[1] + '" r="14" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>' +
@@ -349,24 +393,22 @@
         '<div class="t-caps faint sr-k">The database, as points</div>' +
         '<div class="bignum sr-b1"><div class="t-num sr-c1">0</div><div class="t-label">points in the index</div></div>' +
         '<div class="bignum sr-b2"><div class="t-num c-rust sr-c2">0</div>' +
-          '<div class="sr-b2l"><span class="t-label">returned for one query</span><span class="flag">illustrative</span></div></div>' +
-        '<div class="tile sr-cmp">' +
+          '<div class="sr-b2l"><span class="t-label">returned for one query</span></div></div>' +
+        '<div class="sr-cmp">' +
           '<div class="t-caps faint">Low letter overlap</div>' +
           '<div class="sr-bar"><span class="t-mono c-olive">embedding search</span><b class="t-mono c-olive">57.5%</b></div>' +
           '<div class="sr-bar"><span class="t-mono dim">letter-by-letter</span><b class="t-mono dim">34.5%</b></div>' +
           '<div class="t-label faint">top-1 accuracy, 2022</div>' +
         '</div>' +
-        '<div class="t-body dim sr-cav">On long, multi-part proteins, letter matching still wins.</div>' +
-        Kit.src('Schütze et al., <em>Frontiers in Bioinformatics</em> 2022 (57.5% vs 34.5% top-1 below 20% identity) · Hume, AgFunderNews May 2024 ' +
-          '(a couple of dozen candidates) · 77M+: company release, Mar 2026. The index type is inferred. Point cloud is illustrative.', 'Self-reported');
+        '<div class="t-body dim sr-cav">On long, multi-part proteins, letter matching still wins.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sr-q, .sr-b2, .sr-cmp, .sr-cav'), { autoAlpha: 0 });
+      gsap.set(qa('.sr-q, .sr-b2, .sr-cmp, .sr-cmpbox, .sr-cav, .dd-24, .dd-win'), { autoAlpha: 0 });
       gsap.set(q('.sr-ring'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.sr-k, .src'), { at: .2, stagger: .06 });
+      Kit.fade(tl, qa('.sr-k'), { at: .2, stagger: .06 });
       Kit.draw(tl, qa('.sr-frame .rp'), { at: .25, duration: .9 });
       Kit.fade(tl, qa('.sr-far, .sr-near'), { at: .6, duration: .8 });
       Kit.show(tl, q('.sr-b1'), { at: .5, y: 16 });
@@ -386,19 +428,25 @@
       tl.to(qa('.sr-n'), { fill: C.olive, opacity: 1, attr: { r: 8 }, duration: .25, stagger: .022 }, 'r+=.35');
       Kit.show(tl, q('.sr-b2'), { at: 'r+=.4', y: 16 });
       Kit.count(tl, q('.sr-c2'), { to: 24, duration: .8, at: 'r+=.5' });
+      tl.to(q('.dd-24'), { autoAlpha: 1, duration: .01 }, 'r+=1.2');
+      Kit.draw(tl, qa('.dd-24 .rp'), { at: 'r+=1.2', duration: .6 });
 
       // [click 3] what the benchmark actually says
       ctx.pause();
       tl.addLabel('b');
-      Kit.show(tl, q('.sr-cmp'), { at: 'b', y: 20 });
-      Kit.show(tl, q('.sr-cav'), { at: 'b+=.3', y: 12 });
+      tl.to(q('.sr-cmpbox'), { autoAlpha: 1, duration: .01 }, 'b');
+      Kit.draw(tl, qa('.sr-cmpbox .rp'), { at: 'b', duration: .6 });
+      Kit.show(tl, q('.sr-cmp'), { at: 'b+=.2', y: 20 });
+      tl.to(q('.dd-win'), { autoAlpha: 1, duration: .01 }, 'b+=.8');
+      Kit.draw(tl, qa('.dd-win .rp'), { at: 'b+=.8', duration: .45 });
+      Kit.show(tl, q('.sr-cav'), { at: 'b+=.5', y: 12 });
     },
     notes:
-      'Step three, and now it is geometry. Every protein in the database is a point. Seventy-seven million of them. [click] You query with ' +
-      'something that already does the job. Here, brazzein, a protein that tastes sweet. [click] Back come its nearest neighbours: a couple of ' +
-      'dozen. That is what a lab can physically test in a quarter, so the lab is the bottleneck, not the model. [click] Does the new metric help? ' +
-      'On pairs that barely match letter for letter, embedding search got the top answer right fifty-seven per cent of the time, against ' +
-      'thirty-four for letter matching. But on long, multi-part proteins the old tool wins.'
+      'Step three, and now it is geometry. Every protein in the database is a point. Seventy-seven million, the company\'s own figure. ' +
+      '[click] You query with something that already does the job. Here, brazzein, a protein that tastes sweet. [click] Back come its ' +
+      'nearest neighbours: a couple of dozen, and the twenty-four on screen is my round number. That is what a lab can test in a quarter, ' +
+      'so the lab is the bottleneck, not the model. [click] Does it help? On pairs that barely match letter for letter, embedding search ' +
+      'got the top answer right fifty-seven per cent of the time, against thirty-four. But on long, multi-part proteins letters still win.'
   };
 
   /* ----------------------------------------------------------------- FILTER */
@@ -418,7 +466,7 @@
     budgetSec: 60,
     html: function () {
       var gates = GATES.map(function (g, i) {
-        return '<g class="fl-g g' + i + '">' + Kit.rough.line(g.x, ftop(g.x) - 14, g.x, fbot(g.x) + 14, { seed: 111 + i, sw: 3 }) + '</g>';
+        return '<g class="fl-g g' + i + '">' + Kit.rough.line(g.x, ftop(g.x) - 14, g.x, fbot(g.x) + 14, { seed: 111 + i, w: 'normal' }) + '</g>';
       }).join('');
 
       var r = rng(31337), segs = [[FX0 + 26, 668, 70], [696, 966, 30], [996, 1266, 14], [1296, FX1 - 20, 6]], dots = '';
@@ -433,33 +481,33 @@
 
       return '' +
         '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="fl-wall">' + Kit.rough.line(FX0, FT0, FX1, FT1, { seed: 121, sw: 3 }) + Kit.rough.line(FX0, FB0, FX1, FB1, { seed: 122, sw: 3 }) + '</g>' +
+          '<g class="fl-wall">' + Kit.rough.line(FX0, FT0, FX1, FT1, { seed: 121, w: 'heavy' }) + Kit.rough.line(FX0, FB0, FX1, FB1, { seed: 122, w: 'heavy' }) + '</g>' +
           gates +
           '<g class="fl-dots">' + dots + '</g>' +
-          '<g class="fl-loop">' + Kit.rough.arrow(1560, 606, 686, 404, { seed: 131, sw: 3, stroke: C.rustT, head: 18, bend: 400 }) + '</g>' +
+          '<g class="fl-labbox">' + Kit.rough.rect(1500, 612, 300, 152,
+            { seed: 126, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 20 }) + '</g>' +
+          '<g class="fl-loop">' + Kit.rough.arrow(1560, 606, 686, 404, { seed: 131, w: 'normal', stroke: C.rustT, head: 18, bend: 400 }) + '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(124, 984, 788, { seed: 141 }) + '</g>' +
         '</svg>' +
         '<div class="bignum fl-in"><div class="t-num fl-c">0</div><div class="t-label">sequences in the index</div></div>' +
         GATES.map(function (g, i) {
           return '<div class="t-h2 fl-q q' + i + '" style="left:' + (g.x - 180) + 'px">' + g.q + '</div>' +
             '<div class="t-label dim fl-m m' + i + '" style="left:' + (g.x - 150) + 'px">' + g.m + '</div>';
         }).join('') +
-        '<div class="t-label c-rust fl-loop-l">every result,<br>failures included</div>' +
+        '<div class="callout fl-loop-l">every result, failures included</div>' +
         '<div class="t-h2 c-olive fl-out">dozens</div>' +
-        '<div class="tile fl-lab"><div class="t-caps">Lab</div><div class="t-label dim fl-lab-s">express · purify · assay</div></div>' +
+        '<div class="fl-lab"><div class="t-caps">Lab</div><div class="t-label dim fl-lab-s">express · purify · assay</div></div>' +
         '<div class="t-h2 c-rust fl-one">1 ingredient</div>' +
-        '<div class="fl-note"><span class="t-label dim">Filters trained on a few hundred measured proteins</span><span class="flag">inferred</span></div>' +
-        '<div class="t-h2 c-olive fl-pay">The lab, not the model, sets the pace.</div>' +
-        Kit.src('US 11,439,159 B2 (multi-objective ranking, allergen screening, and the loop that returns assay results to training) · ' +
-          'Hume, AgFunderNews May 2024 (Expressor) · 77M+: company release, Mar 2026. "A few hundred labels" is inferred.', 'Self-reported');
+        '<div class="fl-note"><span class="t-label dim">Filters trained on a few hundred measured proteins</span></div>' +
+        '<div class="t-h2 c-olive fl-pay">The lab, not the model, sets the pace.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.fl-q, .fl-m, .fl-out, .fl-lab, .fl-one, .fl-loop, .fl-loop-l, .fl-note, .fl-pay'), { autoAlpha: 0 });
+      gsap.set(qa('.fl-q, .fl-m, .fl-out, .fl-lab, .fl-labbox, .fl-one, .fl-loop, .fl-loop-l, .fl-note, .fl-pay, .dd-pay'), { autoAlpha: 0 });
       gsap.set(qa('.d1, .d2, .d3'), { autoAlpha: 0 });
       gsap.set(qa('.fl-g'), { opacity: .22 });
 
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.src'), { at: .2 });
       Kit.draw(tl, qa('.fl-wall .rp'), { at: .25, duration: 1.0 });
       Kit.draw(tl, qa('.fl-g .rp'), { at: .5, duration: .5, stagger: .08 });
       Kit.show(tl, q('.fl-in'), { at: .35, y: 16 });
@@ -478,17 +526,21 @@
       // [click 4] the lab, and the loop back
       ctx.pause();
       tl.addLabel('L');
-      Kit.drop(tl, q('.fl-lab'), { at: 'L' });
-      Kit.show(tl, q('.fl-one'), { at: 'L+=.35', y: 14 });
-      tl.to(q('.fl-loop'), { autoAlpha: 1, duration: .01 }, 'L+=.5');
-      Kit.draw(tl, qa('.fl-loop .rp'), { at: 'L+=.5', duration: .9 });
-      Kit.show(tl, q('.fl-loop-l'), { at: 'L+=.9', y: 12 });
-      Kit.show(tl, qa('.fl-note, .fl-pay'), { at: 'L+=1.1', stagger: .15, y: 14 });
+      tl.to(q('.fl-labbox'), { autoAlpha: 1, duration: .01 }, 'L');
+      Kit.draw(tl, qa('.fl-labbox .rp'), { at: 'L', duration: .5 });
+      Kit.show(tl, q('.fl-lab'), { at: 'L+=.15', y: 14 });
+      Kit.show(tl, q('.fl-one'), { at: 'L+=.45', y: 14 });
+      tl.to(q('.fl-loop'), { autoAlpha: 1, duration: .01 }, 'L+=.6');
+      Kit.draw(tl, qa('.fl-loop .rp'), { at: 'L+=.6', duration: .9 });
+      Kit.show(tl, q('.fl-loop-l'), { at: 'L+=1.0', y: 12 });
+      Kit.show(tl, qa('.fl-note, .fl-pay'), { at: 'L+=1.2', stagger: .15, y: 14 });
+      tl.to(q('.dd-pay'), { autoAlpha: 1, duration: .01 }, 'L+=1.7');
+      Kit.draw(tl, qa('.dd-pay .rp'), { at: 'L+=1.7', duration: .5 });
     },
     notes:
       'Step four. Seventy-seven million sequences go in, and three learned filters squeeze the stream. [click] Does it work? A small model predicts ' +
-      'whether the protein gels or dissolves. These predictors are tiny, a few hundred measurements each, and they only work because they sit on ' +
-      'top of the pre-trained model from step one. [click] Can we make it? Expressor predicts whether a microbe will produce the protein and push ' +
+      'whether the protein gels or dissolves. These predictors are tiny, a few hundred measurements each — my inference, not a published number — ' +
+      'and they only work because they sit on top of the pre-trained model from step one. [click] Can we make it? Expressor predicts whether a microbe will produce the protein and push ' +
       'it out of the cell. [click] Is it safe? Does it look like a known allergen. The irony: the regulator\'s test is letter-by-letter matching, ' +
       'the exact method this pipeline was built to beat. [click] Out comes dozens, and the lab picks one. Every result goes back in, including the ' +
       'failures. Where nearly everything fails, the failures are the more useful half. The name for that loop is active learning.'
@@ -502,6 +554,14 @@
     budgetSec: 50,
     html: function () {
       return '' +
+        '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+          '<g class="rs-bar0">' + Kit.rough.rect(330, 618, 197, 26,
+            { seed: 151, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .3, hachureGap: 12, overshoot: 8 }) + '</g>' +
+          '<g class="rs-bar1">' + Kit.rough.rect(330, 674, 460, 26,
+            { seed: 152, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .3, hachureGap: 12, overshoot: 8 }) + '</g>' +
+          '<g class="dd-fat">' + Kit.doodle.circle(1178, 744, 316, 110, { seed: 153, color: 'var(--rust-t)', w: 'heavy', pad: 0 }) + '</g>' +
+          '<g class="dd-ai">' + Kit.doodle.underline(124, 890, 506, { seed: 154 }) + '</g>' +
+        '</svg>' +
         '<div class="t-caps faint rs-k">The searchable database</div>' +
         '<div class="bignum rs-b1"><div class="t-num rs-c1">0</div>' +
           '<div class="t-label">natural protein sequences, March 2026</div></div>' +
@@ -512,24 +572,21 @@
         Kit.photo(IMG + 'oleopro.jpg', { x: 1180, y: 290, w: 560, h: 358, rot: -2, framed: true, cls: 'rs-ph', alt: 'OleoPro, a bowl of structured fat' }) +
         '<div class="t-label dim rs-cap">OleoPro · in production since April 2025</div>' +
         '<div class="rs-b2"><div class="t-num c-rust rs-c2">0</div>' +
-          '<div class="rs-b2t"><span class="t-label">less saturated fat than the solid fats it replaces</span>' +
-          '<span class="flag">Self-reported</span></div></div>' +
+          '<div class="rs-b2t"><span class="t-label">less saturated fat than the solid fats it replaces</span></div></div>' +
         '<div class="t-h2 c-olive rs-p1">AI picked the proteins.</div>' +
-        '<div class="t-body dim rs-p2">Potato protein and ordinary oil did the rest.</div>' +
-        Kit.src('GlobeNewswire 18 Mar 2026 (77M+) · BusinessWire 1 May 2024 (33M+) · Milling MEA 2025 (&gt;90% less saturated fat) · ' +
-          'Protein Production Technology Apr 2025. Product photo: Shiru, via AgFunderNews.', 'Self-reported');
+        '<div class="t-body dim rs-p2">Potato protein and ordinary oil did the rest.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.rs-ph, .rs-cap, .rs-b2, .rs-p1, .rs-p2'), { autoAlpha: 0 });
-      gsap.set(qa('.rs-bar i'), { scaleX: 0, transformOrigin: '0% 50%' });
+      gsap.set(qa('.rs-ph, .rs-cap, .rs-b2, .rs-p1, .rs-p2, .dd-fat, .dd-ai'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.rs-k, .src'), { at: .2, stagger: .06 });
+      Kit.fade(tl, qa('.rs-k'), { at: .2, stagger: .06 });
       Kit.show(tl, q('.rs-b1'), { at: .3, y: 18 });
       Kit.count(tl, q('.rs-c1'), { to: 77, suffix: 'M+', duration: 1.2, at: .4 });
       Kit.show(tl, qa('.rs-bar'), { at: .7, stagger: .15, y: 12 });
-      tl.to(qa('.rs-bar i'), { scaleX: 1, duration: .8, stagger: .15, ease: Kit.ease.out }, .8);
+      Kit.draw(tl, qa('.rs-bar0 .rp'), { at: .8, duration: .7 });
+      Kit.draw(tl, qa('.rs-bar1 .rp'), { at: .95, duration: .8 });
 
       // [click 1] the product, and the claim
       ctx.pause();
@@ -538,12 +595,16 @@
       Kit.show(tl, q('.rs-cap'), { at: 'p+=.5', y: 12 });
       Kit.show(tl, q('.rs-b2'), { at: 'p+=.6', y: 16 });
       Kit.count(tl, q('.rs-c2'), { to: 90, prefix: '>', suffix: '%', duration: .9, at: 'p+=.7' });
+      tl.to(q('.dd-fat'), { autoAlpha: 1, duration: .01 }, 'p+=1.5');
+      Kit.draw(tl, qa('.dd-fat .rp'), { at: 'p+=1.5', duration: .7 });
 
       // [click 2] the correction is the last thing on screen
       ctx.pause();
       tl.addLabel('h');
       Kit.show(tl, qa('.rs-p1, .rs-p2'), { at: 'h', stagger: .2, y: 16 });
-      tl.to(q('.rs-b2'), { autoAlpha: .6, duration: .5 }, 'h+=.2');
+      tl.to(q('.dd-ai'), { autoAlpha: 1, duration: .01 }, 'h+=.5');
+      Kit.draw(tl, qa('.dd-ai .rp'), { at: 'h+=.5', duration: .5 });
+      tl.to(qa('.rs-b2, .dd-fat'), { autoAlpha: .55, duration: .5 }, 'h+=.2');
     },
     notes:
       'The searchable database went from thirty-three million sequences in twenty twenty-four to over seventy-seven million this year. That index ' +
@@ -579,28 +640,35 @@
       var strip = THRU.map(function (k, i) {
         return (i ? '<span class="sep t-caps">·</span>' : '') + '<span class="tok ' + k.cls + ' t-caps">' + k.t + '</span>';
       }).join('');
+      var svg = '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+        '<g class="dd-u0">' + Kit.doodle.underline(284, 472, 620, { seed: 161 }) + '</g>' +
+        '<g class="dd-u1">' + Kit.doodle.underline(284, 672, 572, { seed: 162 }) + '</g>' +
+      '</svg>';
       return Kit.photo(IMG + 'legumes.webp', { x: 1250, y: 300, w: 560, cls: 'tk-img', alt: '' }) +
-        rows + '<div class="tk-thru">' + strip + '</div>' +
-        Kit.src('Shiru report: executive summary and limitations. Food photo: illustration.', 'Generated');
+        svg + rows + '<div class="tk-thru">' + strip + '</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.r0 > *, .r1 > *'), { autoAlpha: 0 });
+      gsap.set(qa('.r0 > *, .r1 > *, .dd-u0, .dd-u1'), { autoAlpha: 0 });
       gsap.set(q('.tk-next'), { color: C.text3 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       tl.fromTo(q('.tk-img'), { autoAlpha: 0, scale: 1.04 }, { autoAlpha: .3, scale: 1, duration: .9, ease: 'power2.out' }, 0);
-      Kit.fade(tl, qa('.tk-thru, .src'), { at: .3, stagger: .06 });
+      Kit.fade(tl, qa('.tk-thru'), { at: .3, stagger: .06 });
 
       // [click 1] lesson one
       ctx.pause();
       Kit.show(tl, qa('.r0 > *'), { stagger: .07, duration: .5 });
+      tl.to(q('.dd-u0'), { autoAlpha: 1, duration: .01 }, '>-.2');
+      Kit.draw(tl, qa('.dd-u0 .rp'), { at: '<', duration: .5 });
 
       // [click 2] lesson two, and the hand-off to Mix
       ctx.pause();
       tl.addLabel('two');
       Kit.show(tl, qa('.r1 > *'), { at: 'two', stagger: .07, duration: .5 });
-      tl.to(q('.tk-next'), { color: C.saffronT, duration: .5 }, 'two+=.4');
+      tl.to(q('.dd-u1'), { autoAlpha: 1, duration: .01 }, 'two+=.4');
+      Kit.draw(tl, qa('.dd-u1 .rp'), { at: 'two+=.4', duration: .5 });
+      tl.to(q('.tk-next'), { color: C.saffronT, duration: .5 }, 'two+=.6');
     },
     notes:
       'Two things to take from Shiru. [click] One. When a single label costs weeks, do not start by labelling. Train on the unlabelled data first, ' +
