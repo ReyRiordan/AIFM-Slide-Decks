@@ -167,7 +167,7 @@
   function transition(old, L, secChange, dir, playEntrance) {
     var start = function () { if (playEntrance && live === L) playTo(0); };
     if (!old) { start(); return; }
-    if (dir === 'back' || MODE !== 'show' || !window.DrawSVGPlugin) { unmount(old); start(); return; }
+    if (dir !== 'fwd' || MODE !== 'show' || !window.DrawSVGPlugin) { unmount(old); start(); return; }
     var sw = document.getElementById('sweep');
     sw.innerHTML = '';
     var svg = svgEl('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H });
@@ -301,19 +301,88 @@
 
   function toggleBlack() { var b = document.getElementById('blackout'); b.style.display = b.style.display === 'block' ? 'none' : 'block'; }
 
+  /* ---------------- slide navigator ----------------
+     G (or Esc) opens a grid of every slide grouped by section: type to filter, arrows to move, Enter or click to jump.
+     Without the overlay: type a slide number then Enter (e.g. 1 2 Enter) to jump to slide 12. Jumps skip the transition. */
+  var nav = null, navSel = 0, numBuf = '', numTimer = null;
+  function jump(i) { if (i >= 0 && i < slides.length && i !== cur) go(i, 'start', 'jump'); }
+  function navItems() { return nav ? Array.prototype.slice.call(nav.querySelectorAll('.nv-item:not(.nv-hide)')) : []; }
+  function navMark() {
+    var it = navItems(); navSel = Math.max(0, Math.min(navSel, it.length - 1));
+    it.forEach(function (n, k) { n.classList.toggle('nv-sel', k === navSel); });
+    if (it[navSel]) it[navSel].scrollIntoView({ block: 'nearest' });
+  }
+  function navFilter(q) {
+    q = q.trim().toLowerCase();
+    nav.querySelectorAll('.nv-item').forEach(function (n) {
+      var hit = !q || n.getAttribute('data-k').indexOf(q) >= 0 || n.getAttribute('data-n') === q;
+      n.classList.toggle('nv-hide', !hit);
+    });
+    nav.querySelectorAll('.nv-sec').forEach(function (g) { g.classList.toggle('nv-hide', !g.querySelector('.nv-item:not(.nv-hide)')); });
+    navSel = 0; navMark();
+  }
+  function closeNav() { if (nav) { nav.remove(); nav = null; } }
+  function openNav() {
+    if (nav) { closeNav(); return; }
+    nav = document.createElement('div'); nav.id = 'nav';
+    nav.innerHTML = '<div class="nv-box"><div class="nv-top"><input class="nv-q" placeholder="Jump to… (type a title, section or number)" spellcheck="false">' +
+      '<span class="nv-keys">↑↓ move · Enter go · Esc close</span></div><div class="nv-grid">' +
+      sections.map(function (sec) {
+        return '<div class="nv-sec" style="--c:' + secTint(sec) + '"><div class="nv-h">' + esc(sec.num) + ' · ' + esc(sec.kicker) +
+          (sec.title ? ' <span>' + esc(sec.title) + '</span>' : '') + '</div>' +
+          slides.filter(function (x) { return x.sec === sec; }).map(function (x) {
+            var t = (x.def.heading || x.def.title || x.def.id).replace(/<[^>]*>/g, '');
+            return '<div class="nv-item' + (x.index === cur ? ' nv-cur' : '') + '" data-i="' + x.index + '" data-n="' + (x.index + 1) +
+              '" data-k="' + esc((t + ' ' + x.def.id + ' ' + sec.id + ' ' + sec.kicker + ' ' + (sec.title || '')).toLowerCase()) + '"><b>' + (x.index + 1) + '</b>' + esc(t) + '</div>';
+          }).join('') + '</div>';
+      }).join('') + '</div></div>';
+    document.body.appendChild(nav);
+    var q = nav.querySelector('.nv-q');
+    q.addEventListener('input', function () { navFilter(q.value); });
+    q.addEventListener('keydown', function (e) {
+      var it = navItems();
+      if (e.key === 'Escape') { e.preventDefault(); closeNav(); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowRight' && !q.value) { e.preventDefault(); navSel++; navMark(); }
+      else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' && !q.value) { e.preventDefault(); navSel--; navMark(); }
+      else if (e.key === 'Enter') { e.preventDefault(); var n = it[navSel]; if (n) { var i = +n.getAttribute('data-i'); closeNav(); jump(i); } }
+      e.stopPropagation();
+    });
+    nav.addEventListener('click', function (e) {
+      var n = e.target.closest('.nv-item');
+      if (n) { var i = +n.getAttribute('data-i'); closeNav(); jump(i); }
+      else if (!e.target.closest('.nv-box')) closeNav();
+    });
+    var all = navItems(); navSel = Math.max(0, all.findIndex(function (n) { return n.classList.contains('nv-cur'); })); navMark();
+    q.focus();
+  }
+
   function onKey(e) {
     var t = e.target;
+    if (nav) return;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     var k = e.key;
-    if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown' || k === 'Enter') { e.preventDefault(); next(); }
+    if (/^[0-9]$/.test(k)) {
+      if (e.repeat) return;
+      numBuf = (numBuf + k).slice(-3); clearTimeout(numTimer); numTimer = setTimeout(function () { numBuf = ''; showNum(); }, 2500); showNum(); return;
+    }
+    if (k === 'Enter' && numBuf) { e.preventDefault(); var n = parseInt(numBuf, 10) - 1; numBuf = ''; showNum(); jump(n); return; }
+    if (numBuf && k !== 'Shift') { numBuf = ''; showNum(); }
+    if (k === 'g' || k === 'G' || k === 'Escape') { e.preventDefault(); openNav(); }
+    else if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown' || k === 'Enter') { e.preventDefault(); next(); }
     else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); prev(); }
-    else if (k === 'Home') go(0, 'start', 'back');
-    else if (k === 'End') go(slides.length - 1, 'start', 'fwd');
+    else if (k === 'Home') jump(0);
+    else if (k === 'End') jump(slides.length - 1);
     else if (k === 'p' || k === 'P') openPresenter();
     else if (k === 'f' || k === 'F') { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
     else if (k === 'b' || k === 'B' || k === '.') toggleBlack();
     else if (k === 'h' || k === 'H') { var h = document.getElementById('hint'); h.style.display = h.style.display === 'none' ? '' : 'none'; }
     else if (typeof Deck.onKey === 'function') Deck.onKey(e, live && live.ctx);
+  }
+  function showNum() {
+    var b = document.getElementById('numbuf');
+    if (!b) { b = document.createElement('div'); b.id = 'numbuf'; document.body.appendChild(b); }
+    b.textContent = numBuf ? 'Go to slide ' + numBuf + ' ↵  (of ' + slides.length + ')' : '';
+    b.style.display = numBuf ? '' : 'none';
   }
 
   /* ---------------- boot ---------------- */
@@ -334,7 +403,7 @@
     go(indexFromHash(), 'start', 'fwd');
     window.addEventListener('hashchange', function () { var i = indexFromHash(); if (i !== cur) go(i, 'start', i > cur ? 'fwd' : 'back'); });
     var hint = document.getElementById('hint');
-    if (hint) hint.textContent = '→ next · ← back · P presenter · F fullscreen · B black';
+    if (hint) hint.textContent = '→ next · ← back · G slides · 12↵ jump · P presenter · F fullscreen · B black';
     setTimeout(function () { if (hint) gsap.to(hint, { autoAlpha: 0, duration: 1 }); }, 4000);
   }
 
