@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Script editor for the deck: live slide on the left, that slide's speaker notes on the right.
 
-Run from anywhere:   python3 deck/tools/script-editor.py      (then open the printed URL)
+Run from anywhere:   python3 decks/automated-selling/tools/script-editor.py      (then open the printed URL)
 
-Saving writes the notes straight back into deck/sections/NN-*.js as a '…' + '…' string,
+Saving writes the notes straight back into sections/NN-*.js as a '…' + '…' string,
 keeping any // comments that sat inside the old notes expression. No dependencies.
 """
 import http.server, json, os, re, socketserver, sys, webbrowser

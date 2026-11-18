@@ -1,0 +1,8 @@
+# Working files that shouldn't be served on the public URL
+KIT.md
+specs/
+design/
+plans/
+sources/
+qa/
+tools/
