@@ -15,7 +15,7 @@
   hatched, overshooting `Kit.rough.rect` tile per row number (`hatch: <section tint>`, `fillOpacity: .3`).
 - **Doodles must teach.** Two marks in the whole section, both sanctioned by Rey:
   `title` a heavy rust underline under the promise (`Food, Decoded.`);
-  `agenda` one rust loop that moves down to the row being talked about, and fades on the "What's next" click.
+  `agenda` no doodle (Rey removed the moving loop: unnecessary). The tinted tiles and rules carry the rows.
   The old title sparkles and the flat rust rule under the byline are deleted: they decorated, they did not teach.
 - **Layout.** Rows at y 566, step 92 (last rule at y 1006). The product name column sits at x 844 so the row
   spans the slide instead of bunching on the left.

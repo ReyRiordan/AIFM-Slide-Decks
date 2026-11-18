@@ -3,7 +3,7 @@
    Spec: specs/intro.md
    - TITLE: full-bleed photo, no `heading`, entrance only, ambient drift only in show mode.
      One doodle: a heavy rust underline under the talk's promise.
-   - AGENDA: three cut-outs + rows lock in one per click; a rust loop marks the row being talked about;
+   - AGENDA: three cut-outs + rows lock in one per click; no loop (Rey: unnecessary);
      last row is a muted "What's next".
    - No source footers anywhere: sources live in 99-refs.js, caveats in the notes (KIT §2.5).
    ========================================================================== */
@@ -85,7 +85,6 @@
             '<text class="mono" x="161" y="' + (cy(i) + 11) + '" text-anchor="middle" font-size="30" fill="' + C[r.color + 'T'] + '">' + r.num + '</text>' +
           '</g>';
         }).join('') +
-        '<g class="dd-cur">' + Kit.doodle.circle(238, cy(0) - 36, 196, 60, { seed: 320, pad: 2, w: 'heavy' }) + '</g>' +
       '</svg>';
 
       var rows = ROWS.map(function (r, i) {
@@ -101,7 +100,7 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.ag-prop, .ag-in, .ag-tile, .dd-cur'), { autoAlpha: 0 });
+      gsap.set(qa('.ag-prop, .ag-in, .ag-tile'), { autoAlpha: 0 });
       gsap.set(qa('.ag-rule'), { opacity: .2 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
@@ -117,18 +116,11 @@
           tl.to(q('.tl' + i), { autoAlpha: 1, duration: .01 }, L);
           Kit.draw(tl, qa('.tl' + i + ' .rp'), { at: L, duration: .4 });
           tl.fromTo(q('.i' + i), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, L + '+=.1');
-          if (i === 0) {
-            tl.to(q('.dd-cur'), { autoAlpha: 1, duration: .01 }, L + '+=.45');
-            Kit.draw(tl, qa('.dd-cur .rp'), { at: L + '+=.45', duration: .6 });
-          } else {
-            tl.to(q('.dd-cur'), { y: i * ROW_STEP, duration: .5, ease: Kit.ease.inOut }, L + '+=.1');
-          }
         })(i);
       }
 
       ctx.pause();
       tl.addLabel('nx');
-      tl.to(q('.dd-cur'), { autoAlpha: 0, duration: .4 }, 'nx');
       tl.to(q('.rl4'), { opacity: .7, duration: .4 }, 'nx');
       tl.fromTo(q('.i4'), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, 'nx+=.1');
     },
