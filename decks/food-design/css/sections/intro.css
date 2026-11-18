@@ -1,5 +1,18 @@
 /* intro section styles — scope every rule under .slide[data-sec="intro"] */
-.slide[data-sec="intro"] .ag-row { position: absolute; left: 120px; height: 110px; display: flex; align-items: center; gap: 36px; }
-.slide[data-sec="intro"] .ag-chip { display: block; width: 72px; height: 38px; border-radius: 10px; transform: skewX(var(--skew)); }
-.slide[data-sec="intro"] .ag-n { font-size: var(--fs-label); color: var(--text-3); width: 48px; }
-.slide[data-sec="intro"] .ag-k { width: 380px; }
+.slide[data-sec="intro"] .ttl-bg { position: absolute; inset: -20px; background-size: cover; background-position: right 8% center; }
+.slide[data-sec="intro"] .ttl-shade { position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(42,46,49,.97) 0%, rgba(42,46,49,.9) 30%, rgba(42,46,49,.35) 52%, rgba(42,46,49,0) 66%); }
+.slide[data-sec="intro"] .ttl-h { position: absolute; left: 120px; top: 270px; font-size: 150px; line-height: 1.0; }
+.slide[data-sec="intro"] .ttl-h .ln { display: block; overflow: hidden; padding: 0 30px 14px 6px; margin-left: -6px; }
+.slide[data-sec="intro"] .ttl-h .ln > span { display: inline-block; }
+.slide[data-sec="intro"] .ttl-sub { position: absolute; left: 120px; top: 628px; width: 620px; color: var(--text-2); font-weight: 500; font-style: italic; }
+.slide[data-sec="intro"] .ttl-by { position: absolute; left: 120px; top: 790px; color: var(--text); }
+.slide[data-sec="intro"] .ttl-by::before { content: ""; display: block; width: 64px; height: 4px; border-radius: 2px; background: var(--rust); margin-bottom: 22px; }
+
+.slide[data-sec="intro"] .ag-prop { height: 260px; width: auto !important; object-fit: contain; }
+.slide[data-sec="intro"] .ag-row { position: absolute; left: 120px; right: 120px; height: 76px; }
+.slide[data-sec="intro"] .ag-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; }
+.slide[data-sec="intro"] .ag-in { position: absolute; left: 0; top: 0; height: 72px; display: flex; align-items: center; gap: 32px; }
+.slide[data-sec="intro"] .ag-chip { display: block; width: 26px; height: 26px; border-radius: 50%; }
+.slide[data-sec="intro"] .ag-n { font-size: var(--fs-label); color: var(--text-3); width: 44px; }
+.slide[data-sec="intro"] .ag-k { width: 360px; }

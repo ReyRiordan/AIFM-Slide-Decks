@@ -18,7 +18,7 @@ Reference implementations: `sections/01-example.js` shows one slide per pattern.
 4. **Animation must earn its place.** Every motion shows a change, a relationship, a sequence or a cause. Reveal reasons and parts one per click. Decorative motion is limited to entrances of ≤ .9 s and the engine's section sweep. No looping motion behind teaching content. Slow ambient drift is allowed only on image-led slides (title, section openers).
 5. **Honesty.** Every number traces to a report line and has a source footer (`Kit.src`). Company-run results get `Kit.src(text, 'Self-reported')`. Mark illustrative values as illustrative. Never invent statistics or quotes. Name the real technique: a live API lookup is a tool call, not retrieval.
 6. **At most one equation in the whole talk**, revealed after its visual. Pseudo-diagrams such as `noise → face` are fine.
-7. **Images of real things.** By default, no real company logos, brand UIs or photos of real people. Describe products in words and diagrams. A real logo or founder photo is allowed when Rey approves it in the plan, and it gets a credit in `Kit.src`. Rey's own captures and demo clips are always allowed.
+7. **Images of real things.** This deck (plan, approved): small real logos and real product photos for results are allowed, credited in `Kit.src`. Never generate an imitation of a real product, package or brand UI. No founder or other real-person photos. Generated food is generic and its footer says so (`Kit.src('… illustration', 'Generated')`). Rey's own captures and demo clips are always allowed.
 
 ## 3. Text rules
 - **Headings** are plain topic labels: sentence case, ≤ ~6 words, no metaphors, puns or teaser questions. "The loss function", not "Grading a price nobody sees". The section tag already names the section, so repeated headings such as "Results" and "Takeaways" are fine.
@@ -49,10 +49,17 @@ slide = { id, title, heading?, theme?: 'dark'|'light', budgetSec, html: string|(
 - Keyboard: → / Space / PageDown go forward and ← goes back (clicker-compatible). Don't bind keys yourself.
 
 ## 6. Kit helpers (`js/components/kit.js`)
-`Kit.rise`, `Kit.show`, `Kit.fade`, `Kit.slideIn`, `Kit.swap(a,b)`, `Kit.count(tl, el, {to, prefix, suffix, decimals, commas})`, `Kit.draw` (SVG strokes),
-`Kit.panels([{x,y,w,h,color}])` (slanted panels), `Kit.src(text, flag)`, `Kit.esc`, `Kit.color.*` (read from the theme's palette tokens, plus `<name>T` text tints).
-`Kit.crumbs(steps, cur)` and `Kit.withCrumbs(def, steps, cur)` draw the "where we are" marker, top right on the section-tag row. Every section has a roadmap slide, and every technique slide after it is wrapped with `Kit.withCrumbs`. The step names must match the roadmap's card titles exactly.
-GSAP plugins loaded: DrawSVG, MorphSVG, MotionPath, SplitText, CustomEase, Draggable.
+`Kit.rise`, `Kit.show`, `Kit.fade`, `Kit.swap(a,b)`, `Kit.count(tl, el, {to, prefix, suffix, decimals, commas})`, `Kit.draw` (SVG strokes draw on),
+`Kit.src(text, flag)`, `Kit.esc`, `Kit.color.*` (palette tokens: `teal olive saffron cranberry plum rust`, `chalk`, `bg`…, plus `<name>T` text tints).
+`Kit.crumbs(steps, cur)` and `Kit.withCrumbs(def, steps, cur)` draw the "where we are" marker, top right on the section-tag row. `cur` is an index or an array of indices (`[1,2]` lights two steps). Every section has a roadmap slide, and every technique slide after it is wrapped with `Kit.withCrumbs`. The step names must match the roadmap's card titles exactly.
+
+**Deck 2 additions (the hand-drawn look):**
+- `Kit.rough.line / rect / ellipse / circle / path / curve / arrow(…, o)` return SVG markup (`<path class="rp">`) drawn by rough.js, so diagrams look hand-drawn in cream chalk. Put them inside an `<svg>` in `html()`. Options: `seed` (keep shapes identical across renders; pass one per shape), `sw` stroke width (default 3), `rough` (default 1.1), `stroke` (default chalk), `fill` + `fillStyle` (`hachure` default, `solid`), `arrow` takes `bend` and `head`. Animate with `Kit.draw(tl, el.querySelectorAll('.rp'))`. Text stays real SVG/HTML text, never rough.
+- `Kit.photo(src, {x,y,w,h,rot,cls,framed,alt})` → `<img class="photo">` with a soft drop shadow. Transparent cut-outs are `.webp`; `framed:true` for rectangular photos.
+- `Kit.drop(tl, targets, {at, stagger, rot})`: the signature photo motion (falls a little, settles). Safe on hidden elements. If something else also moves the photo (a state-driven render), wrap the img in a div and move the div.
+- `Kit.slideIn` and `Kit.panels` (deck 1's slanted glass panels) still exist but are **not part of this deck's look**. Don't use them.
+GSAP plugins loaded: DrawSVG, MorphSVG, MotionPath, SplitText, CustomEase, Draggable. rough.js is vendored (`js/vendor/rough.min.js`).
+Reference slide for this deck's grammar: `sections/03-giuseppe.js` `map` (state + render, cut-outs that travel, rough diagram, Caveat callouts, captions swapped per click).
 
 ## 7. Slide-type patterns
 Every section uses the same shape for these slide types:
@@ -62,25 +69,26 @@ Every section uses the same shape for these slide types:
 - **Summary** (closing section): one row per section marker, in the agenda's colors and order.
 
 ## 8. Visual system
-- **Palette:** set per deck in `css/theme.css` (the `PALETTE` block). Keep the token names. Every fill has a `-t` text tint with ≥ 4.5:1 contrast on `--bg`.
-- Canvas: dark charcoal `--bg`, cards in `--surface`. A slide can use `theme:'light'` if that is clearly easier to read. Use it sparingly.
-- **Type scale (the only sizes):** `t-hero` 168 · `t-h1` 76 · `t-h2` 52 · `t-body` 36 · `t-label` 28 · `t-caps` 28 · `t-num` 132 (mono) · footer 22. No text under 28 px except the source footer. In SVG, set `font-family="Archivo"` or `"JetBrains Mono"` and sizes ≥ 28.
-- Fonts: Archivo (titles: heavy italic, wide; body: normal). JetBrains Mono for prices, numbers, times and code-like labels.
-- Section colors: `var(--sec)` for fills and `var(--sec-t)` for text. `--orange` is the **focus accent**: the one thing to look at.
-- **Text on dark always uses the `-t` tints** (`c-blue` and similar classes, or `Kit.color.blueT`). Raw palette colors are for fills only. Colors that must be told apart need labels or different lightness, never hue alone.
-- Motif: slanted (-12°) rounded panels, translucent where they overlap. Use them for openers and framing, not inside diagrams.
-- Diagrams are **always code** (SVG or HTML), never generated images. Label real component names, not invented icons. A symbol that doesn't mean something gets cut.
+- **Canvas:** dark slate stone `--bg #2A2E31` with a faint grain (built into `.slide`). Cards/tiles in `--surface` or `rgba(0,0,0,.16)`. `theme:'light'` (warm paper) only if clearly easier to read; use it sparingly.
+- **Palette (autumn, from `design/refs/jula-packaging.jpg`):** section colors teal (Read · Samsung), olive (Find · Shiru), saffron (Mix · Giuseppe), cranberry (Sell · NotCo), plum (Next · Future). **`--rust` is the focus accent**: the one thing to look at. `--chalk` (cream) is the default stroke for every diagram. Every fill has a `-t` text tint ≥ 4.5:1 on `--bg`.
+- **Text on slate always uses the `-t` tints** (`c-teal`, `c-rust`… or `Kit.color.tealT`). Raw palette colors are for fills only. Colors that must be told apart need labels or different lightness, never hue alone.
+- **Type scale (the only sizes):** `t-hero` 168 · `t-h1` 76 · `t-h2` 52 · `t-body` 36 · `t-label` 28 · `t-caps` 28 · `t-num` 132 · `t-hand` 44 · footer 22. No text under 28 px except the source footer (SVG caps labels may use 24 with letter-spacing).
+- **Fonts:** Fraunces (`--display`; headings `t-hero t-h1 t-h2`, big numbers `t-num`). Figtree (`--font`; labels, body, chips, SVG text). Caveat (`--hand`; `.callout` / `t-hand` / `<text class="hand">`) **only for short doodle callouts** (≤ 4 words, rust tint, slight tilt, with a rough arrow). JetBrains Mono (`--mono`) only for JSON, sequences, ingredient lists, code-like data.
+- **Look:** realistic, appetizing food photos (generated cut-outs) dropped onto the slate + cream hand-drawn rough.js diagrams that draw themselves on. Think cookbook page with chalk notes. No slanted panels, no glass, no gradients inside diagrams.
+- Diagrams are **always code** (SVG or HTML), never generated images. Label real component names. A symbol that doesn't mean something gets cut.
 - Fill the slide. A half-empty slide or a label overlapping another element is a defect.
 
 ## 9. Generated images
+Two prompt suffixes in `design/`: `style-cutout.txt` (one isolated object on a **transparent** background — the default for food props) and `style-prefix.txt` (a full scene on slate, for openers and the title).
 ```bash
-P="$(cat design/style-prefix.txt)"
-~/.claude/skills/gpt-image-bridge/bin/gpt-image-2 "<SUBJECT + composition; where to leave negative space>. $P" \
-  assets/img/<unit>/<name>.png --size 1536x1024
+G=~/.claude/skills/gpt-image-bridge/bin/gpt-image-2
+$G "<ONE object + angle>. $(cat design/style-cutout.txt)" $PWD/design/raw/<name>.png --size 1024x1024 --timeout 600
+python3 tools/cutout.py design/raw/<name>.png assets/img/<unit>/<name>.webp 900     # clamps alpha, trims, resizes
+$G "<scene + where to leave empty slate>. $(cat design/style-prefix.txt)" $PWD/design/raw/<name>.png --size 1536x1024
 ```
-- A call takes a few minutes. Run calls in the background, several in parallel, and keep working meanwhile. Use `--timeout 600` if needed.
-- **Always `Read` the PNG and judge it.** Regenerate if it is generic, off-palette, cluttered, or contains text or artifacts. Quota is not a concern. Convert it to JPEG with Python PIL (quality 90) and reference the `.jpg`.
-- Images are for section openers and metaphor moments, 1–3 per section. They never contain text, logos or real people.
+- A call takes a few minutes. Run calls in the background, several in parallel, and keep working meanwhile.
+- **Always `Read` the PNG and judge it** (composite a cut-out on `#2A2E31` to check its edges). Regenerate if it is generic, unappetizing, off-palette, cluttered, or contains text or artifacts. Quota is not a concern. Scenes → JPEG (PIL, quality 88); cut-outs → WebP via `tools/cutout.py`.
+- Food cut-outs are the deck's grammar and don't count against a cap; full scenes stay at 1–3 per section. Images never contain text, logos, brand packaging or real people.
 
 ## 10. Speaker notes
 - A natural spoken script in Rey's voice. Write `[click]` exactly where each `ctx.pause()` happens, so a slide with N pauses has N markers.

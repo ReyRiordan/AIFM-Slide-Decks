@@ -5,75 +5,79 @@
    Sections pick their color by token name in Deck.section({ color: 'red' }); there are no per-section rules here.
    ========================================================================== */
 
-@font-face { font-family: "Archivo"; src: url("../assets/fonts/Archivo.ttf") format("truetype");
-  font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: block; }
-@font-face { font-family: "Archivo"; src: url("../assets/fonts/Archivo-Italic.ttf") format("truetype");
-  font-weight: 100 900; font-stretch: 62% 125%; font-style: italic; font-display: block; }
+@font-face { font-family: "Fraunces"; src: url("../assets/fonts/Fraunces.ttf") format("truetype");
+  font-weight: 100 900; font-style: normal; font-display: block; }
+@font-face { font-family: "Fraunces"; src: url("../assets/fonts/Fraunces-Italic.ttf") format("truetype");
+  font-weight: 100 900; font-style: italic; font-display: block; }
+@font-face { font-family: "Figtree"; src: url("../assets/fonts/Figtree.ttf") format("truetype");
+  font-weight: 300 900; font-style: normal; font-display: block; }
+@font-face { font-family: "Caveat"; src: url("../assets/fonts/Caveat.ttf") format("truetype");
+  font-weight: 400 700; font-style: normal; font-display: block; }
 @font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/JetBrainsMono.ttf") format("truetype");
   font-weight: 100 800; font-style: normal; font-display: block; }
 
 :root {
-  /* --- PALETTE: replace per deck (fills) --- */
-  --red:      #EE3538;
-  --orange:   #EF5A35;
-  --magenta:  #B656A0;
-  --purple:   #9A4198;
-  --green:    #53B754;
-  --blue:     #4D6BB1;
-  --sky:      #518CC8;
-  --cobalt:   #286EA8;
-  --navy:     #4053A1;
-  --teal:     #2C8C7E;
-  --charcoal: #353032;
+  /* --- PALETTE (deck 2: autumn, from design/refs/jula-packaging.jpg). Fills. --- */
+  --teal:      #2F7A74;   /* Read  · Samsung Food */
+  --olive:     #8A9A4B;   /* Find  · Shiru */
+  --saffron:   #E2A43B;   /* Mix   · NotCo Giuseppe */
+  --cranberry: #A8443A;   /* Sell  · NotCo */
+  --plum:      #7E4E6B;   /* Next  · Future */
+  --rust:      #D2643A;   /* FOCUS accent: the one thing to look at */
+  --orange:    #D2643A;   /* alias of --rust (engine default sweep + KIT name) */
+  --charcoal:  #33383C;   /* alias of raised slate (engine default sweep) */
 
-  /* --- PALETTE: text-safe tints, one per fill ("-t"), for TEXT/strokes on dark (≥4.5:1 on --bg) --- */
-  --red-t:     #FF7A7C;
-  --orange-t:  #FF8A66;
-  --magenta-t: #E08FCB;
-  --purple-t:  #CC8AD0;
-  --green-t:   #84D484;
-  --blue-t:    #94AEE6;
-  --sky-t:     #8EC0F0;
-  --teal-t:    #62CDBB;
+  /* --- text-safe tints ("-t"), for TEXT/strokes on slate (all ≥5.3:1 on --bg) --- */
+  --teal-t:      #79C7BC;
+  --olive-t:     #BCCB7C;
+  --saffron-t:   #F2C46E;
+  --cranberry-t: #E58A7E;
+  --plum-t:      #C99BB7;
+  --rust-t:      #F08A5D;
+  --orange-t:    #F08A5D;
 
-  /* --- dark stage --- */
-  --bg:      #1E1B1C;
-  --bg-2:    #2A2627;
-  --surface: #353032;   /* cards / chips */
-  --line:    #4A4345;   /* hairlines, axes */
-  --text:    #F4EFEA;
-  --text-2:  #C9C0BA;   /* secondary */
-  --text-3:  #9A908A;   /* tertiary / footers (≥4.5:1 on --bg) */
+  /* --- dark slate stage --- */
+  --bg:      #2A2E31;
+  --bg-2:    #33383C;
+  --surface: #383E42;   /* cards / chips */
+  --line:    #545B60;   /* hairlines, axes */
+  --text:    #F3EBDD;   /* cream ink */
+  --text-2:  #CFC6B8;   /* secondary */
+  --text-3:  #A39C91;   /* tertiary / footers (≥4.5:1 on --bg) */
+  --chalk:   #F3EBDD;   /* doodle / diagram stroke */
 
-  /* --- light stage (opt-in per slide: theme: 'light') --- */
-  --paper:      #F5F0EA;
-  --paper-2:    #EAE3DB;
-  --paper-line: #CFC6BD;
-  --ink:        #1E1B1C;
-  --ink-2:      #4A4345;
-  --ink-3:      #6E6560;
+  /* --- light paper stage (opt-in per slide: theme: 'light') --- */
+  --paper:      #EFE8DC;
+  --paper-2:    #E4DBCC;
+  --paper-line: #C9BEAD;
+  --ink:        #26292B;
+  --ink-2:      #4A4E51;
+  --ink-3:      #686C6E;
 
   /* --- type --- */
-  --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font:    "Figtree", "Helvetica Neue", Arial, sans-serif;   /* labels, body */
+  --display: "Fraunces", Georgia, serif;                      /* headings, big numbers */
+  --hand:    "Caveat", "Comic Sans MS", cursive;              /* doodle callouts ONLY */
+  --mono:    "JetBrains Mono", ui-monospace, Menlo, monospace; /* JSON, sequences, data */
   /* type scale (px at 1920×1080). Use ONLY these. */
   --fs-hero:  168px;  /* title slide only */
   --fs-h1:    76px;   /* slide titles */
   --fs-h2:    52px;   /* big statements / sub-heads */
   --fs-body:  36px;   /* body, card text */
   --fs-label: 28px;   /* labels, captions, chips */
+  --fs-hand:  44px;   /* Caveat callouts (Caveat runs small) */
   --fs-foot:  22px;   /* source footer ONLY */
-  --fs-num:   132px;  /* big numbers (mono) */
+  --fs-num:   132px;  /* big numbers (Fraunces) */
 
   /* --- motion --- */
   --dur-1: .45s; --dur-2: .7s; --dur-3: .9s;
-  --skew: -12deg;     /* the logo's forward lean */
-  --radius: 28px;
+  --skew: 0deg;       /* deck 1's slant is retired; kept for old helpers */
+  --radius: 22px;
 
   /* --- layout --- */
   --pad-x: 120px;
   --pad-top: 92px;
-  --foot-y: 1012px;   /* baseline zone for the source footer */
+  --foot-y: 1012px;
 }
 
 /* --- base --- */
@@ -83,29 +87,36 @@ body { font-family: var(--font); color: var(--text); -webkit-font-smoothing: ant
 
 .slide {
   position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
-  background: var(--bg); color: var(--text);
-  font-family: var(--font); font-size: var(--fs-body); line-height: 1.25;
-  font-stretch: 100%; font-weight: 400;
+  background-color: var(--bg); color: var(--text);
+  /* slate stone: faint grain + soft vignette */
+  background-image:
+    radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.035), rgba(0,0,0,0) 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.28) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='480' height='480'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .055 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  font-family: var(--font); font-size: var(--fs-body); line-height: 1.25; font-weight: 400;
 }
-.slide.light { background: var(--paper); color: var(--ink);
+.slide.light { background-color: var(--paper); background-image: none; color: var(--ink);
   --text: var(--ink); --text-2: var(--ink-2); --text-3: var(--ink-3); --line: var(--paper-line); --surface: var(--paper-2);
-  --sec-t: var(--sec); }
+  --chalk: var(--ink); --sec-t: var(--sec); }
 
 /* --- typographic roles --- */
-.t-hero  { font-size: var(--fs-hero); font-weight: 900; font-style: italic; font-stretch: 125%; line-height: .92; letter-spacing: -.01em; }
-.t-h1    { font-size: var(--fs-h1);  font-weight: 850; font-style: italic; font-stretch: 118%; line-height: 1.02; letter-spacing: -.005em; }
-.t-h2    { font-size: var(--fs-h2);  font-weight: 750; font-stretch: 108%; line-height: 1.1; }
-.t-body  { font-size: var(--fs-body); font-weight: 400; line-height: 1.3; }
-.t-label { font-size: var(--fs-label); font-weight: 600; letter-spacing: .02em; line-height: 1.2; }
-.t-caps  { font-size: var(--fs-label); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-stretch: 112%; }
-.t-num   { font-family: var(--mono); font-size: var(--fs-num); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.t-hero  { font-family: var(--display); font-size: var(--fs-hero); font-weight: 800; line-height: .95; letter-spacing: -.02em;
+           font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; }
+.t-h1    { font-family: var(--display); font-size: var(--fs-h1);  font-weight: 700; line-height: 1.04; letter-spacing: -.012em;
+           font-variation-settings: "SOFT" 100, "WONK" 0, "opsz" 96; }
+.t-h2    { font-family: var(--display); font-size: var(--fs-h2);  font-weight: 600; line-height: 1.12;
+           font-variation-settings: "SOFT" 100, "opsz" 72; }
+.t-body  { font-size: var(--fs-body); font-weight: 450; line-height: 1.3; }
+.t-label { font-size: var(--fs-label); font-weight: 600; letter-spacing: .01em; line-height: 1.2; }
+.t-caps  { font-size: var(--fs-label); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.t-num   { font-family: var(--display); font-size: var(--fs-num); font-weight: 800; line-height: 1; letter-spacing: -.02em;
+           font-variant-numeric: lining-nums tabular-nums; font-variation-settings: "SOFT" 100, "opsz" 144; }
+.t-hand  { font-family: var(--hand); font-size: var(--fs-hand); font-weight: 600; line-height: 1.05; }
 .t-mono  { font-family: var(--mono); font-weight: 500; }
 .dim  { color: var(--text-2); }
 .faint{ color: var(--text-3); }
 .sec  { color: var(--sec-t); }
-.c-red{color:var(--red-t)} .c-orange{color:var(--orange-t)} .c-magenta{color:var(--magenta-t)}
-.c-purple{color:var(--purple-t)} .c-green{color:var(--green-t)} .c-blue{color:var(--blue-t)}
-.c-sky{color:var(--sky-t)} .c-teal{color:var(--teal-t)}
-.light .c-red{color:#C81E24} .light .c-orange{color:#C4421F} .light .c-magenta{color:#93357E}
-.light .c-purple{color:#7B2C79} .light .c-green{color:#2F7E33} .light .c-blue{color:#2F4E96}
-.light .c-sky{color:#2C6AA8} .light .c-teal{color:#1C6E62}
+.c-teal{color:var(--teal-t)} .c-olive{color:var(--olive-t)} .c-saffron{color:var(--saffron-t)}
+.c-cranberry{color:var(--cranberry-t)} .c-plum{color:var(--plum-t)} .c-rust,.c-orange{color:var(--rust-t)}
+.light .c-teal{color:#1F5D58} .light .c-olive{color:#5A6528} .light .c-saffron{color:#8A5A0E}
+.light .c-cranberry{color:#8A2F26} .light .c-plum{color:#5E3450} .light .c-rust,.light .c-orange{color:#A2441C}

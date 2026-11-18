@@ -11,11 +11,10 @@
      Fallbacks are deck 1's values. Text-safe tints are <name>T (e.g. Kit.color.redT). */
   Kit.color = (function () {
     var fallback = {
-      red: '#EE3538', orange: '#EF5A35', magenta: '#B656A0', purple: '#9A4198', green: '#53B754',
-      blue: '#4D6BB1', sky: '#518CC8', cobalt: '#286EA8', navy: '#4053A1', teal: '#2C8C7E', charcoal: '#353032',
-      redT: '#FF7A7C', orangeT: '#FF8A66', magentaT: '#E08FCB', purpleT: '#CC8AD0', greenT: '#84D484',
-      blueT: '#94AEE6', skyT: '#8EC0F0', tealT: '#62CDBB',
-      bg: '#1E1B1C', bg2: '#2A2627', surface: '#353032', line: '#4A4345', text: '#F4EFEA', text2: '#C9C0BA', text3: '#9A908A'
+      teal: '#2F7A74', olive: '#8A9A4B', saffron: '#E2A43B', cranberry: '#A8443A', plum: '#7E4E6B', rust: '#D2643A',
+      orange: '#D2643A', charcoal: '#33383C',
+      tealT: '#79C7BC', oliveT: '#BCCB7C', saffronT: '#F2C46E', cranberryT: '#E58A7E', plumT: '#C99BB7', rustT: '#F08A5D', orangeT: '#F08A5D',
+      bg: '#2A2E31', bg2: '#33383C', surface: '#383E42', line: '#545B60', text: '#F3EBDD', text2: '#CFC6B8', text3: '#A39C91', chalk: '#F3EBDD'
     };
     var css = getComputedStyle(document.documentElement), out = {};
     Object.keys(fallback).forEach(function (k) {
@@ -32,11 +31,12 @@
     return '<div class="src">' + (flag ? '<span class="flag">' + Kit.esc(flag) + '</span>&nbsp;&nbsp;' : '') + text + '</div>';
   };
 
-  /** "Where we are" marker, top-right of a content slide: steps = ['Step one', 'Step two', …], cur = 0-based index.
+  /** "Where we are" marker, top-right of a content slide: steps = ['Step one', 'Step two', …], cur = 0-based index, or an array of indices to light several steps.
       Ties a technique slide back to the section's roadmap. Static on purpose: it orients, it does not teach. */
   Kit.crumbs = function (steps, cur) {
+    var on = [].concat(cur);
     return '<div class="crumbs">' + steps.map(function (t, i) {
-      return (i ? '<i>→</i>' : '') + '<span class="cr' + (i === cur ? ' on' : '') + '"><b>' + (i + 1) + '</b>' + Kit.esc(t) + '</span>';
+      return (i ? '<i>→</i>' : '') + '<span class="cr' + (on.indexOf(i) >= 0 ? ' on' : '') + '"><b>' + (i + 1) + '</b>' + Kit.esc(t) + '</span>';
     }).join('') + '</div>';
   };
   /** Wrap a slide def so its html also renders Kit.crumbs(steps, cur). Returns the def. */
@@ -101,6 +101,65 @@
   Kit.draw = function (tl, targets, o) {
     o = o || {};
     return tl.from(targets, { drawSVG: '0%', duration: o.duration || .9, ease: o.ease || 'power2.inOut', stagger: o.stagger || 0 }, o.at);
+  };
+
+
+  /* ---------------- deck 2: hand-drawn strokes (rough.js) ----------------
+     Kit.rough.* return SVG markup strings (one or more <path class="rp">), so they work inside html() templates.
+     Every call takes o.seed (default derived from the shape) so a shape looks the same on every render and in print.
+     Common opts: stroke (default chalk), sw (stroke width, default 3), rough (roughness, default 1.1), bow (bowing, default 1),
+     fill (hachure fill color, optional), fillStyle ('hachure'|'solid'|'zigzag'|'cross-hatch'), cls (extra class), attrs (raw attr string).
+     Animate them on with Kit.draw(tl, el.querySelectorAll('.rp')). */
+  var _gen = null;
+  function gen() { if (!_gen && window.rough) _gen = window.rough.generator(); return _gen; }
+  function _seed(o, k) { if (o.seed != null) return o.seed; var h = 7; for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 2147483; return h + 1; }
+  function _opts(o, key) {
+    return { seed: _seed(o, key), roughness: o.rough != null ? o.rough : 1.1, bowing: o.bow != null ? o.bow : 1,
+      stroke: o.stroke || Kit.color.chalk, strokeWidth: o.sw || 3, fill: o.fill, fillStyle: o.fillStyle || 'hachure',
+      fillWeight: o.fillWeight || 2, hachureGap: o.hachureGap || 9, hachureAngle: o.hachureAngle != null ? o.hachureAngle : -41,
+      disableMultiStroke: o.single !== false, preserveVertices: true };
+  }
+  function _paths(drawable, o) {
+    var g = gen(); if (!g) return '';
+    return g.toPaths(drawable).map(function (p) {
+      var isFill = p.fill && p.fill !== 'none' && (!p.stroke || p.stroke === 'none');
+      return '<path class="rp' + (isFill ? ' rp-fill' : '') + (o.cls ? ' ' + o.cls : '') + '" d="' + p.d + '" stroke="' + (p.stroke || 'none') +
+        '" stroke-width="' + p.strokeWidth + '" fill="' + (isFill ? p.fill : 'none') + '"' + (o.attrs ? ' ' + o.attrs : '') + '/>';
+    }).join('');
+  }
+  Kit.rough = {
+    line: function (x1, y1, x2, y2, o) { o = o || {}; return gen() ? _paths(gen().line(x1, y1, x2, y2, _opts(o, 'l' + x1 + y1 + x2 + y2)), o) : ''; },
+    rect: function (x, y, w, h, o) { o = o || {}; return gen() ? _paths(gen().rectangle(x, y, w, h, _opts(o, 'r' + x + y + w + h)), o) : ''; },
+    ellipse: function (cx, cy, w, h, o) { o = o || {}; return gen() ? _paths(gen().ellipse(cx, cy, w, h, _opts(o, 'e' + cx + cy + w + h)), o) : ''; },
+    circle: function (cx, cy, d, o) { o = o || {}; return gen() ? _paths(gen().circle(cx, cy, d, _opts(o, 'c' + cx + cy + d)), o) : ''; },
+    path: function (d, o) { o = o || {}; return gen() ? _paths(gen().path(d, _opts(o, 'p' + d)), o) : ''; },
+    curve: function (pts, o) { o = o || {}; return gen() ? _paths(gen().curve(pts, _opts(o, 'v' + pts.join())), o) : ''; },
+    /** Arrow from (x1,y1) to (x2,y2); o.bend bends it (px, + = left of travel); head size o.head (default 22). */
+    arrow: function (x1, y1, x2, y2, o) {
+      o = o || {}; var bend = o.bend || 0, head = o.head || 22;
+      var mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
+      var cx = mx - dy / L * bend, cy = my + dx / L * bend;
+      var body = Kit.rough.path('M' + x1 + ' ' + y1 + ' Q' + cx + ' ' + cy + ' ' + x2 + ' ' + y2, o);
+      var ang = Math.atan2(y2 - cy, x2 - cx), a1 = ang + Math.PI * 0.82, a2 = ang - Math.PI * 0.82;
+      var hd = 'M' + (x2 + Math.cos(a1) * head) + ' ' + (y2 + Math.sin(a1) * head) + ' L' + x2 + ' ' + y2 + ' L' + (x2 + Math.cos(a2) * head) + ' ' + (y2 + Math.sin(a2) * head);
+      return body + Kit.rough.path(hd, Object.assign({}, o, { seed: _seed(o, 'h' + x2 + y2) }));
+    }
+  };
+
+  /** Photo markup. src under assets/img/…; o: {x,y,w,h?,rot,cls,framed,alt}. Cut-outs are transparent PNGs; framed photos get a card shadow. */
+  Kit.photo = function (src, o) {
+    o = o || {};
+    return '<img class="photo' + (o.framed ? ' framed' : '') + (o.cls ? ' ' + o.cls : '') + '" src="' + src + '" alt="' + Kit.esc(o.alt || '') +
+      '" style="left:' + o.x + 'px;top:' + o.y + 'px;width:' + o.w + 'px;' + (o.h ? 'height:' + o.h + 'px;' : '') +
+      (o.rot ? 'transform:rotate(' + o.rot + 'deg);' : '') + '">';
+  };
+  /** Signature motion: a photo drops onto the slate (falls a little, settles with a slight tilt). Safe on hidden elements (fromTo).
+      o: {at, stagger, rot (final rotation, default keeps CSS), from (start y offset, default -70)} */
+  Kit.drop = function (tl, targets, o) {
+    o = o || {};
+    var to = { autoAlpha: 1, y: 0, scale: 1, duration: o.duration || .75, ease: o.ease || 'back.out(1.4)', stagger: o.stagger || 0 };
+    if (o.rot != null) to.rotation = o.rot;
+    return tl.fromTo(targets, { autoAlpha: 0, y: o.from != null ? o.from : -70, scale: 1.06 }, to, o.at);
   };
 
   /** Convert a pointer event to SVG user coordinates (robust to stage scaling). */

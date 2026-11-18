@@ -1,8 +1,0 @@
-/* example section styles — scope every rule under .slide[data-sec="<id>"]. Copy and rename per section. */
-
-/* takeaways: the shared 2-row pattern (number · rule · tag · one line) */
-.slide[data-sec="example"] .tk-row { position: absolute; left: 120px; width: 1680px; height: 190px; }
-.slide[data-sec="example"] .tk-row .n { position: absolute; left: 0; top: 38px; font-size: 52px; font-weight: 600; color: var(--text-3); }
-.slide[data-sec="example"] .tk-row .rule { position: absolute; left: 112px; top: 0; width: 2px; height: 190px; background: var(--line); }
-.slide[data-sec="example"] .tk-row .tg { position: absolute; left: 160px; top: 0; color: var(--sec-t); }
-.slide[data-sec="example"] .tk-row .ln { position: absolute; left: 160px; top: 48px; width: 1500px; font-weight: 800; line-height: 1.1; }

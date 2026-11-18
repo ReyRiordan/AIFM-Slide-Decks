@@ -9,8 +9,8 @@
 /* --- standard header: fixed position on every content slide --- */
 .hd { position: absolute; left: var(--pad-x); top: var(--pad-top); right: var(--pad-x); }
 .hd .tag { display: inline-flex; align-items: center; gap: 14px; color: var(--text-2); }
-.hd .tag i { display: inline-block; width: 44px; height: 22px; border-radius: 6px; background: var(--sec); transform: skewX(var(--skew)); }
-.hd .tag b { color: var(--sec-t); font-weight: 800; }
+.hd .tag i { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--sec); box-shadow: 0 0 0 5px rgba(0,0,0,.18); }
+.hd .tag b { color: var(--sec-t); font-weight: 800; letter-spacing: .04em; }
 .hd .tag .sep { color: var(--line); font-weight: 400; }
 .hd h1 { margin-top: 22px; max-width: 1500px; }
 
@@ -38,7 +38,7 @@
 .chip { display: inline-flex; align-items: center; gap: 12px; padding: 10px 22px; border-radius: 999px;
   background: var(--surface); font-size: var(--fs-label); font-weight: 650; }
 .chip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--sec); }
-.slab { display: inline-block; padding: 6px 22px; border-radius: 12px; transform: skewX(var(--skew)); background: var(--sec); color: #fff; }
+.slab { display: inline-block; padding: 6px 22px; border-radius: 12px; transform: skewX(var(--skew)); background: var(--sec); color: #1E2124; font-weight: 700; }
 .slab > * { display: inline-block; transform: skewX(calc(-1 * var(--skew))); }
 
 /* --- big number block --- */
@@ -54,7 +54,8 @@
 #progress .seg { position: relative; height: 100%; background: rgba(255,255,255,.07); overflow: hidden; }
 #progress .seg > span { position: absolute; inset: 0 auto 0 0; width: 0; }
 #sweep { position: absolute; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
-#sweep .panel { top: -80px; height: 1240px; width: 560px; opacity: .92; }
+#sweep .panel { top: -80px; height: 1240px; width: 560px; opacity: .96; transform: rotate(4deg); border-radius: 6px;
+  box-shadow: 0 0 60px rgba(0,0,0,.35); }
 #blackout { position: absolute; inset: 0; background: #000; z-index: 60; display: none; }
 #hint { position: absolute; right: 24px; bottom: 18px; font: 600 18px var(--font); color: rgba(255,255,255,.35); z-index: 55; pointer-events: none; }
 
@@ -65,3 +66,18 @@ body.print #viewport { position: static; }
 body.print .printpage { position: relative; width: 1920px; height: 1080px; overflow: hidden; page-break-after: always; break-after: page; }
 body.print #progress, body.print #hint { display: none; }
 .eqcard .eq { font-size: 44px; }
+
+/* --- deck 2: food + doodle components --- */
+/* photo cut-out (transparent PNG) or framed photo dropped onto the slate */
+.photo { position: absolute; display: block; filter: drop-shadow(0 26px 30px rgba(0,0,0,.45)) drop-shadow(0 6px 8px rgba(0,0,0,.35)); }
+.photo.framed { border-radius: 14px; box-shadow: 0 26px 50px rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.3); filter: none; object-fit: cover; }
+/* rough.js strokes */
+svg .rp { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg text { font-family: var(--font); fill: var(--text); }
+svg text.hand { font-family: var(--hand); font-weight: 600; }
+svg text.disp { font-family: var(--display); font-variation-settings: "SOFT" 100; }
+svg text.mono { font-family: var(--mono); }
+/* handwritten callout: Caveat text + (optional) rough arrow drawn in an SVG beside it */
+.callout { position: absolute; font-family: var(--hand); font-size: var(--fs-hand); font-weight: 600; color: var(--rust-t); line-height: 1.05; transform: rotate(-3deg); }
+/* chalk card: a slightly raised slate tile with a rough border drawn in SVG behind it */
+.tile { position: absolute; background: rgba(0,0,0,.16); border-radius: 18px; }
