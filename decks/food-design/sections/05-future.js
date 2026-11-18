@@ -355,58 +355,72 @@
     { num: '03', k: 'Mix', color: 'saffron', pre: 'a recipe', rest: ' becomes a point on a map' },
     { num: '04', k: 'Sell', color: 'cranberry', pre: 'the engine', rest: ' outlived the food' }
   ];
-  var SROW_Y = 330, SROW_STEP = 92;
+  /* recap rows use the intro agenda's grammar: hatched number tile + a rule in the section tint */
+  var SROW_Y = 300, SROW_STEP = 76, SRULE_X1 = 1180;
+  function scy(i) { return SROW_Y + i * SROW_STEP + 28; }      // vertical centre of row i
+  function sruleY(i) { return SROW_Y + i * SROW_STEP + 62; }
+
   var SUMMARY = {
     id: 'summary',
     title: 'Summary',
     heading: 'Summary',
     budgetSec: 45,
     html: function () {
+      var svg = '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+        SUM.map(function (r, i) {
+          return '<g class="su-rule rl' + i + '">' +
+            Kit.rough.line(120, sruleY(i), SRULE_X1, sruleY(i), { seed: 320 + i, w: 'normal', stroke: C[r.color + 'T'] }) + '</g>';
+        }).join('') +
+        SUM.map(function (r, i) {
+          return '<g class="su-tile tl' + i + '">' +
+            Kit.rough.rect(120, scy(i) - 26, 76, 52, { seed: 330 + i, w: 'normal', stroke: C[r.color + 'T'],
+              hatch: C[r.color + 'T'], fillOpacity: .3, hachureGap: 12 }) +
+            '<text class="mono" x="158" y="' + (scy(i) + 9) + '" text-anchor="middle" font-size="28" fill="' + C[r.color + 'T'] + '">' + r.num + '</text>' +
+          '</g>';
+        }).join('') +
+        '<g class="dd-q">' + Kit.doodle.underline(128, 946, 980, { seed: 71, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+      '</svg>';
       var rows = SUM.map(function (r, i) {
-        return '<div class="su-row s' + i + '" style="top:' + (SROW_Y + i * SROW_STEP) + 'px">' +
-          '<span class="su-rule" style="background:' + C[r.color] + '"></span>' +
-          '<span class="su-in">' +
-            '<span class="su-chip" style="background:' + C[r.color] + '"></span>' +
-            '<span class="t-mono su-n">' + r.num + '</span>' +
-            '<span class="t-h2 su-k" style="color:' + C[r.color + 'T'] + '">' + r.k + '</span>' +
-            '<span class="t-body dim su-t"><b style="font-weight:600;color:' + C[r.color + 'T'] + '">' + r.pre + '</b>' + r.rest + '</span>' +
-          '</span>' +
+        return '<div class="su-in i' + i + '" style="top:' + (scy(i) - 30) + 'px">' +
+          '<span class="t-h2 su-k" style="color:' + C[r.color + 'T'] + '">' + r.k + '</span>' +
+          '<span class="t-body dim su-t"><b style="font-weight:600;color:' + C[r.color + 'T'] + '">' + r.pre + '</b>' + r.rest + '</span>' +
         '</div>';
       }).join('');
       return '<div class="su-bg" style="background-image:url(' + IMG + 'close-table.jpg)"></div>' +
-        '<div class="su-scrim"></div>' + rows +
+        '<div class="su-scrim"></div>' + svg + rows +
         '<div class="t-h2 su-line1">A model chose what\'s in it.</div>' +
-        '<div class="t-h1 su-line2">Would you notice?</div>' +
-        '<svg class="fu-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="dd-q">' + Kit.doodle.underline(126, 968, 566, { seed: 71, color: 'var(--rust-t)' }) + '</g>' +
-        '</svg>';
+        '<div class="t-h1 su-line2">Would you notice?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.su-in'), { autoAlpha: 0 });
-      gsap.set(qa('.su-rule'), { opacity: .18 });
+      gsap.set(qa('.su-in, .su-tile'), { autoAlpha: 0 });
+      gsap.set(qa('.su-rule'), { opacity: .2 });
       gsap.set(qa('.su-line1, .su-line2, .dd-q'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
-      Kit.fade(tl, qa('.su-bg, .su-rule'), { at: .2, stagger: .04 });
+      Kit.fade(tl, q('.su-bg'), { at: .2 });
+      Kit.draw(tl, qa('.su-rule .rp'), { at: .25, duration: .6, stagger: .04 });
 
       SUM.forEach(function (r, i) {
         ctx.pause();
         var L = 'r' + i;
         tl.addLabel(L);
-        tl.to(q('.s' + i + ' .su-rule'), { opacity: 1, duration: .4 }, L);
-        tl.fromTo(q('.s' + i + ' .su-in'), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, L + '+=.1');
+        tl.to(q('.rl' + i), { opacity: 1, duration: .4 }, L);
+        tl.to(q('.tl' + i), { autoAlpha: 1, duration: .01 }, L);
+        Kit.draw(tl, qa('.tl' + i + ' .rp'), { at: L, duration: .4 });
+        tl.fromTo(q('.i' + i), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, L + '+=.1');
       });
 
-      // [click 5] the question owns the frame
+      // [click 5] the question owns the frame: the recap recedes, the plate comes up
       ctx.pause();
       tl.addLabel('q');
-      tl.to(qa('.su-row'), { opacity: .7, duration: .5 }, 'q');
-      tl.to(q('.su-bg'), { opacity: .55, duration: .8 }, 'q');
+      tl.to(qa('.su-in, .su-tile'), { opacity: .4, duration: .5 }, 'q');
+      tl.to(qa('.su-rule'), { opacity: .3, duration: .5 }, 'q');
+      tl.to(q('.su-bg'), { opacity: .62, duration: .9 }, 'q');
       Kit.show(tl, q('.su-line1'), { at: 'q+=.15', y: 24, duration: .5 });
-      Kit.show(tl, q('.su-line2'), { at: 'q+=.45', y: 24, duration: .6 });
-      tl.to(q('.dd-q'), { autoAlpha: 1, duration: .01 }, 'q+=1.0');
-      Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=1.0', duration: .55 });
+      Kit.show(tl, q('.su-line2'), { at: 'q+=.45', y: 28, duration: .7 });
+      tl.to(q('.dd-q'), { autoAlpha: 1, duration: .01 }, 'q+=1.1');
+      Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=1.1', duration: .6 });
     },
     notes:
       'So, four sections, and every one of them did the same thing. ' +

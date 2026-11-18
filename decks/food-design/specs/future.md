@@ -42,8 +42,15 @@ Dark theme throughout. Diagrams are code-drawn SVG with a rough.js cream wobble 
   a trade report's reading, and the 90% figure is one study run with a toothpaste maker.
 - **Content zone runs to y 1030** (no footer): the bar on `forces` sits at y 866–928 so the sag and its
   callout fill the bottom band; `engine`'s loop and caption moved down; `parity`'s verdict card is now
-  806–990; `avoid` gained the rust Chef Robotics band at 700–950; `summary`'s close lines moved to
-  796 / 880. Notes: 135 · 104 · 112 · 69 · 98 = 518 words for 225 s.
+  806–990; `avoid` gained the rust Chef Robotics band at 700–950. Notes: 135 · 104 · 112 · 69 · 98 =
+  518 words for 225 s.
+- **`summary` (Rey, round 5).** The recap rows now copy the intro agenda exactly: a hatched,
+  overshooting `Kit.rough.rect` number tile in the section tint (`fillOpacity` .3) and a
+  `Kit.rough.line` rule under each row in the same tint, kicker in `t-h2`, one line of recap text.
+  Rows are compact (y 300, step 76, rules to x 1180) because they are recap, not the hero. The close
+  is the hero: `A model chose what's in it.` in `t-h2` at y 682 and `Would you notice?` at 132 px in
+  `--rust-t` at y 762, with one rust underline. On the last click the tiles, rows and rules drop to
+  .4 / .3 and the plate photo lifts to .62, so the empty plate becomes the stage for the question.
 
 ---
 

@@ -43,15 +43,12 @@
 .slide[data-sec="future"] .fu-chef b { color: var(--rust-t); font-weight: 700; }
 .slide[data-sec="future"] .fu-chef span { color: var(--text-2); }
 
-/* ---------- summary (row geometry copied from the intro agenda) ---------- */
+/* ---------- summary (recap rows copy the intro agenda's tiles and rules) ---------- */
 .slide[data-sec="future"] .su-bg { position: absolute; inset: 0; background-size: cover; background-position: right 8% center; opacity: .3; }
 .slide[data-sec="future"] .su-scrim { position: absolute; inset: 0;
   background: linear-gradient(90deg, rgba(42,46,49,1) 0%, rgba(42,46,49,1) 56%, rgba(42,46,49,.45) 74%, rgba(42,46,49,0) 88%); }
-.slide[data-sec="future"] .su-row { position: absolute; left: 120px; right: 120px; height: 76px; }
-.slide[data-sec="future"] .su-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; }
-.slide[data-sec="future"] .su-in { position: absolute; left: 0; top: 0; height: 72px; display: flex; align-items: center; gap: 32px; }
-.slide[data-sec="future"] .su-chip { display: block; width: 26px; height: 26px; border-radius: 50%; }
-.slide[data-sec="future"] .su-n { font-size: var(--fs-label); color: var(--text-3); width: 44px; }
-.slide[data-sec="future"] .su-k { width: 360px; }
-.slide[data-sec="future"] .su-line1 { position: absolute; left: 120px; top: 796px; color: var(--text); }
-.slide[data-sec="future"] .su-line2 { position: absolute; left: 120px; top: 880px; color: var(--rust-t); }
+.slide[data-sec="future"] .su-in { position: absolute; left: 232px; height: 60px; display: flex; align-items: center; gap: 40px; }
+.slide[data-sec="future"] .su-k { width: 272px; }
+.slide[data-sec="future"] .su-line1 { position: absolute; left: 120px; top: 682px; color: var(--text); }
+.slide[data-sec="future"] .su-line2 { position: absolute; left: 120px; top: 762px; font-size: 132px; line-height: 1.02;
+  letter-spacing: -.02em; color: var(--rust-t); }
