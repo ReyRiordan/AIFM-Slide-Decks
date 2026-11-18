@@ -1,0 +1,56 @@
+/* notco section styles — scope every rule under .slide[data-sec="notco"] */
+.slide[data-sec="notco"] .nc-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+
+/* ---- origin ---- */
+.slide[data-sec="notco"] .nc-o-place { position: absolute; left: 120px; top: 288px; }
+.slide[data-sec="notco"] .nc-o-year { position: absolute; left: 120px; top: 320px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-f { position: absolute; left: 120px; width: 880px; }
+.slide[data-sec="notco"] .nc-f1 { top: 520px; }
+.slide[data-sec="notco"] .nc-f2 { top: 640px; }
+.slide[data-sec="notco"] .nc-f .t-label { margin-top: 12px; }
+.slide[data-sec="notco"] .nc-f::after { content: ""; position: absolute; left: 0; top: 112px; width: 920px; height: 3px;
+  border-radius: 2px; background: var(--cranberry); opacity: .45; }
+.slide[data-sec="notco"] .nc-o-c { left: 620px; top: 786px; width: 520px; }
+.slide[data-sec="notco"] .nc-o-card { position: absolute; left: 1174px; top: 694px; width: 600px; }
+.slide[data-sec="notco"] .nc-o-card .t-label { margin-top: 12px; }
+.slide[data-sec="notco"] .nc-o-pct { position: absolute; left: 1140px; top: 816px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-o-pctlab { position: absolute; left: 1340px; top: 858px; width: 460px; line-height: 1.35; }
+.slide[data-sec="notco"] .nc-o-chipbg { position: absolute; left: 1456px; top: 292px; width: 344px; height: 124px;
+  background: rgba(34, 37, 40, .94); border-radius: 14px; }
+.slide[data-sec="notco"] .nc-o-chip { position: absolute; left: 1488px; top: 308px; width: 288px; }
+.slide[data-sec="notco"] .nc-o-chip .t-label { margin-top: 10px; }
+.slide[data-sec="notco"] .nc-g { color: var(--text-2); }
+
+/* ---- pivot ---- */
+.slide[data-sec="notco"] .nc-lane { position: absolute; left: 120px; }
+.slide[data-sec="notco"] .nc-lane1 { top: 288px; }
+.slide[data-sec="notco"] .nc-lane2 { top: 616px; }
+.slide[data-sec="notco"] .nc-mk { position: absolute; top: 340px; width: 268px; text-align: center; }
+.slide[data-sec="notco"] .nc-mk-n { height: 88px; display: flex; align-items: center; justify-content: center;
+  line-height: 1.08; padding: 0 14px; }
+.slide[data-sec="notco"] .nc-mk-t { margin-top: 22px; line-height: 1.3; }
+.slide[data-sec="notco"] .nc-ai { position: absolute; top: 686px; width: 520px; text-align: center; }
+.slide[data-sec="notco"] .nc-ai .t-label { margin-top: 8px; }
+.slide[data-sec="notco"] .nc-cap { position: absolute; left: 120px; top: 846px; width: 1680px; text-align: center; }
+.slide[data-sec="notco"] .nc-cap > div + div { margin-top: 8px; }
+
+/* ---- today ---- */
+.slide[data-sec="notco"] .nc-t-k { position: absolute; left: 120px; top: 288px; }
+.slide[data-sec="notco"] .nc-t-n1 { position: absolute; left: 120px; top: 330px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-t-l1 { position: absolute; left: 122px; top: 484px; width: 860px; }
+.slide[data-sec="notco"] .nc-t-n2 { position: absolute; left: 120px; top: 600px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-t-est { position: absolute; left: 500px; top: 652px; }
+.slide[data-sec="notco"] .nc-t-l2 { position: absolute; left: 122px; top: 752px; width: 860px; }
+.slide[data-sec="notco"] .nc-t-c { left: 356px; top: 876px; }
+.slide[data-sec="notco"] .nc-t-card { position: absolute; left: 1116px; top: 744px; width: 652px; }
+.slide[data-sec="notco"] .nc-t-cl { margin-top: 18px; line-height: 1.35; }
+.slide[data-sec="notco"] .nc-t-cd { margin-top: 12px; }
+
+/* ---- bridge ---- */
+.slide[data-sec="notco"] .nc-b-scrim { position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, var(--bg) 50%, rgba(42,46,49,0) 66%); }
+.slide[data-sec="notco"] .nc-b-l1 { position: absolute; left: 150px; top: 404px; width: 1000px; }
+.slide[data-sec="notco"] .nc-b-l2 { position: absolute; left: 150px; top: 486px; width: 1000px; }
+.slide[data-sec="notco"] .nc-b-sup { position: absolute; left: 150px; top: 624px; width: 1000px; }
+.slide[data-sec="notco"] .nc-b-flag { margin-left: 18px; }
+.slide[data-sec="notco"] .nc-b-l3 { position: absolute; left: 150px; top: 736px; width: 1000px; }

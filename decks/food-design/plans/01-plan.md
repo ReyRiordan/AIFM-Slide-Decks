@@ -89,7 +89,7 @@ Section ids and files: `intro` (`00-intro.js`) · `samsung` (`01-samsung.js`) ·
 | Mix | `map` | The recipe map | 75 | Map |
 | Mix | `score` | Scoring a candidate | 50 | Decode, Score |
 | Mix | `steer` | Steering the search | 50 | Steer |
-| Mix | `rules` | Diet rules | 40 | Steer |
+| Mix | `rules` | Diet rules | 40 | Decode |
 | Mix | `results` | Results | 55 | — |
 | Mix | `takeaways` | Takeaways | 45 | — |
 | Sell | `origin` | Where NotCo came from | 40 | — |

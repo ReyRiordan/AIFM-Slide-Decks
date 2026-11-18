@@ -66,10 +66,8 @@ gives the patent's own 830-ingredient example as the only vocabulary size in the
 
 Sum: 390 s. Notes at 135 wpm: 101 · 68 · 169 · 113 · 113 · 90 · 124 · 101 words (879 total).
 
-**Build note for the kit.** `score` lights two crumb steps at once (`Decode` and `Score`), the same need the
-`samsung` unit's `parse` slide has. `Kit.crumbs(steps, cur)` therefore has to accept an array of indices as
-well as a number. That is a one-line change in a shared file, so it needs Rey's approval (KIT §4). Until it
-lands, `score` lights `Score` only. See open questions.
+**Build note for the kit.** `score` lights two crumb steps at once (`Decode` and `Score`). `Kit.crumbs(steps, cur)`
+accepts an array of indices (approved and shipped), so `score` is wrapped with `Kit.withCrumbs(SCORE, STEPS, [1, 2])`.
 
 ---
 
@@ -648,17 +646,63 @@ tilt, mono for every number, and Caveat for short callouts only.
 
 ## Checklist
 
-- [ ] Headings match the plan's heading map exactly: `The formulation problem`, `How Giuseppe works`,
+- [x] Headings match the plan's heading map exactly: `The formulation problem`, `How Giuseppe works`,
       `The recipe map`, `Scoring a candidate`, `Steering the search`, `Diet rules`, `Results`, `Takeaways`.
-- [ ] `STEPS = ['Map', 'Decode', 'Score', 'Steer']`, identical to the roadmap cards, and every slide after
+- [x] `STEPS = ['Map', 'Decode', 'Score', 'Steer']`, identical to the roadmap cards, and every slide after
       `approach` is wrapped in `Kit.withCrumbs`.
-- [ ] Every number has a `Kit.src` footer. The `10 → 2` months figure carries `'Self-reported'`.
-- [ ] `4 × 10²²` is footnoted as the report author's arithmetic (830 choose 10), not a company figure.
-- [ ] Every technique slide's footer says `patented design; production use not confirmed`.
-- [ ] Every slide that draws the map carries `Drawn in 2-D. The real space has more dimensions.`
-- [ ] `[click]` count equals `ctx.pause()` count: 3 / 3 / 5 / 3 / 3 / 2 / 3 / 2.
-- [ ] `budgetSec` sums to 390, and each slide's notes run about 135 words per minute.
-- [ ] `map`, `score` and `steer` each use one state object and one pure `render()` with `onUpdate: render`.
-- [ ] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` or `Kit.rise` (KIT §5).
-- [ ] All CSS scoped under `.slide[data-sec="giuseppe"]`.
-- [ ] Every build step screenshotted at 1920×1080 and read; print mode checked; `agent-browser errors` empty.
+- [x] Every number has a `Kit.src` footer. The `10 → 2` months figure carries `'Self-reported'`.
+- [x] `4 × 10²²` is footnoted as the report author's arithmetic (830 choose 10), not a company figure.
+- [x] Every technique slide's footer says `patented design; production use not confirmed`.
+- [x] Every slide that draws the map to be read as a space (`map`, `steer`) carries `Drawn in 2-D. The real space has more dimensions.`
+      The 240 px thumbnail on `score` and the 372 px closing image on `takeaways` only locate a point, so they do not repeat the line.
+- [x] `[click]` count equals `ctx.pause()` count: 3 / 3 / 5 / 3 / 3 / 2 / 3 / 2.
+- [x] `budgetSec` sums to 390, and each slide's notes run about 135 words per minute.
+- [x] `map`, `score` and `steer` each use one state object and one pure `render()` with `onUpdate: render`.
+- [x] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` or `Kit.rise` (KIT §5).
+- [x] All CSS scoped under `.slide[data-sec="giuseppe"]`.
+- [x] Every build step screenshotted at 1920×1080 and read; print mode checked; `agent-browser errors` empty.
+
+
+---
+
+## As built (Nov 18) — changes from this spec
+
+Rey approved the specs with "full freedom to split or simplify". The section's budget is unchanged at 390 s
+and the slide list, headings, crumb steps and pause counts (3 / 3 / 5 / 3 / 3 / 2 / 3 / 2) are as specified.
+What differs:
+
+| Slide | Change | Why |
+|---|---|---|
+| `problem` | The ten empty slots sit inside a rough.js bowl (rim ellipse + wall), and `THE REAL TEST` became a full-width strip along the bottom instead of a card at the right. | The right column holds the two numbers, so the bottom strip balances the slide instead of leaving a half-empty lower left. |
+| `score` | One column, not two: the four decoded ingredients *are* the solver's bar labels. Left of them, a 240 px map thumbnail with the rust point feeds a decoder wedge. The target column (milk cut-out, five feature tracks) and the score readout sit at the right. | The spec's separate "decoded list" and "bars" columns repeated the same four words twice and pushed the score readout into the footer. |
+| `steer` | Six tries instead of eight, positions re-fitted to the map's real cluster coordinates (`dairy` is at u .78, v .24, so the milk star is at .82, .17). Build: entrance shows tries 1–2, click 1 → 4, click 2 the belief blob, click 3 → 6. | Eight 28 px score badges could not be placed around the tail of the trail without overlapping. Six keeps every badge legible and still shows the worse-then-back-off step. |
+| `rules` | The dictionary is seven named rows of a feature matrix (`chicken`, `tuna`, `milk`, `egg`, `cabbage`, `pineapple`, `coconut`) plus `… 823 more`, not a 140-dot grid. Masking blanks the four animal rows to `0.00  0.00  0.00  0.00  0.00`, dims them and strikes them in rust. | A dot grid could not carry readable 28 px labels, and "the row is set to zeros" is the actual mechanism, so showing numbers going to zero teaches it directly. |
+| `results` | The carton is drawn in rough.js (plain gable-top carton, no brand marks) and labelled `NotMilk, 2020`. The footer says `Carton: illustration, not a product photo.` | No official NotCo press photo of a NotMilk carton with clear reuse terms was found; the closest are SIG-credited images. **TODO for Rey:** supply a credited photo and swap `.rs-pack` for `Kit.photo(..., {framed: true})` if he wants a real one. |
+| `takeaways` | The row number is 44 px mono (not `t-num`), and the shrunk map carries the six-try trail at 372 px. | A 132 px row number dwarfed the rule it labels. |
+
+**Images.** Generated this round with gpt-image-bridge and `design/style-cutout.txt`: `cabbage.webp`,
+`chicory.webp`, `coconut.webp` (raws in `design/raw/giuseppe-*.png`). Reused: `milk.webp` (`problem`, `score`),
+`pineapple.webp` (`results`), and `tomato / garlic / basil` on `map`. No full scene is used in this section.
+
+**Helpers added inside the section IIFE** (no shared file was touched): `proj(ox, oy, sz)` returns a map-coordinate
+projector, so `score`, `steer` and `takeaways` reuse the map square's geometry; `mapDots(proj, {rs, op})` draws the
+same deterministic dot field at any size. The `map` slide's output is pixel-identical to the gate-2 version.
+
+## Review pass (Nov 18) — fixes applied after the build
+
+| Slide | Fix |
+|---|---|
+| `score` | Added a legend above the target tracks (`\| milk` · `● this blend`) so the cream tick and the rust dot are named. Without it the two marks on each track were unexplained. |
+| `steer` | The `0.37` badge sat on top of the dashed trail; moved to the left of its dot (`off [-108, 6]`). The belief blob is now explained by a legend in the empty left column: a swatch of the same gradient under `ITS GUESS · where good scores probably are`, revealed with the blob on click 2. The caption breaks as two balanced lines. |
+| `rules` | The big rust ✗ crossed straight through `cabbage · chicken · coconut` and made it unreadable; it is now a single rough strike-through, matching the dictionary's blanked rows. The caption *Blank the row and the decoder cannot reach it.* and the lane-A arrow now appear on click 1 instead of at the entrance, where the caption pre-empted the animation and the arrow pointed at nothing. |
+| `approach` | Notes trimmed from 152 to ~142 wpm, in line with the rest of the section. |
+
+Still open for Rey: the generated `chicory.webp` reads like parsnips; the `rules` crumb lights **Steer** per the
+heading map although masking happens at the decoder; and the section's notes average ~141 wpm rather than 135.
+
+## Deck-wide QA pass (v1)
+
+- `takeaways`: the active MIX token on the marker strip was a 18 %-opacity tint that did not render
+  as a pill. It is now a solid saffron pill with dark text (a `.tk-on` class in
+  `css/sections/giuseppe.css`), matching the READ pill on Samsung and the FIND pill on Shiru.
+- `takeaways`: the strip moved from y 846 to y 900, the height the other two sections use.

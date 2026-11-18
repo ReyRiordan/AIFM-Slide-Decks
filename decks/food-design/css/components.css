@@ -73,7 +73,8 @@ body.print #progress, body.print #hint { display: none; }
 .photo.framed { border-radius: 14px; box-shadow: 0 26px 50px rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.3); filter: none; object-fit: cover; }
 /* rough.js strokes */
 svg .rp { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-svg text { font-family: var(--font); fill: var(--text); }
+svg text { font-family: var(--font); }
+svg text:not([fill]) { fill: var(--text); }
 svg text.hand { font-family: var(--hand); font-weight: 600; }
 svg text.disp { font-family: var(--display); font-variation-settings: "SOFT" 100; }
 svg text.mono { font-family: var(--mono); }

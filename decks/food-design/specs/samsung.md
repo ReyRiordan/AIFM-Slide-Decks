@@ -1,7 +1,9 @@
 # Spec: section 01 · Read · Samsung Food
 
 **Owner files:** `sections/01-samsung.js`, `css/sections/samsung.css`, `assets/img/samsung/`, `specs/samsung.md`
-**Budget:** **395 s** (plan: 390 s, +5 s) = 45 + 45 + 30 + 75 + 45 + 45 + 45 + 30 + 35
+**Budget:** **390 s** (plan: 390 s) = 45 + 45 + 30 + 70 + 45 + 45 + 45 + 30 + 35
+**Built:** `read` lost one click and 5 s (see below); everything else follows this spec.
+**Reviewed:** see "Review fixes" at the end for the changes made after the build.
 **Section color:** `teal` (`--sec` = `#2F7A74`, `--sec-t` = `#79C7BC`). Focus accent: `rust` `#D2643A` / `--rust-t` `#F08A5D`.
 **Kicker:** `Read`. Section title: `Samsung Food`.
 **Slide order:** `DEMO, PROBLEM, APPROACH, READ, PARSE, LINK, ERRORS, DISH, TAKEAWAYS`
@@ -29,19 +31,20 @@
 | `demo` | Recipe from a photo | 45 | 1 | — |
 | `problem` | The recipe problem | 45 | 3 | — |
 | `approach` | How the scanner works | 30 | 4 | — |
-| `read` | Reading the page | 75 | 5 | Read |
+| `read` | Reading the page | 70 | 4 | Read |
 | `parse` | Parsing ingredient lines | 45 | 4 | Sort + Parse |
 | `link` | Linking to a food graph | 45 | 3 | Link |
 | `errors` | Two kinds of error | 45 | 3 | — |
 | `dish` | Recipes from a dish photo | 30 | 2 | — |
 | `takeaways` | Takeaways | 35 | 2 | — |
 
-**Crumb mechanics.** `Kit.crumbs(steps, cur)` takes one current index, so `parse` cannot light two steps through it. Define a local `crumbs2(steps, curArray)` inside the section's IIFE that copies `Kit.crumbs`' markup and sets `.on` for every index in `curArray` (allowed by KIT §4; do not edit `kit.js`). `read` and `link` use `Kit.withCrumbs` as normal.
+**Crumb mechanics.** `Kit.crumbs(steps, cur)` now accepts an array, so `parse` uses `Kit.withCrumbs(def, STEPS, [1, 2])` and no local helper is needed.
 
-**Generated images (3).** All photoreal, on the same dark slate, warm side light from upper left, no text, no logos, no hands.
-- `assets/img/samsung/recipe-card.jpg` — subject: a worn handwritten index-card recipe, slightly curled, lying on dark slate stone.
-- `assets/img/samsung/cookbook.jpg` — subject: an open cookbook spread, pages lit from the side, on dark slate stone. Used on `read` and reused under the `takeaways` veil.
-- `assets/img/samsung/dish.jpg` — subject: a finished stew in a shallow bowl, shot from above on dark slate stone, ingredients not identifiable.
+**Generated images (3 generations, 4 files).** All photoreal, on the same dark slate, warm side light from upper left, no readable text, no logos, no hands.
+- `assets/img/samsung/recipe-card.jpg` — a worn handwritten index card, slightly curled, on dark slate. The handwriting is illegible looping ink, so no words are generated.
+- `assets/img/samsung/cookbook.jpg` — an open cookbook spread, used full-bleed under the `takeaways` veil. Printed matter is out of focus.
+- `assets/img/samsung/page.jpg` — a portrait crop of the same generation, used as the `ONE PAGE` tile on `read`.
+- `assets/img/samsung/dish.jpg` — a finished stew in a shallow bowl, shot from above, ingredients not identifiable.
 
 All diagrams are code-drawn SVG with the rough.js wobble in cream strokes that draw themselves on. Caveat is used only for the four short doodle callouts named below.
 
@@ -110,19 +113,20 @@ Caption at x 120, y 870: `Samsung has not published its pipeline.` with an `Infe
 
 ---
 
-### 4 · `read` — 75 s — "Reading the page" — crumb `Read`
+### 4 · `read` — 70 s — "Reading the page" — crumb `Read`
 
 **The one idea:** either chain specialist models that read characters first, or let one model look at the page and write the record directly.
 
-**On screen.** One source tile and two lanes.
-- Source tile: a 220×300 crop of `cookbook.jpg` at x 120, y 460, tilted −2°, with caps `ONE PAGE` above it at y 410.
-- **Path A** lane, y 300–540. Caps `PATH A · A CHAIN` at x 400, y 300. Four rough.js boxes at y 360, h 140, w 290, x 400 / 740 / 1080 / 1420, joined by drawn arrows: `OCR` → `Layout` → `Parse` → `Link`. Under the `OCR` box, on click 2, a two-part inset (w 290, y 510): `encoder · looks at pixels` and `decoder · writes characters`.
-- **Path B** lane, y 660–900. Caps `PATH B · ONE MODEL` at x 400, y 660. One wide rust-outlined box at x 400, y 720, w 630, h 140: `One model, one pass`. Arrow to a mono JSON chip at x 1120, y 720, w 680: `{"title":…, "ingredients":[…]}`. On click 4, three small chips under the box at y 880: `vision encoder` → `projector` → `language model`.
-- Trade-off pair, revealed last, at y 950 (inside the zone, h 40): left `misreads a character` in teal, right `writes a line that is not there` in rust.
+**On screen.** One source tile and two lanes. The multimodal split (vision encoder, projector, language model) was cut from the slide and moved into the spoken notes, because the slide was carrying two teaching ideas at once.
+- Source tile: `page.jpg` at x 120, y 430, w 220, h 300, tilted -2, with caps `ONE PAGE` above it at y 382. A drawn arrow feeds each lane.
+- **Path A** lane. Caps `PATH A · A CHAIN` at x 400, y 286. Four rough.js boxes at y 350, h 120, w 290, x 400 / 740 / 1080 / 1420, joined by drawn arrows: `OCR` -> `Layout` -> `Parse` -> `Link`. On click 2 the OCR box opens, through a drawn bracket, into two boxes at y 520: `encoder / looks at pixels` and `decoder / writes characters`, with a Caveat callout `pixels in, characters out` at x 1118 and an arrow back to the decoder box.
+- **Path B** lane. Caps `PATH B · ONE MODEL` at x 400, y 676. One rust-outlined box at x 400, y 740, w 630, h 130: `One model, one pass`. Arrow to a mono JSON chip at x 1120, y 740, w 680.
+- The failure modes land on each lane's caption row, right-aligned to x 1800: teal `fails by misreading a character` on Path A, rust `fails by inventing a line` on Path B.
+- The `PATH B · ONE MODEL` label appears with Path B's content on click 3, not in the entrance, so the encoder/decoder inset is never mistaken for Path B.
 
-Body text is labels only; no sentence runs past 7 words.
+Body text is labels only; no line runs past 7 words.
 
-**Build.** Entrance: the page tile drops in and both lane labels fade. `[click]` 1: Path A's four boxes and arrows draw left to right. `[click]` 2: the OCR box opens into encoder and decoder, with a Caveat callout `pixels in, characters out` above it. `[click]` 3: Path B draws: the single box and the JSON chip, in rust. `[click]` 4: the three chips appear under Path B's box, with arrows between them. `[click]` 5: the two trade-off lines appear under their lanes, and Path A's arrows pick up a rust dot at each join to show where an error gets passed on.
+**Build.** Entrance: the page tile drops in, both lane labels fade, the Path A feed arrow draws. `[click]` 1: Path A's four boxes and arrows draw left to right. `[click]` 2: the OCR box opens into encoder and decoder, with the Caveat callout. `[click]` 3: the Path B feed arrow, the single box and the JSON chip draw in rust. `[click]` 4: the two failure lines appear and Path A's arrows pick up a rust dot at each join, to show where an error is passed on.
 
 **Spoken only.** Optical character recognition turns images of text into machine-readable text. The modern version, TrOCR from Microsoft in 2021, uses a pre-trained image Transformer as the encoder and a pre-trained text Transformer as the decoder, and it beat the older designs on both printed and handwritten text. The intuition is machine translation where the source language is pixels. Handwriting matters, because Samsung markets turning handwritten recipes into digital ones. Donut, from NAVER CLOVA in 2022, skips OCR: it maps a document image straight to structured output, and the paper's own figure turns a receipt photo into nested JSON. A general multimodal model such as LLaVA goes further: a vision encoder cuts the image into patches, a small projector translates those patches into the same space the language model uses for words, and then the language model writes an answer. The projector teaches the image to speak a dialect the language model already understands. For a scanner you lower the sampling temperature, because you want the most likely tokens when copying text off a page. Samsung does not name its model. Its terms say it may use OpenAI to generate and adapt recipes, so a plausible design is a hosted multimodal model for the draft and Samsung's own deterministic parsing afterwards — a teaching hypothesis, not a fact.
 
@@ -174,7 +178,7 @@ Body text is labels only; no sentence runs past 7 words.
 - Right panel, x 980, y 320, w 820, h 460, rust rule. Caps `INVENTED`. Three cream lines of a recipe, then a fourth in rust marked with a Caveat `not on the page` callout and an arrow.
 - Bottom strip, x 120, y 830, w 1680, h 130: three items in a row — `confidence per field` · `low-confidence fields flagged` · `the user saves and edits`.
 
-**Build.** Entrance: both panel headers and their empty rules draw on. `[click]` 1: the left panel's misread plays — `½` flips to `12` and a small downstream readout beside it jumps to a wrong sodium figure, so the consequence is visible rather than asserted. `[click]` 2: the right panel's three real lines appear, then the fourth rust line slides in with its callout. `[click]` 3: the bottom strip fills left to right, ending on the user.
+**Build.** Entrance: both panel headers and their empty rules draw on. `[click]` 1: the left panel's misread plays — `½` flips to `12` and the sodium readout beside it reads `190 mg → 4,560 mg`, so the consequence is a visible change rather than a bare number. `[click]` 2: the right panel's three real lines appear, then the fourth rust line slides in with its callout. `[click]` 3: the bottom strip fills left to right, ending on the user.
 
 **Spoken only.** This is the trade-off between the two paths, stated as failures. In a chain, a mistake early on poisons everything after it: the parser tags the wrong number perfectly, the nutrition is computed perfectly, and the dish is still inedible. A single large model rarely misreads a character, but it writes fluent text that was never on the page. FIRE's authors call hallucination a critical challenge for this whole family of systems. The mitigations differ: per-field confidence scores are natural in a chain and hard to calibrate for a large model, so for the model you check each output line against the text actually found in the image and keep the sampling temperature low. In both cases Samsung's flow ends the same way, with a recipe the user saves and can then edit. A good interface makes the uncertain fields obvious instead of burying them.
 
@@ -191,7 +195,7 @@ This slide carries the section's results-type content. Samsung publishes no accu
 **On screen.**
 - `dish.jpg` at x 120, y 320, w 560, h 420, tilted −3°, with a Caveat callout `what is in it?`.
 - Two big numbers, `t-num` mono, at x 760, y 360 and x 1280, y 360, each with one plain label under it at y 520, w 460:
-  - `49.3` · `ingredient F1, best published system`
+  - `49.3` · `ingredient F1, best system`, with `100 = a perfect ingredient list.` under it in `--text-3`, so the scale of an undefined term is readable
   - `55%` · `generated recipes judged to match the photo`
   - Under the second, in `--text-3`: `the real recipe scored 80%`.
 - One teal line at x 760, y 740, w 1040: `Samsung's dish-photo feature finds existing recipes.` (7 words.)
@@ -254,8 +258,29 @@ Marker strip at y 900: `READ · FIND · MIX · SELL`, with `READ` filled teal an
 - [ ] Headings match the plan's heading map: Recipe from a photo · The recipe problem · How the scanner works · Reading the page · Parsing ingredient lines · Linking to a food graph · Two kinds of error · Recipes from a dish photo · Takeaways.
 - [ ] `read`, `parse` and `link` carry crumbs with the exact step names `Read`, `Sort`, `Parse`, `Link`; `parse` lights two.
 - [ ] Every number has a `Kit.src` footer; the `dish` numbers carry the `Research` flag; `½ → 12`, the sodium readout, the confidence bars and the JSON field names are marked illustrative.
-- [ ] `[click]` count equals `ctx.pause()` count: 1 / 3 / 4 / 5 / 4 / 3 / 3 / 2 / 2.
-- [ ] `budgetSec` sums to 395 (plan 390, +5), and notes run about 135 words per minute.
+- [ ] `[click]` count equals `ctx.pause()` count: 1 / 3 / 4 / 4 / 4 / 3 / 3 / 2 / 2.
+- [ ] `budgetSec` sums to 390 (plan 390), and notes run about 135 words per minute.
 - [ ] No Samsung model is named. No claim that the app writes a recipe from a dish photo. Twomey 2020 appears nowhere.
 - [ ] All CSS scoped under `.slide[data-sec="samsung"]`.
 - [ ] Every build step screenshotted at 1920×1080; print mode checked; `agent-browser errors` empty.
+
+---
+
+## Review fixes (reviewer pass)
+
+Layout, wording and notes only. No claim, number or source footer changed.
+
+1. `read` — the `PATH B · ONE MODEL` label now appears on click 3 with its own content. In the entrance it sat under the encoder/decoder inset, so that inset read as Path B's contents.
+2. `read` — the bracket that opens the `OCR` box now forks into **both** the encoder and the decoder box; it previously stopped short of the encoder.
+3. `read` — the two failure lines are right-aligned to x 1800 and reworded to `fails by misreading a character` / `fails by inventing a line`, so each reads as a statement about its lane rather than a label on the box above it.
+4. `errors` — the sodium readout shows the change (`190 mg → 4,560 mg`). It previously showed only the wrong value, with nothing to compare it to.
+5. `errors` — the `INVENTED` panel's four lines are set at 32 px and respread (y 474 / 528 / 582 / 640), with the callout and its arrow moved to match. The panel was visibly half empty.
+6. `dish` — `F1` was an undefined term in the audience's first encounter with it. The label is shortened to `ingredient F1, best system` and a `--text-3` line under the number gives the scale: `100 = a perfect ingredient list.`
+7. Notes — `link` and `errors` ran at 121 and 116 wpm. One sentence was added to each (the Recipe1M 16,823 → 1,488 clean-up on `link`, per-field confidence on `errors`). Every slide now runs 130–140 wpm and `budgetSec` still sums to 390.
+
+## Deck-wide QA pass (v1)
+
+- `takeaways`: the marker strip listed four markers (READ · FIND · MIX · SELL). It now lists all
+  five, READ · FIND · MIX · SELL · NEXT, matching Find, Mix and the intro agenda.
+- `takeaways`: the strip tokens take the same 10/20 px padding and 12 px radius as the Find and Mix
+  strips; the active READ pill is no longer a 999 px capsule.

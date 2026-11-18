@@ -279,14 +279,43 @@ Three, all photoreal food or props on the matching slate under warm side light, 
 
 ## Checklist
 
-- [ ] Headings match the plan's heading map: `The protein problem`, `How Shiru searches`, `Proteins as language`, `Proteins as vectors`, `Nearest-neighbor search`, `Three filters`, `Results`, `Takeaways`.
-- [ ] `learn`, `embed`, `search` and `filter` are wrapped with `Kit.withCrumbs(def, ['Learn','Embed','Search','Filter'], n)`, and the four names match `approach`'s card titles character for character.
-- [ ] Every number has a `Kit.src` footer. `77M+`, `33M+`, `>90%` and the "50 scientists" line carry `'Self-reported'`.
-- [ ] Every inferred claim is marked on screen or in the footer: the ~15% masking (`learn`), the ~1,000 numbers (`embed`), the approximate index (`search`), the few-hundred labels (`filter`).
-- [ ] Illustrative values are labelled: the sequence fragment, the 18% and 71% letter overlaps, the map layout, the point cloud, the `24`.
-- [ ] `[click]` count equals `ctx.pause()` count: 2 / 4 / 4 / 3 / 3 / 4 / 2 / 2.
-- [ ] `budgetSec` sums to 390 and the notes run about 135 words per minute (≈878 words for the section).
-- [ ] All CSS scoped under `.slide[data-sec="shiru"]`.
-- [ ] Hidden-by-default elements revealed with `Kit.show` or `tl.to`, never `tl.from` or `Kit.rise`.
-- [ ] Right-hand columns on `filter` and `results` clear the footer (content zone ends at y 990).
-- [ ] Every build step screenshotted at 1920×1080 in `qa/shiru/`, print mode checked, `agent-browser errors` empty.
+- [x] Headings match the plan's heading map: `The protein problem`, `How Shiru searches`, `Proteins as language`, `Proteins as vectors`, `Nearest-neighbor search`, `Three filters`, `Results`, `Takeaways`.
+- [x] `learn`, `embed`, `search` and `filter` are wrapped with `Kit.withCrumbs(def, ['Learn','Embed','Search','Filter'], n)`, and the four names match `approach`'s card titles character for character.
+- [x] Every number has a `Kit.src` footer. `77M+`, `33M+` and `>90%` carry `'Self-reported'` (the "50 scientists" line was cut from the notes).
+- [x] Every inferred claim is marked on screen or in the footer: the ~15% masking (`learn`), the ~1,000 numbers (`embed`), the approximate index (`search`, footer), the few-hundred labels (`filter`).
+- [x] Illustrative values are labelled: the sequence fragments, the 18% and 73% letter overlaps, the map layouts, the point clouds, the `24`.
+- [x] `[click]` count equals `ctx.pause()` count: 2 / 4 / 4 / 3 / 3 / 4 / 2 / 2.
+- [x] `budgetSec` sums to 390. Notes run ~915 words against the 878-word target (+4%) after the review pass.
+- [x] All CSS scoped under `.slide[data-sec="shiru"]`.
+- [x] Hidden-by-default elements revealed with `Kit.show` or `tl.to`, never `tl.from` or `Kit.rise`.
+- [x] Right-hand columns on `filter` and `results` clear the footer.
+- [x] Every build step screenshotted at 1920x1080 in `qa/final/shiru/`, print mode checked, console errors empty in show and print.
+
+## Build changes (what the built section does differently)
+
+| Slide | Change | Why |
+|---|---|---|
+| `problem` | The rust cost chip sits at the lower left (x 120, y 820) and the rough arrow runs from it to the legume pile, instead of the chip sitting under the legumes. Milk cut-out reused from `assets/img/giuseppe/milk.webp`. | The right column could not hold the legume photo, the olive line and the chip without collisions. |
+| `approach` | Four cards at x 120 / 552 / 984 / 1416, w 384, y 364, h 462. | 4 x 390 + gaps overran the x-1800 content edge. |
+| `learn` | The `~15% of positions hidden` readout moved from the top right (y 288) to the `A PROTEIN` caps row (y 536), where nothing else sits. The fragment is 22 residues with 2 masks. The two co-evolution arcs are nested, not crossing. Note reworded to `alphabet of 20 ...`. | At y 288 the readout overlapped panel 1; "20 letters" read as a length, not an alphabet. |
+| `embed` | Sequence C is shown on the left column as well as on the map, its overlap with A is **73%** (16 of 22 illustrative residues), and the payoff line moved to the lower left instead of under the map. Each sequence swaps in place into its number strip. | The left column was half empty below y 740; 71% is not reachable with a 22-residue fragment. The footer still marks both overlaps illustrative. |
+| `search` | `77M+` and `24` are `Kit.count` counters in `t-num`, not the literal `77,000,000` (which does not fit 460 px at 132 px). `a couple of dozen` moved to the spoken notes; the `24` carries an `illustrative` flag. The comparison tile title is `LOW LETTER OVERLAP`. | Type scale and the y-990 floor. |
+| `filter` | Gates at x 680 / 980 / 1280 (was 420 / 760 / 1100 local), one-line predictor labels, and the loop label is two lines at the left of the arc. | The labels overlapped each other and the loop arrow crossed the `Works?` / `Makeable?` text. |
+| `results` | Uses a real credited OleoPro press photograph (Shiru company image, via AgFunderNews), so the code-drawn oleogel fallback was not needed. Right column restacked: photo, caption, `>90%`, label + `Self-reported`. `Griffith Foods 2023` dropped from the footer. | The spec's asset-to-source path cleared; the footer had to stay two lines. |
+| `takeaways` | Reuses the `legumes.webp` cut-out at 30% opacity instead of a bleed image plus veil. | Cut-outs are this deck's grammar; no veil gradient is needed on slate. |
+| Images | `assets/img/shiru/egg.webp` and `legumes.webp` are transparent cut-outs, not the three JPEG scenes the spec listed; milk is reused from the giuseppe section. | KIT 9: cut-outs are the default for food props. |
+
+## Review pass (reviewer + fixer)
+
+| Slide | Fix |
+|---|---|
+| `problem` | `WHAT NOBODY HAS TESTED` now arrives with the legume pile on click 1, so the right half is never a labelled void. Notes: "fewer than a quarter even survive purification" corrected to "only about a quarter", which is what `sources/shiru.md` (49% expression x 52% purification) supports. |
+| `approach` | Card height 516 -> 462 (top 364) to close the dead band between the question and the technique line. Notes: the closing line no longer claims a crumb marker that this slide does not show. |
+| `learn` | The payoff line now names the visual: "The arcs mark letters that touch once the chain folds." (was a 13-word sentence that never mentioned the arcs). |
+| `search` | The `brazzein` label moved above the expanding ring (centred at x 790, y 452) so it no longer crosses the dashed circle; the dot-cloud exclusion box moved with it. Comparison tile title `TOO DISTANT TO ALIGN` -> `LOW LETTER OVERLAP` (one line, plain words). Caveat and notes now say "letter matching" rather than "alignment", matching the word used in the tile. |
+| notes | Trimmed `approach`, `embed`, `results` and `takeaways`; the section now runs ~915 words (878 target). `[click]` counts still equal `ctx.pause()` counts (2 / 4 / 4 / 3 / 3 / 4 / 2 / 2) and budgets are unchanged. |
+
+## Deck-wide QA pass (v1)
+
+- `approach` notes trimmed from 76 to 69 words (152 → 138 wpm, the only slide in the deck outside
+  the 115–150 wpm band). No on-screen change, no change to the [click] count or the budget.

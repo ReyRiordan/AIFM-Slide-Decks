@@ -312,11 +312,28 @@ Then the close, in two lines: `A model chose what's in it.` / `Would you notice?
 
 - `close-table.jpg` — subject: an overhead of a plain dark plate with a few raw ingredients beside it (a bean, a leaf, a pod) on the deck's slate, warm side light, generous empty space on the left two thirds. No text, no branding, no hands.
 
-### Open question for Rey
+### Closing question (settled)
 
-The closing question is `Would you notice?`, set up by `A model chose what's in it.` It ties back to the parity slide. The alternative, if he wants the close pointed at the technique rather than the eater, is `Who picks the target?` over `Everything after that is search.` One of the two, his call.
+Rey chose `A model chose what's in it.` / `Would you notice?`, which ties back to the parity slide.
 
 ---
+
+## Build notes (as built)
+
+The section was built to this spec with these changes. Budgets, slide count, clicks and every number are unchanged (225 s, 5 / 3 / 3 / 2 / 5 clicks).
+
+- **`forces`:** the bar is a cream rough.js slab that **sags** under each click (`state.load` → a redrawn path), instead of a rect whose bow deepens; the label `ONE FORMULA` rides the sag. The cocoa number is set on two lines (`$12,931` / `→ $6,771`) so it fits a 300 px column, and the tariffs column shows a cream em dash in the number slot so the five columns keep one grid. The candy is a **cut-out** (`candy.webp`), not a `.jpg` behind the text: it drops beside the dye column's arrow at (446, 650), where it collides with nothing.
+- **`engine`:** the score box is drawn at its final width (540 px) from the start and only its text swaps, so no box has to grow; the new score is set on two lines (`cost · label` / `shelf life · allergens`). The box's outline turns saffron on the swap, which ties it back to Mix. The loop runs clockwise: `point on the map` → `decode` → `score` → `steer`.
+- **`parity`:** both panels share one grammar — a 0–100% cream track, one plum bar, the value direct-labelled at the tip. Panel A's single bar is vertically centred against panel B's two, and panel A carries its evidence line (`57 surveys, 9,300 human responses`) where panel B carries the chance label. The chance rule is drawn as **two dashed segments**, one beside each bar, so it never crosses a label; `33%` is set clear of it. Rey's call stands: the baseline is labelled `about 36% by chance (top three)` and is never paired with the 33%.
+- **`avoid`:** the three cards share one grammar (name / figure / one outcome line). Karakuri's figure is its sale price, so the cream cross-out stroke falls only on the two **raised** figures, Zume's and Picnic's; all three figures dim. `$43.1M` is set in Fraunces at 76 px rather than mono, since mono is reserved for data in this deck. The Miso Robotics sale and Picnic's "robot aquarium" moved to the notes.
+- **`summary`:** the row geometry is copied from `sections/00-intro.js` (`.ag-*`): rule, 26 px round chip, mono number, `t-h2` marker in a 360 px column, sub-line in the product-name slot. The markers keep the agenda's casing (`Read`, not `READ`), the numbers `01`–`04` are kept, and the throughline replaces the product name. Rows sit at y 330 + 92 i to leave the close its own space.
+
+## Review pass (as fixed)
+
+- **`engine`:** the gap card's tag is `Mid-sized makers`, not `The gap`, so the slide names the buyer instead of an abstraction (the body line is unchanged and still quotes §4).
+- **`parity`:** only one dashed chance rule is drawn, beside the `in the top three` bar, and it is drawn over the bars (y 610 → 672) so the 67% vs about 36% comparison is visible. The rule beside the `33%` bar is gone: the source does not support a 36% baseline for a first-place pick, and Rey's call is that the baseline is never paired with 33%. `33%` is direct-labelled at its bar tip.
+- **`parity`:** panel A's caption `of human test-retest reliability` moved below the bar and now lands with the number on click 1, so the slide never shows a dangling `of …` over an empty track. The panel's small line defines the term in plain words: `the same human, asked twice` (the `57 surveys, 9,300 human responses` evidence stays in the source footer).
+- **`avoid`:** the cross-out strokes sit on the money line (y 492 → 476) and are cut to each figure's width, so they no longer clip the company name above.
 
 ## Cross-section hooks
 
@@ -350,3 +367,13 @@ The closing question is `Would you notice?`, set up by `A model chose what's in 
 - [ ] All CSS scoped under `.slide[data-sec="future"]`.
 - [ ] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` / `Kit.rise`.
 - [ ] Every build step screenshotted at 1920×1080, `agent-browser errors` empty, print mode shows each final state.
+
+## Deck-wide QA pass (v1)
+
+- `forces`, tariffs column: the number slot held a cream em dash, which read as missing data on a
+  projector. It now reads **Feb 2026** with the label "struck down, still a top risk"
+  (future-markets.md, line 32: the Supreme Court struck down the IEEPA tariffs on 20 Feb 2026, but
+  tariffs stay a top planning risk). The spoken note already said this and is unchanged. The dead
+  `.fu-dash` rule was removed from `css/sections/future.css`.
+- `forces`, sub-line: straight quotes around "the great reformulation" became curly quotes, matching
+  the rest of the deck.

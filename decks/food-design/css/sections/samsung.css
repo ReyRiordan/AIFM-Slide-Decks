@@ -1,0 +1,100 @@
+/* samsung section styles — every rule is scoped under .slide[data-sec="samsung"] */
+.slide[data-sec="samsung"] .sm-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.slide[data-sec="samsung"] .sm-svg text { font-family: var(--font); }
+.slide[data-sec="samsung"] .sm-svg text.mono { font-family: var(--mono); }
+.slide[data-sec="samsung"] .sm-svg text.disp { font-family: var(--display); font-variation-settings: "SOFT" 100; }
+
+/* ---------------------------------------------------------------- demo */
+.slide[data-sec="samsung"] .sm-col { position: absolute; }
+.slide[data-sec="samsung"] .sm-ct { margin-top: 18px; color: var(--text); }
+.slide[data-sec="samsung"] .sm-kq { transform: rotate(-4deg); }
+.slide[data-sec="samsung"] .sm-demo-cap { position: absolute; text-align: center; font-weight: 600; }
+
+/* ------------------------------------------------------------- problem */
+.slide[data-sec="samsung"] .sm-pk { position: absolute; }
+.slide[data-sec="samsung"] .sm-pk1 { left: 120px; top: 272px; }
+.slide[data-sec="samsung"] .sm-pk2 { left: 1060px; top: 272px; }
+.slide[data-sec="samsung"] .sm-json { position: absolute; padding: 26px 34px; }
+.slide[data-sec="samsung"] .sm-json .t-mono { font-size: var(--fs-label); line-height: 1.72; color: var(--text-2); white-space: pre; }
+.slide[data-sec="samsung"] .sm-chip-rust { position: absolute; display: inline-flex; align-items: center; padding: 12px 24px;
+  border-radius: 999px; background: rgba(210, 100, 58, .16); box-shadow: inset 0 0 0 2px var(--rust);
+  color: var(--rust-t); font-size: var(--fs-label); font-weight: 650; white-space: nowrap; }
+.slide[data-sec="samsung"] .sm-dcard { position: absolute; height: 110px; display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, .16); border-radius: 18px; opacity: .3; }
+.slide[data-sec="samsung"] .sm-dcard .t-label { color: var(--text-2); }
+
+/* ------------------------------------------------------------ approach */
+.slide[data-sec="samsung"] .sm-rcard { position: absolute; height: 420px; padding: 34px 32px; display: flex; flex-direction: column; }
+.slide[data-sec="samsung"] .sm-rn { font-size: var(--fs-label); color: var(--text-3); }
+.slide[data-sec="samsung"] .sm-rs { margin-top: 6px; }
+.slide[data-sec="samsung"] .sm-rq { margin-top: 18px; color: var(--text-2); }
+.slide[data-sec="samsung"] .sm-rt { margin-top: auto; }
+.slide[data-sec="samsung"] .sm-inf { position: absolute; display: flex; align-items: center; gap: 20px; }
+.slide[data-sec="samsung"] .sm-flag-rust { border-color: var(--rust); color: var(--rust-t); }
+
+/* ---------------------------------------------------------------- read */
+.slide[data-sec="samsung"] .sm-pagek { position: absolute; left: 120px; top: 382px; }
+.slide[data-sec="samsung"] .sm-lane { position: absolute; color: var(--text-2); }
+.slide[data-sec="samsung"] .sm-fail { position: absolute; text-align: right; }
+.slide[data-sec="samsung"] .sm-jchip { position: absolute; padding: 22px 26px; display: flex; align-items: center; }
+.slide[data-sec="samsung"] .sm-jchip .t-mono { font-size: var(--fs-label); line-height: 1.5; color: var(--text-2); white-space: pre; }
+.slide[data-sec="samsung"] .sm-ck { width: 420px; }
+
+/* --------------------------------------------------------------- parse */
+.slide[data-sec="samsung"] .sm-bl { position: absolute; }
+.slide[data-sec="samsung"] .sm-line { position: absolute; font-size: 36px; letter-spacing: 0; white-space: pre; }
+.slide[data-sec="samsung"] .sm-fr { position: absolute; display: flex; align-items: center; gap: 24px; }
+.slide[data-sec="samsung"] .sm-fk { width: 200px; flex: none; }
+.slide[data-sec="samsung"] .sm-fv { font-size: var(--fs-label); color: var(--text); flex: 1; }
+.slide[data-sec="samsung"] .sm-bar { width: 160px; height: 14px; flex: none; border-radius: 8px; background: rgba(0, 0, 0, .3); overflow: hidden; }
+.slide[data-sec="samsung"] .sm-bar i { display: block; width: 100%; height: 100%; border-radius: 8px; }
+
+/* ---------------------------------------------------------------- link */
+.slide[data-sec="samsung"] .sm-sp { position: absolute; height: 76px; display: flex; align-items: center; padding: 0 26px;
+  background: rgba(0, 0, 0, .16); border-radius: 16px; }
+.slide[data-sec="samsung"] .sm-sp .t-mono { font-size: var(--fs-label); color: var(--text); }
+.slide[data-sec="samsung"] .sm-out { position: absolute; padding: 26px 32px; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  background: rgba(0, 0, 0, .16); border-radius: 18px; }
+.slide[data-sec="samsung"] .sm-out .sm-cnt { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.slide[data-sec="samsung"] .sm-lk { width: 440px; }
+.slide[data-sec="samsung"] .sm-link-svg2 { position: absolute; left: 0; top: 0; }
+
+/* -------------------------------------------------------------- errors */
+.slide[data-sec="samsung"] .sm-ph { position: absolute; }
+.slide[data-sec="samsung"] .sm-ms { position: absolute; font-size: 44px; font-weight: 600; white-space: nowrap; }
+.slide[data-sec="samsung"] .sm-na { position: absolute; display: flex; align-items: center; gap: 20px; }
+.slide[data-sec="samsung"] .sm-nav { font-size: var(--fs-label); color: var(--text); font-variant-numeric: tabular-nums; }
+.slide[data-sec="samsung"] .sm-nav0 { font-size: var(--fs-label); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.slide[data-sec="samsung"] .sm-narr { color: var(--text-3); }
+.slide[data-sec="samsung"] .sm-flag-sm { font-size: 20px; padding: 2px 10px; }
+.slide[data-sec="samsung"] .sm-mline { position: absolute; color: var(--text-2); }
+.slide[data-sec="samsung"] .sm-ik2 { width: 320px; }
+.slide[data-sec="samsung"] .sm-st { position: absolute; display: flex; align-items: center; padding: 0 32px;
+  background: rgba(0, 0, 0, .16); border-radius: 18px; }
+.slide[data-sec="samsung"] .sm-st .t-label { color: var(--text-2); }
+.slide[data-sec="samsung"] .sm-st.t2 .t-label { color: var(--teal-t); }
+
+/* ---------------------------------------------------------------- dish */
+.slide[data-sec="samsung"] .sm-dq { transform: rotate(-5deg); }
+.slide[data-sec="samsung"] .sm-bn { position: absolute; }
+.slide[data-sec="samsung"] .sm-bn .t-num { font-variant-numeric: tabular-nums; }
+.slide[data-sec="samsung"] .sm-bn .t-label { margin-top: 16px; }
+.slide[data-sec="samsung"] .sm-ref { position: absolute; }
+.slide[data-sec="samsung"] .sm-dline { position: absolute; }
+
+/* ----------------------------------------------------------- takeaways */
+.slide[data-sec="samsung"] .sm-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0;
+  filter: saturate(.72) brightness(.9); }
+.slide[data-sec="samsung"] .sm-veil { position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(100deg, rgba(42, 46, 49, .95) 0%, rgba(42, 46, 49, .89) 50%, rgba(42, 46, 49, .79) 100%); }
+.slide[data-sec="samsung"] .sm-tk-row, .slide[data-sec="samsung"] .sm-strip { position: absolute; z-index: 1; }
+.slide[data-sec="samsung"] .sm-tk-h { display: flex; align-items: baseline; gap: 20px; }
+.slide[data-sec="samsung"] .sm-tn { font-size: var(--fs-label); color: var(--text-3); }
+.slide[data-sec="samsung"] .sm-tl { margin-top: 16px; }
+.slide[data-sec="samsung"] .sm-strip { display: flex; align-items: center; gap: 22px; font-size: var(--fs-label); font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; }
+.slide[data-sec="samsung"] .sm-mk { color: var(--text-3); }
+.slide[data-sec="samsung"] .sm-mk { padding: 10px 20px; border-radius: 12px; }
+.slide[data-sec="samsung"] .sm-mk.m0 { background: var(--teal); color: #1E2124; }
+.slide[data-sec="samsung"] .sm-mkd { font-style: normal; color: var(--line); }
+.slide[data-sec="samsung"] .hd, .slide[data-sec="samsung"] .crumbs, .slide[data-sec="samsung"] .src { z-index: 2; }

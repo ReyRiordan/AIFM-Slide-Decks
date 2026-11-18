@@ -15,7 +15,23 @@ Deck.section({ id: 'notco', order: 4, num: '04', kicker: 'Sell', title: 'NotCo',
 
 This section follows the Giuseppe section, which already taught the technique (the recipe map, the score, the search, the diet rules). It teaches **no new ML**. It is the company story, told in four fast slides, and it hands over to Next. There is **no roadmap slide and no `Kit.withCrumbs`** here: there are no steps to track.
 
-Dark theme throughout. Diagrams are code-drawn SVG with a rough.js wobble in cream strokes that draw themselves on (`Kit.draw`). The three generated images are photoreal generic food on matching slate, dropped in with a slight tilt (`Kit.drop`). No founder photos. Real logos are allowed, small and credited: this section uses one, the Ferrero wordmark on `today`.
+Dark theme throughout. Diagrams are code-drawn SVG with a rough.js wobble in cream strokes that draw themselves on (`Kit.draw`). The three generated images are photoreal generic food on matching slate, dropped in with a slight tilt (`Kit.drop`). No founder photos. **As built, the section uses no logo at all:** the Ferrero card names the company in the deck's own type, so nothing on screen imitates a brand mark.
+
+**Built-state changes from the plan below (Nov 18, built under Rey's "full freedom"):**
+1. `pivot` drops the shared 2022 → 2026 time axis. Placing five markets on a real time axis crowded four of them into 2026, and an axis that chips were not aligned to would have been misleading. The two lanes are now separated by a cream rough rule, and every date is written on the chip or its exit tag.
+2. `pivot` splits `Argentina + Uruguay` into two chips, so all six market names fit on one line each (the two-line chip collided with its own strike-through). Both carry the same exit tag, and both are struck in the same beat, so the slide still shows four exits.
+3. `pivot` drops the connector from `US + Canada` down to the Kraft Heinz JV chip. The JV (2022) and the hand-over of US sales (2025) are different events, and one line between them read as cause.
+4. `origin` gives each founder row a thin cranberry rule, which carries the left column across the page.
+5. `bridge` drops the rough arrow leaving the frame on click 1: on a statement slide it read as decoration. The image fades to 50% instead.
+
+**Review pass (Nov 18, reviewer):**
+6. `origin`: the `$1.5B` chip is painted after the photo (its own dark plate, then its own `<svg>`, then the text). The chip's cranberry outline was hidden behind the plate and the photo, so only a stray stroke showed at the top right.
+7. `pivot`: the US and Canada exit tag reads `Kraft Heinz sells it, Feb 2025`. `to Kraft Heinz` read as a sale; the source says Kraft Heinz took over *selling* the brand there.
+8. `pivot`: `Kraft Heinz JV` is written out as `Kraft Heinz joint venture`. "JV" is not a term this audience knows.
+9. `today`: the Ferrero card's frame is drawn on click 1 with its two lines, not at the entrance, so no empty box ever sits on the slide. `Ferrero` alone captions the photo until then.
+10. `today`: the grouping bracket moved from y 798 to y 842 and the `the AI business` callout from y 824 to y 876, so the bracket no longer reads as an underline of `of revenue, from AI`.
+11. `today` notes gain one sentence (NotCo's largest contract, $30M over 18 months) to bring the section's script closer to the 135 wpm target.
+12. The four exits run left to right by geography, not strictly by date (Mexico's month is deliberately unstated on screen), so nothing on the slide claims date order.
 
 ## Story spine (approve before building)
 
@@ -116,8 +132,8 @@ Two lanes against one shared time axis. The axis runs `2022` → `2026`.
 | lane label, above axis | `FOOD` |
 | lane label, below axis | `AI` |
 | food chips (above) | `Chile` · `Argentina + Uruguay` · `Brazil` · `Mexico` · `US + Canada` |
-| exit tags | `→ Molinos, Jun 2026` · `→ Ferrara, Sep 2026` · `closed, 2026 (reported)` · `→ Kraft Heinz, Feb 2025` |
-| AI chips (below) | `Kraft Heinz JV, 2022` · `NotCo AI unit · Concept Quant, 2025` · `Barry Callebaut, Nov 2025` |
+| exit tags | `sold to Molinos, Jun 2026` · `sold to Ferrara, Sep 2026` · `closed, 2026 (reported)` · `Kraft Heinz sells it, Feb 2025` |
+| AI chips (below) | `Kraft Heinz joint venture, 2022` · `NotCo AI unit · Concept Quant, 2025` · `Barry Callebaut, Nov 2025` |
 | closing caption | `One food market left.` / `Giuseppe is the product.` |
 
 Body text on screen: 8 words in the caption. Everything else is a place, a date or a buyer.
@@ -176,7 +192,7 @@ None. This slide is code-drawn.
 | element | exact text |
 |---|---|
 | caps sub-line | `WHO BUYS GIUSEPPE NOW` |
-| example card title | `Ferrero` (wordmark, small) |
+| example card title | `Ferrero` (set in the deck's display face, not a logo) |
 | example card line | `cocoa substitutes across 30,000 recipes a year` |
 | example card date | `after the 2024 cocoa price surge` |
 | big number A | `7 of 20` / `largest packaged-goods companies` |
@@ -292,13 +308,13 @@ No engine heading (`heading` is omitted). This is a statement slide, like deck 1
 
 ## Checklist
 
-- [ ] Headings match the plan's heading map: `Where NotCo came from`, `From food to software`, `NotCo today`, and no heading on `bridge`.
-- [ ] No roadmap and no `Kit.withCrumbs` in this section (by design; the plan lists no crumbs for Sell).
-- [ ] Every number has a `Kit.src` footer: 8% (IDB), $1.5B (Series D), 7 of 20 (Forbes, March 2026), 30,000+ recipes (Forbes via FEN), about half of revenue (estimate), 90% of AI requests (self-reported).
-- [ ] `[click]` count equals `ctx.pause()` count: 3 / 4 / 3 / 2.
-- [ ] `budgetSec` sums to 165, and the notes run about 135 words per minute (≈ 371 words total).
-- [ ] Both generated images are photoreal generic food on slate, carry no text, and are labeled as illustrations in the footer.
-- [ ] The Ferrero wordmark is the section's only logo and is credited in the `today` footer.
-- [ ] All CSS scoped under `.slide[data-sec="notco"]`.
-- [ ] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` / `Kit.rise`.
-- [ ] Every build step screenshotted at 1920×1080, `agent-browser errors` empty, print mode shows each final state.
+- [x] Headings match the plan's heading map: `Where NotCo came from`, `From food to software`, `NotCo today`, and no heading on `bridge`.
+- [x] No roadmap and no `Kit.withCrumbs` in this section (by design; the plan lists no crumbs for Sell).
+- [x] Every number has a `Kit.src` footer: 8% (IDB), $1.5B (Series D), 7 of 20 (Forbes, March 2026), 30,000+ recipes (Forbes via FEN), about half of revenue (estimate), 90% of AI requests (self-reported).
+- [x] `[click]` count equals `ctx.pause()` count: 3 / 4 / 3 / 2.
+- [x] `budgetSec` sums to 165, and the notes run about 135 words per minute (≈ 371 words total).
+- [x] All three generated images are photoreal generic food on slate, carry no text, and are labeled as illustrations in the footer.
+- [x] No logo is used. `Ferrero` is set in the deck's own type and the Ferrero work is credited in the `today` footer.
+- [x] All CSS scoped under `.slide[data-sec="notco"]`.
+- [x] Hidden-by-default elements use `Kit.show` or `tl.to`, never `tl.from` / `Kit.rise`.
+- [x] Every build step screenshotted at 1920×1080, `agent-browser errors` empty, print mode shows each final state.
