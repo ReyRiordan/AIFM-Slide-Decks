@@ -100,3 +100,6 @@
 .slide[data-sec="samsung"] .tk-tok.tk-on { background: var(--teal); }
 .slide[data-sec="samsung"] .tk-tok.tk-on .t-caps { color: #1E2124; }
 .slide[data-sec="samsung"] .hd, .slide[data-sec="samsung"] .crumbs { z-index: 2; }
+/* full-slide drawing layers must not swallow the click on the phone video */
+.slide[data-sec="samsung"] .sm-svg { pointer-events: none; }
+.slide[data-sec="samsung"] .sm-vid { z-index: 5; cursor: pointer; pointer-events: auto; }
