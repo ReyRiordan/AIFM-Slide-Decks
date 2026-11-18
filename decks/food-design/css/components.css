@@ -82,3 +82,23 @@ svg text.mono { font-family: var(--mono); }
 .callout { position: absolute; font-family: var(--hand); font-size: var(--fs-hand); font-weight: 600; color: var(--rust-t); line-height: 1.05; transform: rotate(-3deg); }
 /* chalk card: a slightly raised slate tile with a rough border drawn in SVG behind it */
 .tile { position: absolute; background: rgba(0,0,0,.16); border-radius: 18px; }
+
+/* --- slide navigator (G / Esc) + number jump: screen UI, outside the 1920×1080 stage --- */
+#nav { position: fixed; inset: 0; z-index: 100; background: rgba(14,12,13,.82); backdrop-filter: blur(6px);
+  display: flex; align-items: flex-start; justify-content: center; padding: 4vh 3vw; font-family: var(--font); }
+#nav .nv-box { width: min(1500px, 100%); max-height: 92vh; display: flex; flex-direction: column; background: var(--bg);
+  border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6); overflow: hidden; }
+#nav .nv-top { display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+#nav .nv-q { flex: 1; font: 500 18px var(--font); color: var(--text); background: var(--surface); border: 0; outline: 0; border-radius: 8px; padding: 10px 14px; }
+#nav .nv-keys { font-size: 13px; color: var(--text-3); white-space: nowrap; }
+#nav .nv-grid { overflow-y: auto; padding: 14px 18px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px 16px; }
+#nav .nv-h { font: 800 12px var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--c); margin-bottom: 6px; }
+#nav .nv-h span { color: var(--text-3); font-weight: 600; }
+#nav .nv-item { display: flex; gap: 10px; align-items: baseline; padding: 5px 8px; border-radius: 6px; font-size: 14px; color: var(--text-2); cursor: pointer; }
+#nav .nv-item b { font: 600 12px var(--mono); color: var(--text-3); min-width: 20px; text-align: right; }
+#nav .nv-item:hover { background: var(--surface); color: var(--text); }
+#nav .nv-item.nv-cur { color: var(--c); }
+#nav .nv-item.nv-sel { background: var(--surface); color: var(--text); box-shadow: inset 3px 0 0 var(--c); }
+#nav .nv-hide { display: none; }
+#numbuf { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 100; padding: 10px 18px; border-radius: 10px;
+  background: rgba(14,12,13,.85); color: #F3EBDD; font: 600 18px "Figtree", sans-serif; }
