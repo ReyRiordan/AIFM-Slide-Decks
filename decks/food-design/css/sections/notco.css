@@ -34,19 +34,21 @@
 
 /* ---- today ---- */
 .slide[data-sec="notco"] .nc-t-k { position: absolute; left: 120px; top: 288px; }
-.slide[data-sec="notco"] .nc-t-n1 { position: absolute; left: 120px; top: 334px; color: var(--cranberry-t); }
-.slide[data-sec="notco"] .nc-t-l1 { position: absolute; left: 122px; top: 524px; width: 860px; }
-.slide[data-sec="notco"] .nc-t-n2 { position: absolute; left: 120px; top: 600px; color: var(--cranberry-t); }
-.slide[data-sec="notco"] .nc-t-l2 { position: absolute; left: 122px; top: 752px; width: 860px; }
-.slide[data-sec="notco"] .nc-t-c { left: 356px; top: 894px; }
+.slide[data-sec="notco"] .nc-t-n1 { position: absolute; left: 120px; top: 352px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-t-l1 { position: absolute; left: 122px; top: 544px; width: 860px; }
+.slide[data-sec="notco"] .nc-t-n2 { position: absolute; left: 120px; top: 686px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-t-l2 { position: absolute; left: 122px; top: 878px; width: 860px; }
 .slide[data-sec="notco"] .nc-t-card { position: absolute; left: 1116px; top: 744px; width: 652px; }
 .slide[data-sec="notco"] .nc-t-cl { margin-top: 18px; line-height: 1.35; }
 .slide[data-sec="notco"] .nc-t-cd { margin-top: 12px; }
 
 /* ---- bridge ---- */
-.slide[data-sec="notco"] .nc-b-scrim { position: absolute; inset: 0;
-  background: linear-gradient(90deg, var(--bg) 0%, var(--bg) 50%, rgba(42,46,49,0) 66%); }
-.slide[data-sec="notco"] .nc-b-l1 { position: absolute; left: 150px; top: 404px; width: 1000px; }
-.slide[data-sec="notco"] .nc-b-l2 { position: absolute; left: 150px; top: 486px; width: 1000px; }
-.slide[data-sec="notco"] .nc-b-sup { position: absolute; left: 150px; top: 624px; width: 1000px; }
-.slide[data-sec="notco"] .nc-b-l3 { position: absolute; left: 150px; top: 736px; width: 1000px; }
+.slide[data-sec="notco"] .nc-b-l1 { position: absolute; left: 150px; top: 300px; width: 1300px; }
+.slide[data-sec="notco"] .nc-b-l2 { position: absolute; left: 150px; top: 382px; width: 1300px; }
+.slide[data-sec="notco"] .nc-b-cap { position: absolute; left: 170px; top: 806px; width: 300px; }
+.slide[data-sec="notco"] .nc-b-pct { position: absolute; left: 690px; top: 540px; color: var(--cranberry-t); }
+.slide[data-sec="notco"] .nc-b-pl { position: absolute; left: 692px; top: 706px; width: 340px; }
+.slide[data-sec="notco"] .nc-b-bk { position: absolute; left: 1060px; top: 478px; }
+.slide[data-sec="notco"] .nc-b-bl1 { position: absolute; left: 1060px; top: 619px; width: 648px; text-align: center; }
+.slide[data-sec="notco"] .nc-b-bl2 { position: absolute; left: 1520px; top: 812px; width: 280px; text-align: right; }
+.slide[data-sec="notco"] .nc-b-l3 { position: absolute; left: 150px; top: 888px; width: 1000px; }

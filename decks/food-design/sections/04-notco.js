@@ -237,9 +237,9 @@
     budgetSec: 45,
     html: function () {
       var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-        '<g class="nc-br">' + Kit.rough.path('M120 858 L120 882 L980 882 L980 858', { seed: 80, w: 'normal', bow: .4, rough: .7, stroke: C.chalk }) + '</g>' +
         '<g class="nc-t-crd">' + tileRect(1080, 724, 720, 226, 81, { w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .12, hachureGap: 26 }) + '</g>' +
-        '<g class="dd-n1">' + Kit.doodle.underline(124, 496, 392, { seed: 213, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="dd-n1">' + Kit.doodle.underline(124, 514, 392, { seed: 213, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="dd-n2">' + Kit.doodle.underline(124, 848, 304, { seed: 214, color: 'var(--rust-t)' }) + '</g>' +
       '</svg>';
 
       var left =
@@ -247,8 +247,7 @@
         '<div class="t-num nc-t-n1"><span class="n">0</span> of 20</div>' +
         '<div class="t-label dim nc-t-l1">largest packaged-goods companies</div>' +
         '<div class="t-num nc-t-n2">~half</div>' +
-        '<div class="t-label dim nc-t-l2">of revenue, from AI</div>' +
-        '<div class="callout nc-t-c">the AI business</div>';
+        '<div class="t-label dim nc-t-l2">of revenue, from AI</div>';
 
       var right =
         Kit.photo(IMG + 'cocoa.jpg', { x: 1080, y: 300, w: 720, h: 400, rot: -2, framed: true, cls: 'nc-t-img', alt: 'split cocoa pod' }) +
@@ -262,7 +261,7 @@
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-t-img, .nc-t-crd, .nc-t-co, .nc-t-cl, .nc-t-cd, .nc-t-n1, .nc-t-l1, .nc-t-n2, .nc-t-l2, .nc-br, .nc-t-c, .dd-n1'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-t-img, .nc-t-crd, .nc-t-co, .nc-t-cl, .nc-t-cd, .nc-t-n1, .nc-t-l1, .nc-t-n2, .nc-t-l2, .dd-n1, .dd-n2'), { autoAlpha: 0 });
 
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .08 });
       Kit.fade(tl, q('.nc-t-k'), { at: .15 });
@@ -286,14 +285,13 @@
       tl.to(q('.dd-n1'), { autoAlpha: 1, duration: .01 }, 'n1+=.9');
       Kit.draw(tl, qa('.dd-n1 .rp'), { at: 'n1+=.9', duration: .7 });
 
-      // [click 3] how much of the money, and the two numbers grouped
+      // [click 3] how much of the money
       ctx.pause();
       tl.addLabel('n2');
       Kit.show(tl, q('.nc-t-n2'), { at: 'n2', y: 14 });
       Kit.show(tl, q('.nc-t-l2'), { at: 'n2+=.2', y: 14 });
-      tl.to(q('.nc-br'), { autoAlpha: 1, duration: .01 }, 'n2+=.5');
-      Kit.draw(tl, qa('.nc-br .rp'), { at: 'n2+=.5', duration: .6 });
-      Kit.show(tl, q('.nc-t-c'), { at: 'n2+=.8', y: 12 });
+      tl.to(q('.dd-n2'), { autoAlpha: 1, duration: .01 }, 'n2+=.5');
+      Kit.draw(tl, qa('.dd-n2 .rp'), { at: 'n2+=.5', duration: .6 });
     },
     notes:
       'So who pays for Giuseppe now? The companies NotCo used to compete with. ' +
@@ -310,29 +308,56 @@
     title: 'Bridge',
     budgetSec: 30,
     html: function () {
-      return '' +
-        Kit.photo(IMG + 'glass-milk.jpg', { x: 1230, y: 250, w: 520, h: 582, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
-        '<div class="nc-b-scrim"></div>' +
+      /* the one figure on the slide, drawn: 90% of the AI work is no longer plant-based */
+      var BX = 1060, BY = 528, BH = 216, BIG = 648, SM = 72, SX = BX + BIG + 14;
+      var svg = '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
+        '<g class="nc-b-ar">' + Kit.rough.arrow(505, 630, 635, 630, { seed: 90, w: 'heavy', head: 26 }) + '</g>' +
+        '<g class="nc-b-b1">' + Kit.rough.rect(BX, BY, BIG, BH, { seed: 91, w: 'heavy', rough: .9, overshoot: 6,
+          hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 24 }) + '</g>' +
+        '<g class="nc-b-b2">' + Kit.rough.rect(SX, BY, SM, BH, { seed: 92, w: 'fine', rough: .9, overshoot: 5, stroke: C.text3 }) + '</g>' +
+        '<g class="nc-b-tk">' + Kit.rough.line(SX + SM / 2, BY + BH + 14, SX + SM / 2, BY + BH + 58,
+          { seed: 93, w: 'fine', stroke: C.text3, bow: .4, rough: .7 }) + '</g>' +
+        '<g class="dd-90">' + Kit.rough.ellipse(835, 615, 390, 152, { seed: 215, w: 'heavy', stroke: C.rustT, rough: .55, bow: 1.1, cls: 'dd' }) + '</g>' +
+        '<g class="dd-q">' + Kit.doodle.underline(150, 1000, 596, { seed: 216 }) + '</g>' +
+      '</svg>';
+
+      return svg +
         '<div class="t-h2 nc-b-l1">The food business is almost gone.</div>' +
         '<div class="t-h2 nc-b-l2">The AI it built is the product.</div>' +
-        '<div class="t-label dim nc-b-sup">90% of its AI requests are no longer plant-based</div>' +
-        '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>' +
-        '<svg class="nc-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
-          '<g class="dd-q">' + Kit.doodle.underline(150, 844, 596, { seed: 214 }) + '</g>' +
-        '</svg>';
+        Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 470, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
+        '<div class="t-label dim nc-b-cap">the food business</div>' +
+        '<div class="t-caps faint nc-b-bk">NotCo AI requests \u00b7 2025</div>' +
+        '<div class="t-num nc-b-pct"><span class="v">0</span>%</div>' +
+        '<div class="t-label dim nc-b-pl">of NotCo\'s AI requests</div>' +
+        '<div class="t-label nc-b-bl1">not plant-based</div>' +
+        '<div class="t-label faint nc-b-bl2">plant-based</div>' +
+        '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.nc-b-img, .nc-b-sup, .nc-b-l3, .dd-q'), { autoAlpha: 0 });
+      gsap.set(qa('.nc-b-ar, .nc-b-b1, .nc-b-b2, .nc-b-tk, .nc-b-bk, .nc-b-pct, .nc-b-pl, .nc-b-bl1, .nc-b-bl2, .nc-b-l3, .dd-90, .dd-q'), { autoAlpha: 0 });
 
-      Kit.drop(tl, q('.nc-b-img'), { at: 0 });
-      Kit.rise(tl, qa('.nc-b-l1, .nc-b-l2'), { at: .2, stagger: .12 });
+      Kit.rise(tl, qa('.nc-b-l1, .nc-b-l2'), { at: 0, stagger: .12 });
+      Kit.drop(tl, q('.nc-b-img'), { at: .3 });
+      Kit.show(tl, q('.nc-b-cap'), { at: .7, y: 12 });
 
-      // [click 1] the claim behind it, and the product recedes
+      // [click 1] where the work went: the split, as a bar, and the figure
       ctx.pause();
       tl.addLabel('s');
-      Kit.show(tl, q('.nc-b-sup'), { at: 's', y: 14 });
-      tl.to(q('.nc-b-img'), { opacity: .5, duration: .8 }, 's');
+      tl.to(q('.nc-b-ar'), { autoAlpha: 1, duration: .01 }, 's');
+      Kit.draw(tl, qa('.nc-b-ar .rp'), { at: 's', duration: .45 });
+      tl.to(q('.nc-b-pct'), { autoAlpha: 1, duration: .3 }, 's+=.35');
+      Kit.count(tl, q('.nc-b-pct .v'), { to: 90, duration: 1.0, at: 's+=.35' });
+      Kit.show(tl, q('.nc-b-pl'), { at: 's+=.9', y: 12 });
+      tl.to(qa('.nc-b-b1, .nc-b-b2'), { autoAlpha: 1, duration: .01 }, 's+=.5');
+      Kit.draw(tl, qa('.nc-b-b1 .rp'), { at: 's+=.5', duration: .7 });
+      Kit.draw(tl, qa('.nc-b-b2 .rp'), { at: 's+=.8', duration: .4 });
+      Kit.show(tl, qa('.nc-b-bk, .nc-b-bl1'), { at: 's+=.9', y: 12, stagger: .06 });
+      tl.to(q('.nc-b-tk'), { autoAlpha: 1, duration: .01 }, 's+=1.0');
+      Kit.draw(tl, qa('.nc-b-tk .rp'), { at: 's+=1.0', duration: .3 });
+      Kit.show(tl, q('.nc-b-bl2'), { at: 's+=1.15', y: 10 });
+      tl.to(q('.dd-90'), { autoAlpha: 1, duration: .01 }, 's+=1.4');
+      Kit.draw(tl, qa('.dd-90 .rp'), { at: 's+=1.4', duration: .7 });
 
       // [click 2] the question the next section answers
       ctx.pause();
