@@ -3,6 +3,8 @@
 Rey's animated HTML lecture decks. Each deck is a ~27-minute talk to students with no ML background that teaches real ML techniques through real products.
 A deck is static HTML/CSS/JS built on GSAP. It has no build step and opens directly from `file://`.
 
+Food design deck live site: https://ai-automated-selling-deck-food-desi.vercel.app/
+
 **Read `HANDOFF.md` first.** It covers how to start a deck, the process and its approval gates, the lessons from deck 1, and the tools.
 
 ## Where things are
@@ -23,7 +25,7 @@ A deck is static HTML/CSS/JS built on GSAP. It has no build step and opens direc
 - Clarity first. One idea per slide, ≤ ~12 words of body text, no prose bullets. Every animation shows a change or a relationship.
 - Story before technique: problem → roadmap → technique slides with crumbs → results → 2 takeaways.
 - Headings are plain topic labels in sentence case, ≤ ~6 words.
-- Every number traces to a report in `sources/` and has a `Kit.src(...)` footer. Never invent stats or quotes.
+- Every number traces to a report in `sources/`. Never invent stats or quotes. In food-design (since Nov 2026) slides carry **no** source text or provenance flags: citations go in the References appendix and caveats in the speaker notes. Other decks follow their own KIT.
 - On-screen text and speaker notes follow `.claude/skills/technical-writing` and `.claude/skills/anti-slop`.
 - Speaker notes mark each `ctx.pause()` with `[click]`. Length is about 135 words per minute of `budgetSec`. Rey owns the script: match slides to his notes.
 - Free reign over GPT image generation until all images are perfect (use GPT image bridge skill).

@@ -612,7 +612,7 @@
 
   Deck.section({
     id: 'shiru', order: 2, num: '02', kicker: 'Find', title: 'Shiru', color: 'olive',
-    sweep: ['olive', 'rust', 'olive', 'charcoal', 'olive', 'saffron'],
+    toss: 'assets/img/shiru/egg.webp',
     slides: [
       PROBLEM, APPROACH,
       Kit.withCrumbs(LEARN, STEPS, 0),

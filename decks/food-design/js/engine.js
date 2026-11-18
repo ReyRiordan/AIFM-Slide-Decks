@@ -2,10 +2,10 @@
    Lecture deck — slide engine (classic script, no modules, works from file://)
 
    Sections register themselves:
-     Deck.section({ id, order, num, kicker, title, color, sweep?, slides: [ slideDef, ... ] })
+     Deck.section({ id, order, num, kicker, title, color, toss?, slides: [ slideDef, ... ] })
        color: palette token name from css/theme.css ('red' → --red fills, --red-t text) or a hex.
               The engine sets --sec / --sec-t on every slide of the section.
-       sweep: optional list of 6 token names or hexes for the section-change panel sweep.
+       toss:  optional image path (a transparent food cut-out) that tumbles across the section-change scribble.
 
    slideDef = {
      id:        'loss',                  // unique within section → URL #/<section>/<slide>
@@ -36,17 +36,12 @@
   Deck.section = function (def) { Deck._sections.push(def); };
 
   /* Section colors come from each section def, never from this file:
-       Deck.section({ id, color: 'red', sweep?: ['red', 'orange', ...], ... })
-     `color` (and each `sweep` entry) is a palette token name from css/theme.css (--red, --red-t) or a raw hex.
-     Without `sweep`, the section-change sweep alternates the section color with --orange and --charcoal. */
+       Deck.section({ id, color: 'teal', ... })
+     `color` is a palette token name from css/theme.css (--teal, --teal-t) or a raw hex. */
   function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim(); }
   function hexOf(c) { return !c ? '#888' : c.charAt(0) === '#' ? c : (cssVar(c) || '#888'); }
   function secColor(sec) { return hexOf(sec.color); }
   function secTint(sec) { var c = sec.color; return !c ? '#bbb' : c.charAt(0) === '#' ? c : (cssVar(c + '-t') || hexOf(c)); }
-  function secSweep(sec) {
-    var c = sec.color || 'orange';
-    return (sec.sweep || [c, 'orange', c, 'charcoal', c, 'orange']).map(hexOf);
-  }
   function secColors() { var m = {}; sections.forEach(function (s) { m[s.id] = secColor(s); }); return m; }
 
   var slides = [];       // { def, sec, index }
@@ -144,31 +139,99 @@
     updateHash(); updateProgress(); emit();
   }
 
+  /* ---------------- transitions (deck 2: chalk) ----------------
+     Section change: a scribble in the new section's color fills the screen, the section's food cut-out (sec.toss)
+     tumbles across, its kicker is chalked big in the middle, then an eraser wipes the scribble away (~1.25 s).
+     Within a section: slate-colored eraser strokes smear over the old slide, then rub away to show the new one (~0.5 s).
+     Back navigation is instant. */
+  function rnd(seed) { seed = seed % 2147483647 || 1; return function () { seed = seed * 16807 % 2147483647; return seed / 2147483647; }; }
+  /** Zig-zag stroke path covering the stage left→right. gap: horizontal step; slant: lean of each stroke. */
+  function zigzag(seed, gap, slant, jit) {
+    var r = rnd(seed), pad = 120, x = -pad - slant, top = true, d = 'M' + x + ' ' + (-pad);
+    while (x < W + pad + slant) {
+      x += gap * (0.8 + r() * 0.4); top = !top;
+      var y = top ? -pad + (r() - .5) * jit : H + pad + (r() - .5) * jit;
+      d += ' L' + Math.round(top ? x : x - slant) + ' ' + Math.round(y);
+    }
+    return d;
+  }
+  var XL = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, at) { var e = document.createElementNS(XL, tag); for (var k in at) e.setAttribute(k, at[k]); return e; }
+  function stroke(d, col, w, extra) {
+    var at = { d: d, fill: 'none', stroke: col, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+    for (var k in extra || {}) at[k] = extra[k];
+    return svgEl('path', at);
+  }
+  var tseed = 1;
+
   function transition(old, L, secChange, dir, playEntrance) {
     var start = function () { if (playEntrance && live === L) playTo(0); };
     if (!old) { start(); return; }
-    if (dir === 'back') { unmount(old); return; }
+    if (dir === 'back' || MODE !== 'show' || !window.DrawSVGPlugin) { unmount(old); start(); return; }
+    var sw = document.getElementById('sweep');
+    sw.innerHTML = '';
+    var svg = svgEl('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H });
+    var id = 'swm' + (tseed++), sd = tseed * 7919;
+    var mask = svgEl('mask', { id: id, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H });
+    mask.appendChild(svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: '#fff' }));
+    var g = svgEl('g', { mask: 'url(#' + id + ')' });
+    var defs = svgEl('defs', {}); defs.appendChild(mask); svg.appendChild(defs); svg.appendChild(g);
+    sw.appendChild(svg);
+    var finish = function () { sw.innerHTML = ''; transitioning = null; };
+    gsap.set(L.el, { autoAlpha: 0 });
+
     if (secChange) {
-      var sw = document.getElementById('sweep');
-      var cols = secSweep(slides[L.index].sec);
-      sw.innerHTML = cols.map(function (c, k) {
-        return '<div class="panel" style="left:' + (k * 330 - 120) + 'px;background:' + c + '"></div>';
-      }).join('');
-      var ps = sw.querySelectorAll('.panel');
-      gsap.set(L.el, { autoAlpha: 0 });
-      transitioning = gsap.timeline({ onComplete: function () { sw.innerHTML = ''; transitioning = null; } })
-        .fromTo(ps, { x: 2300 }, { x: 0, duration: .5, ease: 'power3.in', stagger: .035 })
-        .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); })
-        .to(ps, { x: -2600, duration: .6, ease: 'power3.out', stagger: .035 })
-        .add(start, '-=.45');
+      var sec = slides[L.index].sec, col = secColor(sec), tint = secTint(sec);
+      var solid = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: col, opacity: 0 });
+      var base = stroke(zigzag(sd, 46, 260, 60), col, 112);
+      var tex1 = stroke(zigzag(sd + 3, 70, 300, 200), 'rgba(0,0,0,.16)', 7);
+      var tex2 = stroke(zigzag(sd + 5, 95, 220, 260), tint, 5, { opacity: .55 });
+      var eraser = stroke(zigzag(sd + 9, 92, 200, 80), '#000', 210);
+      mask.appendChild(eraser);
+      [solid, base, tex1, tex2].forEach(function (n) { g.appendChild(n); });
+      var word = svgEl('text', { x: W / 2, y: H / 2 + 70, 'text-anchor': 'middle', fill: '#1E2124',
+        style: 'font-family:var(--hand);font-weight:700;font-size:250px' });
+      word.textContent = sec.kicker || sec.title || '';
+      g.appendChild(word);
+      var toss = null;
+      if (sec.toss) {
+        toss = document.createElement('img'); toss.src = sec.toss; toss.className = 'toss';
+        sw.appendChild(toss);
+      }
+      var T = gsap.timeline({ onComplete: finish });
+      T.fromTo(base, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, 0)
+        .fromTo(tex1, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, .06)
+        .fromTo(tex2, { drawSVG: '0%' }, { drawSVG: '100%', duration: .5, ease: 'power1.inOut' }, .1)
+        .set(solid, { attr: { opacity: 1 } }, .52)
+        .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); }, .52)
+        .fromTo(word, { opacity: 0, scale: .5, rotation: -14, svgOrigin: (W / 2) + ' ' + (H / 2) },
+          { opacity: 1, scale: 1, rotation: -4, duration: .4, ease: 'back.out(2)' }, .3)
+        .fromTo(eraser, { drawSVG: '0%' }, { drawSVG: '100%', duration: .55, ease: 'power2.inOut' }, .82)
+        .to(word, { opacity: 0, duration: .2 }, .82)
+        .add(start, .95);
+      if (toss) {
+        T.fromTo(toss, { x: -420, y: 760, rotation: -60, autoAlpha: 1 },
+          { duration: 1.0, ease: 'power1.inOut', rotation: 300,
+            motionPath: { path: [{ x: 260, y: 160 }, { x: 900, y: -60 }, { x: 1500, y: 260 }, { x: 2050, y: 820 }], curviness: 1.4 } }, .05);
+      }
+      transitioning = T;
       return;
     }
-    gsap.set(L.el, { autoAlpha: 0 });
-    transitioning = gsap.timeline({ onComplete: function () { transitioning = null; } })
-      .to(old.el, { autoAlpha: 0, duration: .3, ease: 'power1.in' })
-      .add(function () { unmount(old); })
-      .to(L.el, { autoAlpha: 1, duration: .35, ease: 'power1.out' })
-      .add(start, '-=.3');
+    // within a section: eraser smear
+    var bg = cssVar('bg') || '#2A2E31';
+    var cover = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: bg, opacity: 0 });
+    var smear = stroke(zigzag(sd, 150, 340, 40), bg, 250);
+    var dust = stroke(zigzag(sd + 2, 150, 340, 140), 'rgba(243,235,221,.07)', 60);
+    var rub = stroke(zigzag(sd + 4, 160, -300, 60), '#000', 270);
+    mask.appendChild(rub);
+    [cover, smear, dust].forEach(function (n) { g.appendChild(n); });
+    transitioning = gsap.timeline({ onComplete: finish })
+      .fromTo(smear, { drawSVG: '0%' }, { drawSVG: '100%', duration: .24, ease: 'power1.in' }, 0)
+      .fromTo(dust, { drawSVG: '0%' }, { drawSVG: '100%', duration: .24, ease: 'power1.in' }, .02)
+      .set(cover, { attr: { opacity: 1 } }, .25)
+      .add(function () { unmount(old); gsap.set(L.el, { autoAlpha: 1 }); }, .25)
+      .fromTo(rub, { drawSVG: '0%' }, { drawSVG: '100%', duration: .3, ease: 'power1.out' }, .27)
+      .add(start, .3);
   }
 
   /* ---------------- chrome ---------------- */
@@ -265,6 +328,7 @@
     viewport = document.getElementById('viewport');
     stage = document.getElementById('stage');
     buildProgress();
+    sections.forEach(function (sec) { if (sec.toss) { var im = new Image(); im.src = sec.toss; } });   // preload transition cut-outs
     fit(); window.addEventListener('resize', fit);
     document.addEventListener('keydown', onKey);
     go(indexFromHash(), 'start', 'fwd');
@@ -304,6 +368,7 @@
   // test/automation hooks
   Deck.next = function () { next(); };
   Deck.prev = function () { prev(); };
+  Deck._transition = function () { return transitioning; };   // QA hook: seek a running transition
   Deck.go = function (i) { go(i, 'start', i > cur ? 'fwd' : 'back'); };
   Deck.state = function () { return { index: cur, step: step, steps: live ? nSteps(live) : 0, id: live ? slides[cur].sec.id + '/' + slides[cur].def.id : null, animating: !!pending || !!transitioning }; };
   Deck.finishStep = function () { settle(); if (transitioning) transitioning.progress(1); };

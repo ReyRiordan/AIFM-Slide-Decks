@@ -863,7 +863,7 @@
 
   Deck.section({
     id: 'giuseppe', order: 3, num: '03', kicker: 'Mix', title: 'NotCo Giuseppe', color: 'saffron',
-    sweep: ['saffron', 'rust', 'saffron', 'charcoal', 'saffron', 'olive'],
+    toss: 'assets/img/giuseppe/tomato.webp',
     slides: [PROBLEM, APPROACH, MAP, SCORE, STEER, RULES, RESULTS, TAKEAWAYS]
   });
 })();

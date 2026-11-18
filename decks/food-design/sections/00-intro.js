@@ -125,7 +125,6 @@
 
   Deck.section({
     id: 'intro', order: 0, num: '00', kicker: 'Intro', title: '', color: 'rust',
-    sweep: ['rust', 'teal', 'olive', 'saffron', 'cranberry', 'plum'],
     slides: [TITLE, AGENDA]
   });
 })();

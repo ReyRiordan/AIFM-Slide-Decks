@@ -337,7 +337,7 @@
 
   Deck.section({
     id: 'notco', order: 4, num: '04', kicker: 'Sell', title: 'NotCo', color: 'cranberry',
-    sweep: ['cranberry', 'rust', 'cranberry', 'charcoal', 'cranberry', 'plum'],
+    toss: 'assets/img/giuseppe/milk.webp',
     slides: [ORIGIN, PIVOT, TODAY, BRIDGE]
   });
 })();

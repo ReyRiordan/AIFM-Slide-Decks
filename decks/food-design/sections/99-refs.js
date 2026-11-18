@@ -119,7 +119,6 @@
 
   Deck.section({
     id: 'refs', order: 99, num: '—', kicker: 'References', title: '', color: 'teal',
-    sweep: ['teal', 'charcoal', 'teal', 'charcoal', 'teal', 'charcoal'],
     slides: [
       refSlide('refs-1', [
         [COL_X[0], '01 · Read · Samsung Food', READ_A],

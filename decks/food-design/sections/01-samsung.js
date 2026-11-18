@@ -624,7 +624,7 @@
 
   Deck.section({
     id: 'samsung', order: 1, num: '01', kicker: 'Read', title: 'Samsung Food', color: 'teal',
-    sweep: ['teal', 'rust', 'teal', 'charcoal', 'teal', 'olive'],
+    toss: 'assets/img/intro/card.webp',
     slides: [DEMO, PROBLEM, APPROACH, READ, PARSE, LINK, ERRORS, DISH, TAKE]
   });
 })();

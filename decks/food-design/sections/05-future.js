@@ -385,7 +385,7 @@
 
   Deck.section({
     id: 'future', order: 5, num: '05', kicker: 'Next', title: 'Future', color: 'plum',
-    sweep: ['plum', 'rust', 'cranberry', 'charcoal', 'plum', 'teal'],
+    toss: 'assets/img/future/candy.webp',
     slides: [FORCES, ENGINE, PARITY, AVOID, SUMMARY]
   });
 })();
