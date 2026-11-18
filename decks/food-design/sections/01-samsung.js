@@ -85,8 +85,8 @@
   /* ================================================================ 1 · DEMO */
   var DEMO = {
     id: 'demo',
-    title: 'Recipe from a photo',
-    heading: 'Recipe from a photo',
+    title: 'Demo',
+    heading: 'Demo',
     budgetSec: 30,
     html: function () {
       return phoneVideo('card-scan.mp4', 810, 300, 300, 650) +
@@ -94,8 +94,8 @@
           '<g class="sm-ain">' + Kit.rough.arrow(690, 548, 782, 586, { seed: 12, w: 'normal', head: 20, bend: 14 }) + '</g>' +
           '<g class="sm-aout">' + Kit.rough.arrow(1138, 586, 1230, 548, { seed: 13, w: 'normal', head: 20, bend: 14 }) + '</g>' +
           '<g class="dd-cap">' + Kit.doodle.underline(1246, 742, 400, { seed: 201 }) + '</g>') +
-        div('sm-col', 120, 470, 540, '<div class="t-caps dim">Input</div><div class="t-body sm-ct">A handwritten card</div>') +
-        div('sm-col', 1240, 470, 560, '<div class="t-caps dim">Output</div><div class="t-body sm-ct">A recipe the app can use</div>') +
+        div('sm-col', 120, 470, 540, '<div class="t-caps dim">Input</div><div class="t-body sm-ct">Photo of a recipe card</div>') +
+        div('sm-col', 1240, 470, 560, '<div class="t-caps dim">Output</div><div class="t-body sm-ct">Structured recipe</div>') +
         div('t-h2 sm-demo-cap', 1240, 648, 560, 'Photo in, recipe out.');
     },
     build: function (ctx) {
@@ -134,8 +134,8 @@
   var GAPS = [[412, 475], [757, 469], [1101, 467], [1446, 469]];
   var PROBLEM = {
     id: 'problem',
-    title: 'One question, five sources',
-    heading: 'One question, five sources',
+    title: 'The meal-planning problem',
+    heading: 'The meal-planning problem',
     budgetSec: 35,
     html: function () {
       var frames = '', cards = '', lines = '';
@@ -159,7 +159,7 @@
         }).join('') +
         '<g class="sm-gapa">' + Kit.rough.arrow(1186, 356, 1136, 455, { seed: 37, w: 'normal', stroke: C.rustT, head: 18, bend: 14 }) + '</g>') +
         div('t-h2 c-rust sm-q', 120, 296, 940, 'What should I cook tonight?') +
-        div('callout sm-gk', 1180, 292, 540, 'none of these talk') +
+        div('callout sm-gk', 1180, 292, 540, 'five separate sources') +
         cards;
     },
     build: function (ctx) {
@@ -216,8 +216,8 @@
   ];
   var SYSTEM = {
     id: 'system',
-    title: 'How Samsung Food fits together',
-    heading: 'How Samsung Food fits together',
+    title: 'How Samsung Food works',
+    heading: 'How Samsung Food works',
     budgetSec: 45,
     html: function () {
       var frames = '', cards = '', arrows = '', chips = '', who = '';
@@ -247,7 +247,7 @@
           tx(960, 736, 'allergens · Food List', { size: 28, anchor: 'middle', fill: C.text2, cls: 'mono', weight: 500 }) + '</g>' +
         '<g class="dd-cap">' + Kit.doodle.underline(1366, 752, 410, { seed: 203, color: 'var(--rust-t)' }) + '</g>') +
         cards + who + evid + elab +
-        div('t-h2 sm-sw', 1360, 600, 440, 'Swap any model. Keep the system.');
+        div('t-h2 sm-sw', 1360, 600, 440, 'Swap models. Keep the graph.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -300,8 +300,8 @@
   var SPELL = ['plain flour', 'all-purpose flour', 'AP flour', '1 tbsp flour'];
   var INPUTS = {
     id: 'inputs',
-    title: 'Turning inputs into data',
-    heading: 'Turning inputs into data',
+    title: 'The food graph',
+    heading: 'The food graph',
     budgetSec: 40,
     html: function () {
       var chipF = '', chips = '', conv = '';
@@ -336,7 +336,7 @@
         div('t-mono sm-g', 600, 788, 230, '<span class="sm-gv">0</span>') +
         div('t-label c-teal sm-dl d1', 966, 644, 200, 'apple') +
         div('t-label c-rust sm-dl d2', 1512, 644, 240, 'unknown item') +
-        div('sm-flist', 1139, 740, 420, '<div class="t-body">Food List</div><div class="t-label dim">an estimate, not a database</div>') +
+        div('sm-flist', 1139, 740, 420, '<div class="t-body">Food List</div><div class="t-label dim">a best guess</div>') +
         // detection marks sit ON the photo, so they go in an overlay layer (KIT §6).
         // Each box is tight on one object: the apples, and the upper of the two plain containers.
         Kit.overlay(
@@ -403,8 +403,8 @@
   ];
   var RETRIEVE = {
     id: 'retrieve',
-    title: 'Find, don\'t invent',
-    heading: 'Find, don\'t invent',
+    title: 'Recipe retrieval',
+    heading: 'Recipe retrieval',
     budgetSec: 40,
     html: function () {
       var chipF = '', chips = '';
@@ -419,13 +419,13 @@
           '<g class="sm-fbox">' + Kit.rough.rect(600, 596, 1200, 404,
             { seed: 122, w: 'heavy', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .16, hachureGap: 26 }) + '</g>' +
           '<g class="dd-ok">' + Kit.doodle.mark(1700, 666, 34, 'check', { seed: 205, color: 'var(--rust-t)' }) + '</g>') +
-        div('t-caps faint sm-wk', 640, 334, 700, 'Write a recipe') +
-        div('t-body dim sm-wl', 640, 382, 900, 'What a photo hides') +
+        div('t-caps faint sm-wk', 640, 334, 700, 'Generate a recipe') +
+        div('t-body dim sm-wl', 640, 382, 900, 'Has to guess what the photo hides') +
         chips +
-        div('t-caps c-teal sm-fk', 640, 638, 700, 'Find a recipe') +
+        div('t-caps c-teal sm-fk', 640, 638, 700, 'Retrieve a recipe') +
         div('bignum sm-fn', 640, 690, 520, '<div class="t-num sm-fv">0</div>') +
-        div('t-body sm-fl1', 1180, 744, 580, 'the right recipe, out of 1,000') +
-        div('t-label faint sm-fl2', 1180, 820, 580, 'and only ones that already exist');
+        div('t-body sm-fl1', 1180, 744, 580, 'finds the right recipe among 1,000') +
+        div('t-label faint sm-fl2', 1180, 820, 580, 'only returns recipes that exist');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -470,8 +470,8 @@
   var RSLOT = 212, RW = 206;
   var RANK = {
     id: 'rank',
-    title: 'Filters and scores',
-    heading: 'Filters and scores',
+    title: 'Filtering and ranking',
+    heading: 'Filtering and ranking',
     budgetSec: 60,
     html: function () {
       var resF = '', resC = '';
@@ -503,11 +503,11 @@
         div('t-caps dim sm-sk k3', 360, 788, 500, 'Boost') +
         div('t-body sm-sl l3', 360, 828, 520, 'apples, use by Thursday') +
         div('t-body sm-kot', 1180, 420, 480, 'Taffy Apple Salad') +
-        div('t-caps faint sm-sg', 1160, 600, 640, 'Where taste comes from') +
+        div('t-caps faint sm-sg', 1160, 600, 640, 'Taste signals') +
         div('t-label sm-bl g1', 1160, 662, 130, 'save') +
         div('t-label sm-bl g2', 1160, 730, 130, 'view') +
         resC +
-        div('t-h2 sm-cap', 1160, 846, 640, 'A filter can\'t be outscored.');
+        div('t-h2 sm-cap', 1160, 846, 640, 'Filter, then rank.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -573,7 +573,7 @@
       '[click] Our demo recipe has peanuts in it, so it must never appear, however well it matches their taste. Allergies and diets are a filter, not a weight. ' +
       '[click] Taste and cooking time are soft, so they go into a score. Where does taste come from? People almost never rate a recipe, so the system reads clues. A save says more than a view, and a saved recipe may still never be cooked. ' +
       '[click] Three come out the bottom, in score order. Then context nudges the score: Samsung\'s meal plans favour ingredients near their use-by date. ' +
-      '[click] The apples have to go, so the apple dish moves to the front. Nothing was filtered out here, only reordered: a filter cannot be outscored. The allergy and the Thursday date are mine, to make it concrete.'
+      '[click] The apples have to go, so the apple dish moves to the front. Nothing was filtered out here, only reordered. Filter first, then rank. The allergy and the Thursday date are mine, to make it concrete.'
   };
   Kit.withCrumbs(RANK, STEPS, 2);
 
@@ -588,8 +588,8 @@
   var DRAFT = ['peanuts → sunflower seeds', 'serves: 0', '≈ 220 kcal'];
   var CHECK = {
     id: 'check',
-    title: 'Models propose, rules check',
-    heading: 'Models propose, rules check',
+    title: 'Checking LLM output',
+    heading: 'Checking LLM output',
     budgetSec: 70,
     html: function () {
       var gF = '', gC = '', gM = '';
@@ -617,8 +617,8 @@
         '<g class="dd-last">' + Kit.doodle.underline(126, 1004, 560, { seed: 208 }) + '</g>') +
         div('chip sm-req', 120, 296, 0, '<span class="dot"></span>Make it nut-free') +
         div('t-caps c-rust sm-dk', 160, 428, 500, 'LLM draft') + lines +
-        div('callout sm-cc', 140, 726, 420, 'models guess numbers') +
-        div('t-h2 sm-last', 120, 862, 760, 'The model never has the last word.') +
+        div('callout sm-cc', 140, 726, 420, 'LLMs guess numbers') +
+        div('t-h2 sm-last', 120, 862, 760, 'The LLM drafts. Code checks.') +
         Kit.photo(IMG + 'still-servings.webp', { x: 1560, y: 876, w: 230, h: 62, framed: true, cls: 'sm-sv', alt: 'The servings field, left at 0 persons' }) +
         gC;
     },
@@ -675,7 +675,7 @@
       Kit.draw(tl, qa('.dd-last .rp'), { at: 'a+=1.3', duration: .5 });
     },
     notes:
-      'Samsung confirms that its Personalize feature uses generative AI to adapt a recipe to a diet. What sits after the model is my inference, but it is the defensible design. ' +
+      'An LLM, a large language model like the one behind ChatGPT, writes fluent text. Samsung\'s Personalize feature uses one to adapt a recipe to a diet. What sits after the model is my inference, but it is the defensible design. ' +
       '[click] Here is the draft. A swap, a serving count, a calorie figure. The calories and the sunflower seeds are made up, to show the shape. ' +
       '[click] Allergens first. US law names nine major allergens, and a miss is a safety incident, so this is a lookup in the food graph, not the model\'s opinion. Units next: scaling a recipe is arithmetic, exact in code and unreliable as text prediction. ' +
       '[click] Nutrition fails. In a 2025 benchmark, general-purpose models were off on nutrition by twenty-four to forty-four percent, so you recompute from the linked ingredients and send the draft back. ' +
@@ -692,8 +692,8 @@
   var JSONL = ['device: oven', 'action: bake', 'temp_c: 180', 'min: 25', 'confirm: true'];
   var ACT = {
     id: 'act',
-    title: 'From words to oven settings',
-    heading: 'From words to oven settings',
+    title: 'Oven commands',
+    heading: 'Oven commands',
     budgetSec: 30,
     html: function () {
       var words = '', tags = '';
@@ -785,8 +785,8 @@
   /* =========================================================== 9 · TAKEAWAYS */
   // one row per takeaway: number · rule · tag · one line (KIT §7)
   var TK = [
-    ['01', 'The models are parts. The system is the product.', 'architecture', 'Swap the model; keep the graph.'],
-    ['02', 'Models propose. Rules decide.', 'safety', 'Allergens, numbers, ovens: checked in code.']
+    ['01', 'Build a system, not one model', 'system design', 'Typed data between parts lets you swap any model.'],
+    ['02', 'Check LLM output with code', 'validation', 'Allergens, nutrition and oven settings are computed, not generated.']
   ];
   var MARKS = [['Cook', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
   var TAKE = {
@@ -834,8 +834,8 @@
     },
     notes:
       'Two things to take away, and neither is a fact about Samsung. ' +
-      '[click] First: the models are parts, and the system is the product. What Samsung owns is the graph those models write into and read from, so it can swap either one. ' +
-      '[click] Second: models propose, rules decide. Allergens, arithmetic and oven settings are checked in code, because being fluent is not the same as being right. ' +
+      '[click] First: build a system, not one model. Samsung owns the graph the models write into and read from, so it can swap any model. ' +
+      '[click] Second: check LLM output with code. Allergens, nutrition and oven settings are computed, because a fluent answer can still be wrong. ' +
       'Samsung reported over six million users in July 2024, but it publishes no accuracy figures, so adoption is not accuracy. ' +
       'Next, Shiru: finding an ingredient nobody has used yet.'
   };

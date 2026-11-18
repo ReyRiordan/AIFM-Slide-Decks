@@ -34,8 +34,8 @@
         return '<div class="t-h2 fu-qtl l' + i + '" style="left:' + g.x + 'px;width:' + QTW + 'px">' + g.t + '</div>';
       }).join('');
       return svg +
-        '<div class="t-h1 fu-q1">Change what’s in it.</div>' +
-        '<div class="t-h1 fu-q2">Keep what people love.</div>' + labs;
+        '<div class="t-h1 fu-q1">Change the recipe.</div>' +
+        '<div class="t-h1 fu-q2">Keep the taste.</div>' + labs;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -76,8 +76,8 @@
 
   var PERSONAL = {
     id: 'personal',
-    title: 'Food for one person',
-    heading: 'Food for one person',
+    title: 'Personalized food',
+    heading: 'Personalized food',
     budgetSec: 45,
     html: function () {
       var keepArr = KEEP.map(function (k, i) {
@@ -177,8 +177,8 @@
 
   var TAILOR = {
     id: 'tailor',
-    title: 'A loop aimed at one person',
-    heading: 'A loop aimed at one person',
+    title: 'Personalized recipe search',
+    heading: 'Personalized recipe search',
     budgetSec: 35,
     html: function () {
       var fl = { w: 'heavy', head: 24, rough: 1.0 };
@@ -212,8 +212,8 @@
       }).join('');
       return svg + boxes +
         '<div class="t-h2 ta-tl">your bar</div>' +
-        '<div class="callout ta-c1">like Giuseppe, aimed at you</div>' +
-        '<div class="callout ta-c2">a rule, not a score</div>' +
+        '<div class="callout ta-c1">Giuseppe’s loop, your target</div>' +
+        '<div class="callout ta-c2">hard filter</div>' +
         '<div class="t-caps ta-ft">First buyers</div>' +
         '<div class="t-h2 ta-fb">medically tailored meals</div>' +
         '<div class="ta-num"><div class="t-num c-rust"><span class="v">0</span></div>' +
@@ -283,8 +283,8 @@
 
   var BACKUP = {
     id: 'backup',
-    title: 'When an ingredient fails',
-    heading: 'When an ingredient fails',
+    title: 'Supply shocks',
+    heading: 'Supply shocks',
     budgetSec: 45,
     html: function () {
       var svg = svgOpen() +
@@ -311,8 +311,8 @@
         '<div class="t-mono bk-peak">$12,000+ / t</div>' +
         '<div class="t-label faint bk-peakl">December 2024</div>' +
         '<div class="t-mono bk-fall">~70%</div>' +
-        '<div class="callout bk-both">both ways, fast</div>' +
-        '<div class="t-caps bk-eul">EU forest rule</div>' +
+        '<div class="callout bk-both">prices swing</div>' +
+        '<div class="t-caps bk-eul">EU forest law</div>' +
         '<div class="t-label bk-eud">30 Dec 2026</div>' +
         Kit.photo(IMG + 'biscuit.webp', { x: 790, y: 636, w: 340, rot: -3, cls: 'bk-bis', alt: 'chocolate-coated biscuit with a bite taken out' }) +
         '<div class="t-h2 bk-jobs">cocoa does four jobs</div>';
@@ -362,7 +362,7 @@
       'Now the factory. ' +
       '[click] Cocoa futures topped twelve thousand dollars a tonne in December 2024, then fell about seventy percent. ' +
       'A manufacturer has to move both ways, and fast. ' +
-      '[click] And from the end of December 2026, the EU deforestation rule applies to large and medium companies. ' +
+      '[click] And from the end of December 2026, the EU forest law applies to large and medium companies. ' +
       'Cocoa farming has been linked to forest loss in Côte d’Ivoire and Ghana. ' +
       '[click] But you cannot just swap cocoa out. In a coating it does four jobs: it sets the snap and the melt, it gives the roasted aroma, ' +
       'it sets colour and bitterness, and it changes how the coating flows on the line. A substitute has to pass all four.'
@@ -379,8 +379,8 @@
 
   var LIBRARY = {
     id: 'library',
-    title: 'Backups before the shock',
-    heading: 'Backups before the shock',
+    title: 'Backup formulas',
+    heading: 'Backup formulas',
     budgetSec: 35,
     html: function () {
       var cards = CARDY.map(function (y, i) {
@@ -406,15 +406,15 @@
         return '<div class="t-body lb-n d' + i + '" style="top:' + (y + 16) + 'px">' + CARDN[i] + '</div>';
       }).join('');
       return svg + names +
-        '<div class="t-caps lb-k">Backup library</div>' +
+        '<div class="t-caps lb-k">Pre-tested backups</div>' +
         '<div class="callout lb-c1">tested before it’s needed</div>' +
         '<div class="t-body lb-tn">ChoViva · sunflower seeds</div>' +
         '<div class="t-label dim lb-ts">Nestlé Germany, April 2026</div>' +
         Kit.photo(IMG + 'sunflower.webp', { x: 726, y: 826, w: 150, rot: 6, cls: 'lb-sun', alt: 'roasted sunflower seeds' }) +
-        '<div class="t-caps lb-lk">Land for the same oil</div>' +
+        '<div class="t-caps lb-lk">Land per tonne of oil</div>' +
         '<div class="t-body lb-bl b0">oil palm</div>' +
         '<div class="t-body lb-bl b1">soy or rapeseed</div>' +
-        '<div class="t-hand lb-ans">keep palm, change the source</div>' +
+        '<div class="t-hand lb-ans">or keep palm, buy deforestation-free</div>' +
         Kit.photo(IMG + 'palm.webp', { x: 1540, y: 300, w: 250, rot: -5, cls: 'lb-palm', alt: 'oil palm fruit' });
     },
     build: function (ctx) {

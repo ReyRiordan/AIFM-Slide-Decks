@@ -67,14 +67,14 @@ Section ids and files: `intro` (`00-intro.js`) · `samsung` (`01-samsung.js`) ·
 |---|---|---|---|---|
 | Intro | `title` | (none: title slide) | 20 | — |
 | Intro | `agenda` | Agenda | 40 | — |
-| Cook | `demo` | Recipe from a photo | 30 | — |
-| Cook | `problem` | One question, five sources | 35 | — |
-| Cook | `system` | How Samsung Food fits together | 45 | — |
-| Cook | `inputs` | Turning inputs into data | 40 | Understand, Sense |
-| Cook | `retrieve` | Find, don't invent | 40 | Sense |
-| Cook | `rank` | Filters and scores | 60 | Rank |
-| Cook | `check` | Models propose, rules check | 70 | Check |
-| Cook | `act` | From words to oven settings | 30 | Act |
+| Cook | `demo` | Demo | 30 | — |
+| Cook | `problem` | The meal-planning problem | 35 | — |
+| Cook | `system` | How Samsung Food works | 45 | — |
+| Cook | `inputs` | The food graph | 40 | Understand, Sense |
+| Cook | `retrieve` | Recipe retrieval | 40 | Sense |
+| Cook | `rank` | Filtering and ranking | 60 | Rank |
+| Cook | `check` | Checking LLM output | 70 | Check |
+| Cook | `act` | Oven commands | 30 | Act |
 | Cook | `takeaways` | Takeaways | 40 | — |
 | Find | `problem` | The protein problem | 45 | — |
 | Find | `approach` | How Shiru searches | 30 | — |
@@ -97,10 +97,10 @@ Section ids and files: `intro` (`00-intro.js`) · `samsung` (`01-samsung.js`) ·
 | Sell | `today` | NotCo today | 45 | — |
 | Sell | `bridge` | (none: statement slide) | 30 | — |
 | Next | `question` | (none: statement slide) | 20 | — |
-| Next | `personal` | Food for one person | 45 | — |
-| Next | `tailor` | A loop aimed at one person | 35 | — |
-| Next | `backup` | When an ingredient fails | 45 | — |
-| Next | `library` | Backups before the shock | 35 | — |
+| Next | `personal` | Personalized food | 45 | — |
+| Next | `tailor` | Personalized recipe search | 35 | — |
+| Next | `backup` | Supply shocks | 45 | — |
+| Next | `library` | Backup formulas | 35 | — |
 | Next | `summary` | Summary | 45 | — |
 
 **Redo (Nov 2026):** Samsung's marker is now **Cook** (was Read) and the section is rebuilt as a system of parts; Future is rebuilt around the two directions. See `specs/samsung.md` and `specs/future.md` (v2). Cook roadmap boxes: Understand · Sense · Rank · Check · Act around a central Food graph.
