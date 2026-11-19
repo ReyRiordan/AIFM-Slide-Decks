@@ -1,18 +1,19 @@
 /* ==========================================================================
-   01 · Read · Samsung Food   (budget 390 s)
-   Spec: specs/samsung.md. Roadmap cards / crumbs: Read → Sort → Parse → Link.
-   Restyle (Nov 2026): weight hierarchy, hatched focal boxes, teaching doodles only,
-   no source text on slides (caveats live in the notes).
+   01 · Cook · Samsung Food   (budget 390 s)
+   Spec: specs/samsung.md (v2). Roadmap boxes / crumbs: Understand → Sense → Rank → Check → Act.
+   House style (Nov 2026 restyle): weight hierarchy, hatched focal boxes, teaching doodles only,
+   no source text on slides (caveats live in the notes, citations in 99-refs.js).
    ========================================================================== */
 (function () {
   'use strict';
   var C = Kit.color;
   var IMG = 'assets/img/samsung/';
-  var STEPS = ['Read', 'Sort', 'Parse', 'Link'];
+  var VID = 'assets/video/samsung/';
+  var STEPS = ['Understand', 'Sense', 'Rank', 'Check', 'Act'];
 
   /* ---------- local helpers (KIT §4: helpers live inside the section) ---------- */
 
-  /** Rounded-rectangle path, drawn with the rough.js wobble (used where corners must read as rounded). */
+  /** Rounded-rectangle path drawn with the rough.js wobble (phone frames). */
   function rr(x, y, w, h, r, o) {
     var d = 'M' + (x + r) + ' ' + y + ' H' + (x + w - r) + ' A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) +
       ' V' + (y + h - r) + ' A' + r + ' ' + r + ' 0 0 1 ' + (x + w - r) + ' ' + (y + h) +
@@ -31,630 +32,781 @@
   function svg(cls, inner) {
     return '<svg class="sm-svg ' + cls + '" width="1920" height="1080" viewBox="0 0 1920 1080">' + inner + '</svg>';
   }
+  /** ML / rule tag: says whether a step is learned or written by hand. */
+  function tag(kind, x, y, cls, text) {
+    return div('sm-tag ' + kind + ' ' + (cls || ''), x, y, 0, text || (kind === 'ml' ? 'ML' : 'rule'));
+  }
   /** Absolutely positioned block. */
   function div(cls, x, y, w, inner, extra) {
     return '<div class="' + cls + '" style="left:' + x + 'px;top:' + y + 'px;' + (w ? 'width:' + w + 'px;' : '') +
       (extra || '') + '">' + inner + '</div>';
   }
 
+  /* ---------- phone video (the player from PR #1, made reusable) ----------
+     A clip inside a hand-drawn phone frame. A click on the phone plays or pauses it; → and Space
+     still advance the deck, because nothing here binds keys. If the file is missing the <video>
+     fires `error` and the "clip coming" card shows instead: drop the file in and it plays. */
+  function phoneVideo(file, x, y, w, h) {
+    var p = 16;
+    return svg('sm-phone-svg',
+      '<g class="sm-frame">' + rr(x - p, y - p, w + p * 2, h + p * 2, 40,
+        { seed: 11, w: 'heavy', fill: 'var(--sec-t)', fillStyle: 'hachure', hachureGap: 36, fillOpacity: .1 }) + '</g>') +
+      div('sm-vid', x, y, w,
+        '<video class="sm-vid-el" src="' + VID + file + '" muted playsinline preload="auto"></video>' +
+        '<div class="sm-vid-play"><i></i><span class="t-label">Play</span></div>' +
+        '<div class="sm-vid-ph"><div class="t-label dim">Clip coming</div></div>',
+        'height:' + h + 'px;');
+  }
+  /** Wire one phone video up and tear it down with the slide. */
+  function wireVideo(ctx) {
+    var vid = ctx.q('.sm-vid-el'), box = ctx.q('.sm-vid'), ph = ctx.q('.sm-vid-ph'), play = ctx.q('.sm-vid-play');
+    if (!vid) return;
+    var onError = function () { vid.style.display = 'none'; ph.classList.add('on'); play.classList.add('off'); };
+    var onPlay = function () { play.classList.add('off'); };
+    var onPause = function () { play.classList.remove('off'); };
+    var onClick = function () {
+      if (ph.classList.contains('on')) return;
+      if (vid.paused) {
+        if (vid.ended) vid.currentTime = 0;
+        var p = vid.play();
+        if (p && p['catch']) p['catch'](function () { });
+      } else vid.pause();
+    };
+    vid.addEventListener('error', onError);
+    vid.addEventListener('play', onPlay);
+    vid.addEventListener('pause', onPause);
+    box.addEventListener('click', onClick);
+    if (vid.error) onError();
+    ctx.cleanup(function () {
+      box.removeEventListener('click', onClick);
+      vid.removeEventListener('error', onError);
+      vid.removeEventListener('play', onPlay);
+      vid.removeEventListener('pause', onPause);
+      try { vid.pause(); vid.currentTime = 0; } catch (e) { }
+    });
+  }
+
   /* ================================================================ 1 · DEMO */
   var DEMO = {
     id: 'demo',
-    title: 'Recipe from a photo',
-    heading: 'Recipe from a photo',
-    budgetSec: 45,
+    title: 'Demo',
+    heading: 'Demo',
+    budgetSec: 30,
     html: function () {
-      var g = svg('sm-demo-svg',
-        '<g class="sm-frame">' + rr(740, 300, 440, 630, 40,
-          { seed: 11, w: 'heavy', fill: 'var(--sec-t)', fillStyle: 'hachure', hachureGap: 34, fillOpacity: .1 }) + '</g>' +
-        '<g class="sm-ain">' + Kit.rough.arrow(628, 500, 724, 560, { seed: 12, w: 'normal', head: 20, bend: 16 }) + '</g>' +
-        '<g class="sm-aout">' + Kit.rough.arrow(1196, 560, 1292, 500, { seed: 13, w: 'normal', head: 20, bend: 16 }) + '</g>' +
-        '<g class="dd-cap">' + Kit.doodle.underline(800, 1008, 320, { seed: 201 }) + '</g>');
-      return g +
-        div('sm-col', 120, 380, 500, '<div class="t-caps dim">Input</div><div class="t-body sm-ct">A photo of a written recipe</div>') +
-        div('sm-col', 1300, 380, 500, '<div class="t-caps dim">Output</div><div class="t-body sm-ct">An editable recipe in the app</div>') +
-        div('callout sm-kq', 760, 596, 400, 'demo clip goes here') +
-        div('t-body sm-demo-cap', 660, 952, 600, 'Photo in, record out.');
+      return phoneVideo('card-scan.mp4', 810, 300, 300, 650) +
+        svg('sm-demo-svg',
+          '<g class="sm-ain">' + Kit.rough.arrow(690, 548, 782, 586, { seed: 12, w: 'normal', head: 20, bend: 14 }) + '</g>' +
+          '<g class="sm-aout">' + Kit.rough.arrow(1138, 586, 1230, 548, { seed: 13, w: 'normal', head: 20, bend: 14 }) + '</g>' +
+          '<g class="dd-cap">' + Kit.doodle.underline(1246, 742, 400, { seed: 201 }) + '</g>') +
+        div('sm-col', 120, 470, 540, '<div class="t-caps dim">Input</div><div class="t-body sm-ct">Photo of a recipe card</div>') +
+        div('sm-col', 1240, 470, 560, '<div class="t-caps dim">Output</div><div class="t-body sm-ct">Structured recipe</div>') +
+        div('t-h2 sm-demo-cap', 1240, 648, 560, 'Photo in, recipe out.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      wireVideo(ctx);
       gsap.set(qa('.sm-demo-cap, .dd-cap'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
       Kit.rise(tl, qa('.sm-col'), { at: .25, stagger: .12 });
       Kit.draw(tl, qa('.sm-frame .rp'), { at: .5, duration: .9 });
       Kit.draw(tl, qa('.sm-ain .rp, .sm-aout .rp'), { at: .9, duration: .5, stagger: .08 });
-      Kit.fade(tl, q('.sm-kq'), { at: 1.2 });
+      Kit.fade(tl, q('.sm-vid'), { at: 1.1 });
 
+      // [click 1] the one-line summary of the whole scan
       ctx.pause();
       Kit.show(tl, q('.sm-demo-cap'), { y: 18 });
       tl.to(q('.dd-cap'), { autoAlpha: 1, duration: .01 }, '>-.2');
       Kit.draw(tl, qa('.dd-cap .rp'), { at: '<', duration: .5 });
     },
     notes:
-      'Let\'s start with the thing itself. You point your phone at a recipe, and a few seconds later it is in the app: a title, an ingredient list, steps you can edit. ' +
-      'Samsung shipped this in July. Basic accounts get three free scans, then it needs the paid tier. ' +
-      'If the recipe runs over one page, you add a second photo and it stitches them together. ' +
-      '[click] Photo in, record out. That is the promise. ' +
-      'The rest of this section is what happens during those few seconds of waiting, because every step in there can go wrong, and each one fails in its own way.'
+      'You point a phone at a handwritten recipe card, and a few seconds later the app has a recipe it can work with. ' +
+      'Samsung shipped this in July 2025: three free scans, then it needs the paid tier. ' +
+      'Watch what comes back after the scan: ingredient icons, aisle groups, a health score, recommendations. ' +
+      '[click] Photo in, recipe out. Everything in this section is what sits behind that wait.'
   };
 
   /* ============================================================= 2 · PROBLEM */
-  var DOWNSTREAM = ['Search', 'Nutrition', 'Servings', 'Shopping list', 'Oven'];
+  var SRC = [
+    { t: 'Taste', s: 'saves, searches', dy: 0 },
+    { t: 'Recipes', s: 'what could be cooked', dy: 16 },
+    { t: 'Food List', s: 'what is in the kitchen', dy: -12 },
+    { t: 'Health goals', s: 'calories, diet', dy: 12 },
+    { t: 'Appliances', s: 'what the oven can do', dy: -8 }
+  ];
+  var PX = [120, 465, 810, 1155, 1500], PW = 286, PH = 210, PY = 430;
+  // top-left corner of the loop box in each of the four gaps between the five cards
+  var GAPS = [[412, 475], [757, 469], [1101, 467], [1446, 469]];
   var PROBLEM = {
     id: 'problem',
-    title: 'The recipe problem',
-    heading: 'The recipe problem',
-    budgetSec: 45,
+    title: 'The meal-planning problem',
+    heading: 'The meal-planning problem',
+    budgetSec: 35,
     html: function () {
-      var json = [
-        '{',
-        '  "title":       "",',
-        '  "yield":       "",',
-        '  "ingredients": [],',
-        '  "steps":       [],',
-        '  "nutrition":   ""',
-        '}'
-      ].map(function (l) { return '<div>' + Kit.esc(l) + '</div>'; }).join('');
-      var frames = '', cards = '';
-      DOWNSTREAM.forEach(function (t, i) {
-        frames += '<g class="sm-df d' + i + '">' + Kit.rough.rect(120 + i * 340, 866, 320, 116, { seed: 25 + i, w: 'fine', stroke: C.text3 }) + '</g>';
-        cards += div('sm-dcard c' + i, 120 + i * 340, 866, 320, '<span class="t-label">' + t + '</span>');
+      var frames = '', cards = '', lines = '';
+      SRC.forEach(function (s, i) {
+        frames += '<g class="sm-sf f' + i + '" style="transform:rotate(' + (i % 2 ? 1.2 : -1.4) + 'deg);transform-origin:' +
+          (PX[i] + PW / 2) + 'px ' + (PY + s.dy + PH / 2) + 'px">' +
+          Kit.rough.rect(PX[i], PY + s.dy, PW, PH, { seed: 21 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .13, hachureGap: 24 }) + '</g>';
+        cards += div('sm-sc c' + i, PX[i], PY + s.dy, PW,
+          '<div class="t-body sm-st">' + s.t + '</div><div class="t-label dim sm-ss">' + Kit.esc(s.s) + '</div>',
+          'height:' + PH + 'px;transform:rotate(' + (i % 2 ? 1.2 : -1.4) + 'deg);');
+        lines += '<g class="sm-jl j' + i + '">' + Kit.rough.line(PX[i] + PW / 2, PY + s.dy + PH + 14, 960, 846,
+          { seed: 31 + i, w: 'fine', stroke: C.text3, rough: .5 }) + '</g>';
       });
-      return svg('sm-prob-svg',
-        '<g class="sm-jbox">' + Kit.rough.rect(1060, 320, 740, 380, { seed: 22, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .13, hachureGap: 24 }) + '</g>' +
-        '<g class="sm-parrow">' + Kit.rough.arrow(866, 540, 1024, 540, { seed: 21, w: 'heavy', head: 28, bend: -12 }) + '</g>' +
-        frames +
-        '<g class="dd-chip">' + Kit.doodle.circle(1060, 726, 380, 68, { seed: 202, color: 'var(--rust-t)', w: 'heavy', rx: 250, ry: 44 }) + '</g>' +
-        '<g class="sm-darr">' + Kit.rough.arrow(360, 836, 290, 862, { seed: 26, w: 'normal', stroke: C.rustT, head: 18, bend: 14 }) + '</g>') +
-        '<div class="t-caps dim sm-pk sm-pk1">A photo</div>' +
-        Kit.photo(IMG + 'recipe-card.jpg', { x: 120, y: 320, w: 700, h: 440, rot: -3, framed: true, cls: 'sm-card', alt: 'A handwritten recipe card' }) +
-        '<div class="t-caps dim sm-pk sm-pk2">A record</div>' +
-        div('sm-json', 1060, 320, 740, '<div class="t-mono">' + json + '</div>', 'height:380px;') +
-        div('sm-chip-rust', 1060, 726, 0, '50+ fields, typed by hand') +
-        div('callout sm-dcall', 120, 790, 620, 'none of them read the photo') +
+      return svg('sm-prob-svg', frames + lines +
+        '<g class="sm-hub">' + Kit.rough.circle(960, 920, 150, { seed: 36, w: 'normal', stroke: C.text2 }) +
+          tx(960, 936, '?', { size: 60, anchor: 'middle', fill: C.text2, weight: 700, cls: 'disp' }) + '</g>' +
+        // one rust loop per gap: the callout says "none of these talk", so every gap is marked
+        GAPS.map(function (g, i) {
+          return '<g class="sm-gap">' + Kit.doodle.circle(g[0], g[1], 48, 136,
+            { seed: 202 + i, color: 'var(--rust-t)', w: 'heavy', rx: 24, ry: 68 }) + '</g>';
+        }).join('') +
+        '<g class="sm-gapa">' + Kit.rough.arrow(1186, 356, 1136, 455, { seed: 37, w: 'normal', stroke: C.rustT, head: 18, bend: 14 }) + '</g>') +
+        div('t-h2 c-rust sm-q', 120, 296, 940, 'What should I cook tonight?') +
+        div('callout sm-gk', 1180, 292, 540, 'five separate sources') +
         cards;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-json, .sm-jbox, .sm-pk2, .sm-chip-rust, .dd-chip, .sm-dcall, .sm-darr'), { autoAlpha: 0 });
-      gsap.set(qa('.sm-dcard'), { autoAlpha: 0 });
+      gsap.set(qa('.sm-sf, .sm-sc, .sm-gk, .sm-gap, .sm-gapa, .sm-jl, .sm-hub'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.fade(tl, q('.sm-pk1'), { at: .2 });
-      Kit.drop(tl, q('.sm-card'), { at: .25, rot: -3 });
-      tl.fromTo(qa('.sm-parrow .rp'), { drawSVG: '0%' }, { drawSVG: '0%', duration: .01 }, 0);
+      Kit.show(tl, q('.sm-q'), { at: .3, y: 20 });
 
+      // [click 1] the five sources land, scattered and unconnected
       ctx.pause();
-      tl.addLabel('r');
-      tl.to(qa('.sm-parrow .rp'), { drawSVG: '100%', duration: .6, ease: 'power2.inOut' }, 'r');
-      Kit.show(tl, q('.sm-pk2'), { at: 'r+=.2', y: 0 });
-      tl.to(q('.sm-jbox'), { autoAlpha: 1, duration: .01 }, 'r+=.3');
-      Kit.draw(tl, qa('.sm-jbox .rp'), { at: 'r+=.3', duration: .7 });
-      Kit.show(tl, q('.sm-json'), { at: 'r+=.5', y: 22 });
+      tl.addLabel('s');
+      tl.to(qa('.sm-sf'), { autoAlpha: 1, duration: .01, stagger: .12 }, 's');
+      Kit.draw(tl, qa('.sm-sf .rp'), { at: 's', duration: .45, stagger: .12 });
+      Kit.drop(tl, qa('.sm-sc'), { at: 's+=.15', stagger: .12 });
 
+      // [click 2] the gaps between them are the point
       ctx.pause();
-      Kit.show(tl, q('.sm-chip-rust'), { y: 16 });
-      tl.to(q('.dd-chip'), { autoAlpha: 1, duration: .01 }, '>-.1');
-      Kit.draw(tl, qa('.dd-chip .rp'), { at: '<', duration: .7 });
+      tl.addLabel('g');
+      Kit.show(tl, q('.sm-gk'), { at: 'g', y: 10 });
+      tl.to(qa('.sm-gap, .sm-gapa'), { autoAlpha: 1, duration: .01 }, 'g+=.2');
+      Kit.draw(tl, qa('.sm-gapa .rp'), { at: 'g+=.2', duration: .35 });
+      Kit.draw(tl, qa('.sm-gap .rp'), { at: 'g+=.35', duration: .45, stagger: .1 });
 
+      // [click 3] joining them up is the whole product
       ctx.pause();
-      tl.addLabel('dn');
-      Kit.draw(tl, qa('.sm-df .rp'), { at: 'dn', duration: .4, stagger: .06 });
-      tl.to(qa('.sm-dcard'), { autoAlpha: 1, duration: .45, stagger: .06, ease: Kit.ease.out }, 'dn');
-      tl.to(qa('.sm-dcard .t-label'), { color: C.tealT, duration: .4, stagger: .06 }, 'dn');
-      Kit.show(tl, q('.sm-dcall'), { at: 'dn+=.5', y: 10 });
-      tl.to(q('.sm-darr'), { autoAlpha: 1, duration: .01 }, 'dn+=.5');
-      Kit.draw(tl, qa('.sm-darr .rp'), { at: 'dn+=.5', duration: .4 });
+      tl.addLabel('h');
+      tl.to(qa('.sm-jl'), { autoAlpha: 1, duration: .01, stagger: .08 }, 'h');
+      Kit.draw(tl, qa('.sm-jl .rp'), { at: 'h', duration: .55, stagger: .08 });
+      tl.to(q('.sm-hub'), { autoAlpha: 1, duration: .01 }, 'h+=.6');
+      Kit.draw(tl, qa('.sm-hub .rp'), { at: 'h+=.6', duration: .5 });
     },
     notes:
-      'Here is the problem underneath it. On the left is a photo. To a computer that is a grid of coloured dots. Nothing in it can be searched. ' +
-      '[click] What the app needs is a record: named fields with values. I made those field names up. ' +
-      '[click] Filling it in by hand is slow. Before the New York Times automated its archive, people typed recipes in field by field. An average recipe needed over fifty fields. ' +
-      '[click] And every feature depends on that record. Ingredient search runs over forty-two thousand products. Nutrition, servings, the shopping list, the oven. None of them read the photo.'
+      'What should I cook tonight? One question. ' +
+      '[click] The answer needs five things that normally never talk to each other: what the household likes, what recipes exist, what is actually in the kitchen, the health goals, and what the oven can do. ' +
+      '[click] A recipe app knows the catalogue but not your fridge. A fridge camera knows a bit of your fridge but nothing about your taste. ' +
+      '[click] Samsung\'s bet is that holding several of these at once beats holding any one of them well.'
   };
 
-  /* ============================================================ 3 · APPROACH */
-  var ROAD = [
-    { n: '1', step: 'Read', q: 'What does the page say?', tech: 'OCR or a vision-language model' },
-    { n: '2', step: 'Sort', q: 'Which text is which?', tech: 'Layout analysis' },
-    { n: '3', step: 'Parse', q: 'What is in this line?', tech: 'Sequence labeling' },
-    { n: '4', step: 'Link', q: 'Which ingredient is this?', tech: 'Entity normalization' }
+  /* ============================================================== 3 · SYSTEM */
+  var PARTS = [
+    { t: 'Understand', s: 'vision-language model', chip: 'id: flour' },
+    { t: 'Sense', s: 'image recognition', chip: 'apple × 4', who: 'Gemini' },
+    { t: 'Rank', s: 'collaborative filtering', chip: 'top 3' },
+    { t: 'Check', s: 'LLM + rules', chip: '✓ nut-free', who: 'OpenAI' },
+    { t: 'Act', s: 'sequence labeling + rules', chip: '180 °C' }
   ];
-  var RX = [120, 560, 1000, 1440], RW = 360, RY = 322, RH = 500;
-  var APPROACH = {
-    id: 'approach',
-    title: 'How the scanner works',
-    heading: 'How the scanner works',
-    budgetSec: 30,
+  var BX = [120, 465, 810, 1155, 1500], BW = 300, BH = 196, BY = 272;
+  // Crops, not whole phone screens: at this width only a fragment stays legible (reviewer, Nov 2026).
+  // Each label names what its crop evidences, so the shopping-list row is not captioned "Food graph".
+  var EVID = [
+    { img: 'ev-fields.webp', x: 160, y: 845, w: 420, h: 140, lab: 'Understand', alt: 'A typed ingredient row from the scan' },
+    { img: 'ev-list.webp', x: 680, y: 858, w: 420, h: 115, lab: 'grams from the graph', alt: 'The shopping-list row: flour 15.6 g' },
+    { img: 'ev-like.webp', x: 1200, y: 865, w: 420, h: 101, lab: 'Rank', alt: 'The "You may also like" header' }
+  ];
+  var SYSTEM = {
+    id: 'system',
+    title: 'How Samsung Food works',
+    heading: 'How Samsung Food works',
+    budgetSec: 45,
     html: function () {
-      var frames = ROAD.map(function (r, i) {
-        return '<g class="sm-rf f' + i + '">' + Kit.rough.rect(RX[i], RY, RW, RH,
-          { seed: 31 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .15, hachureGap: 22 }) + '</g>';
-      }).join('');
-      var arrows = [1, 2, 3].map(function (i) {
-        return '<g class="sm-ra a' + i + '">' + Kit.rough.arrow(RX[i - 1] + RW + 4, 572, RX[i] - 4, 572,
-          { seed: 36 + i, w: 'heavy', head: 26 }) + '</g>';
-      }).join('');
-      var cards = ROAD.map(function (r, i) {
-        return div('sm-rcard rc' + i, RX[i], RY, RW,
-          '<div class="t-caps faint sm-rn">Step ' + r.n + '</div>' +
-          '<div class="t-h2 sm-rs">' + r.step + '</div>' +
-          '<div class="t-body sm-rq">' + Kit.esc(r.q) + '</div>' +
-          '<div class="t-label sm-rt c-teal">' + Kit.esc(r.tech) + '</div>');
-      }).join('');
-      return svg('sm-road-svg', frames + arrows +
-        '<g class="dd-fail">' + Kit.doodle.underline(126, 962, 640, { seed: 203 }) + '</g>') +
-        cards + div('t-h2 sm-aline', 120, 890, 1200, 'Each step can fail on its own.');
+      var frames = '', cards = '', arrows = '', chips = '', who = '';
+      PARTS.forEach(function (p, i) {
+        frames += '<g class="sm-pf f' + i + '">' + Kit.rough.rect(BX[i], BY, BW, BH,
+          { seed: 41 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .15, hachureGap: 22 }) + '</g>';
+        cards += div('sm-pc p' + i, BX[i], BY, BW,
+          '<div class="t-h2 sm-pt">' + p.t + '</div><div class="t-label dim sm-ps">' + Kit.esc(p.s) + '</div>',
+          'height:' + BH + 'px;');
+        chips += '<g class="sm-ch h' + i + '">' + tx(BX[i] + BW / 2, 506, p.chip, { size: 28, anchor: 'middle', fill: C.tealT, cls: 'mono', weight: 500 }) + '</g>';
+        arrows += '<g class="sm-pa a' + i + '">' + Kit.rough.arrow(BX[i] + BW / 2, 522, BX[i] + BW / 2, 550,
+          { seed: 51 + i, w: 'normal', head: 16 }) + '</g>';
+        if (p.who) who += div('t-label c-rust sm-pw w' + i, BX[i] + 22, BY + 140, BW - 44, p.who);
+      });
+      var evid = '', elab = '';
+      EVID.forEach(function (e, i) {
+        evid += Kit.photo(IMG + e.img, { x: e.x, y: e.y, w: e.w, h: e.h, framed: true, cls: 'sm-ev e' + i, alt: e.alt });
+        elab += div('t-label c-rust sm-el l' + i, e.x, 790, 420, e.lab);
+      });
+      return svg('sm-sys-svg', frames + arrows + chips +
+        '<g class="sm-bus">' + Kit.rough.line(270, 556, 1650, 556, { seed: 60, w: 'heavy' }) +
+          Kit.rough.arrow(960, 562, 960, 586, { seed: 59, w: 'heavy', head: 24 }) + '</g>' +
+        '<g class="sm-hubb">' + Kit.rough.rect(600, 592, 720, 158,
+          { seed: 61, w: 'heavy', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 20 }) +
+          tx(960, 660, 'Food graph', { size: 52, anchor: 'middle', fill: C.text, cls: 'disp', weight: 700 }) +
+          tx(960, 702, 'ingredient IDs · nutrition', { size: 28, anchor: 'middle', fill: C.text2, cls: 'mono', weight: 500 }) +
+          tx(960, 736, 'allergens · Food List', { size: 28, anchor: 'middle', fill: C.text2, cls: 'mono', weight: 500 }) + '</g>' +
+        '<g class="dd-cap">' + Kit.doodle.underline(1366, 752, 410, { seed: 203, color: 'var(--rust-t)' }) + '</g>') +
+        cards + who + evid + elab +
+        div('t-h2 sm-sw', 1360, 600, 440, 'Swap models. Keep the graph.');
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-rcard, .sm-ra, .sm-aline, .dd-fail'), { autoAlpha: 0 });
-      gsap.set(qa('.sm-rf.f1, .sm-rf.f2, .sm-rf.f3'), { autoAlpha: 0 });
+      gsap.set(qa('.sm-pf, .sm-pc, .sm-pa, .sm-ch, .sm-ev, .sm-el, .sm-sw, .sm-pw, .sm-bus, .dd-cap'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.draw(tl, qa('.f0 .rp'), { at: .25, duration: .7 });
-      Kit.show(tl, q('.rc0'), { at: .5, y: 18, duration: .5 });
-      for (var i = 1; i < ROAD.length; i++) {
-        (function (i) {
-          ctx.pause();
-          tl.addLabel('s' + i);
-          tl.to(q('.a' + i), { autoAlpha: 1, duration: .01 }, 's' + i);
-          Kit.draw(tl, qa('.a' + i + ' .rp'), { at: 's' + i, duration: .3 });
-          tl.to(q('.f' + i), { autoAlpha: 1, duration: .01 }, 's' + i + '+=.25');
-          Kit.draw(tl, qa('.f' + i + ' .rp'), { at: 's' + i + '+=.25', duration: .5 });
-          Kit.show(tl, q('.rc' + i), { at: 's' + i + '+=.4', y: 18, duration: .5 });
-        })(i);
-      }
+      Kit.draw(tl, qa('.sm-hubb .rp'), { at: .3, duration: .9 });
+      tl.fromTo(qa('.sm-hubb text'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .4, stagger: .1 }, .8);
+
+      // [click 1] the five parts
       ctx.pause();
-      Kit.show(tl, q('.sm-aline'), { y: 16 });
-      tl.to(q('.dd-fail'), { autoAlpha: 1, duration: .01 }, '>-.2');
-      Kit.draw(tl, qa('.dd-fail .rp'), { at: '<', duration: .5 });
+      tl.addLabel('p');
+      tl.to(qa('.sm-pf'), { autoAlpha: 1, duration: .01, stagger: .16 }, 'p');
+      Kit.draw(tl, qa('.sm-pf .rp'), { at: 'p', duration: .45, stagger: .16 });
+      Kit.show(tl, qa('.sm-pc'), { at: 'p+=.15', y: 16, stagger: .16, duration: .45 });
+
+      // [click 2] what travels between them is typed data, not prose
+      ctx.pause();
+      tl.addLabel('t');
+      Kit.show(tl, qa('.sm-ch'), { at: 't', y: 10, stagger: .1, duration: .35 });
+      tl.to(qa('.sm-pa'), { autoAlpha: 1, duration: .01, stagger: .1 }, 't+=.2');
+      Kit.draw(tl, qa('.sm-pa .rp'), { at: 't+=.2', duration: .35, stagger: .1 });
+      tl.to(q('.sm-bus'), { autoAlpha: 1, duration: .01 }, 't+=.8');
+      Kit.draw(tl, qa('.sm-bus .rp'), { at: 't+=.8', duration: .6, stagger: .25 });
+
+      // [click 3] four of these were on screen in the demo
+      ctx.pause();
+      tl.addLabel('e');
+      Kit.drop(tl, qa('.sm-ev'), { at: 'e', stagger: .18, from: -120 });
+      Kit.show(tl, qa('.sm-el'), { at: 'e+=.4', y: 10, stagger: .18, duration: .4 });
+
+      // [click 4] the named models are the replaceable part
+      ctx.pause();
+      tl.addLabel('s');
+      Kit.show(tl, qa('.sm-pw'), { at: 's', y: 10, stagger: .14, duration: .4 });
+      tl.to(qa('.f1 .rp:not(.rp-hatch), .f3 .rp:not(.rp-hatch)'), { stroke: C.rustT, duration: .4 }, 's');
+      Kit.show(tl, q('.sm-sw'), { at: 's+=.4', y: 16 });
+      tl.to(q('.dd-cap'), { autoAlpha: 1, duration: .01 }, 's+=.9');
+      Kit.draw(tl, qa('.dd-cap .rp'), { at: 's+=.9', duration: .5 });
     },
     notes:
-      'You tap the button and you wait. Four things happen in that wait. One, read: get the characters off the page. ' +
-      '[click] Two, sort: which text is title, which is ingredients, which is method. ' +
-      '[click] Three, parse: pull the quantity and name out of one line. ' +
-      '[click] Four, link: decide which real ingredient that is. ' +
-      '[click] Samsung has published none of this; the four steps are my reconstruction. Each can fail on its own.'
+      'Samsung does not build one model. It builds a system of parts around one shared food graph. ' +
+      'Samsung publishes product behaviour, not architecture, so this diagram is my reconstruction. ' +
+      '[click] Five parts. Understand, sense, rank, check, act. Each uses a different family of model. ' +
+      '[click] What flows between them is not prose. It is an ingredient ID, a quantity with a unit, a temperature. Typed hand-offs are what let one part check another. ' +
+      '[click] You already watched three of these in the demo. ' +
+      '[click] Gemini runs the 2026 fridge camera, and the terms allow OpenAI for recipes. Both could be swapped next year. The graph and the rules would stay.'
   };
 
-  /* ================================================================ 4 · READ */
-  var CHAIN = ['OCR', 'Layout', 'Parse', 'Link'];
-  var READ = {
-    id: 'read',
-    title: 'Reading the page',
-    heading: 'Reading the page',
+  /* ============================================================== 4 · INPUTS */
+  var SPELL = ['plain flour', 'all-purpose flour', 'AP flour', '1 tbsp flour'];
+  var INPUTS = {
+    id: 'inputs',
+    title: 'The food graph',
+    heading: 'The food graph',
+    budgetSec: 40,
+    html: function () {
+      var chipF = '', chips = '', conv = '';
+      SPELL.forEach(function (s, i) {
+        var y = 556 + i * 72;
+        chipF += '<g class="sm-spf s' + i + '">' + Kit.rough.rect(120, y, 370, 62, { seed: 71 + i, w: 'fine', stroke: C.text3 }) + '</g>';
+        chips += div('sm-sp q' + i, 120, y, 370, '<span class="t-mono">' + Kit.esc(s) + '</span>', 'height:62px;');
+        conv += '<g class="sm-cv v' + i + '">' + Kit.rough.arrow(502, y + 31, 586, 700,
+          { seed: 81 + i, w: 'normal', head: 15, bend: 16 - i * 11, stroke: C.text2 }) + '</g>';
+      });
+      return svg('sm-in-svg',
+        chipF + conv +
+        '<g class="sm-node">' + Kit.rough.rect(600, 632, 230, 136,
+          { seed: 91, w: 'heavy', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .2, hachureGap: 18 }) +
+          tx(715, 712, 'flour', { size: 52, anchor: 'middle', fill: C.text, cls: 'disp', weight: 700 }) + '</g>' +
+        // the Food List is built from EVERY detection, so both labels feed one collector line
+        '<g class="sm-fcol">' +
+          Kit.rough.line(1066, 710, 1632, 710, { seed: 101, w: 'fine', stroke: C.text2 }) +
+          Kit.rough.line(1066, 690, 1066, 710, { seed: 102, w: 'fine', stroke: C.text2 }) +
+          Kit.rough.line(1632, 692, 1632, 710, { seed: 103, w: 'fine', stroke: C.text2 }) + '</g>' +
+        '<g class="sm-fla">' + Kit.rough.arrow(1349, 712, 1349, 736, { seed: 97, w: 'heavy', head: 18 }) + '</g>' +
+        '<g class="sm-strip">' + Kit.rough.rect(120, 892, 1680, 118,
+          { seed: 98, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .16, hachureGap: 26 }) +
+          tx(960, 968, 'Food graph', { size: 52, anchor: 'middle', fill: C.text, cls: 'disp', weight: 700 }) + '</g>' +
+        '<g class="sm-fa1">' + Kit.rough.arrow(715, 844, 760, 886, { seed: 99, w: 'heavy', head: 22 }) + '</g>' +
+        '<g class="sm-fa2">' + Kit.rough.arrow(1349, 872, 1310, 888, { seed: 100, w: 'heavy', head: 22 }) + '</g>') +
+        // the running example's own card, typed: this crop carries the `1 tbsp flour` row the chips below name
+        Kit.photo(IMG + 'card-rows.webp', { x: 120, y: 300, w: 420, h: 244, rot: -2, framed: true, cls: 'sm-card', alt: 'The scanned card, typed: 1 egg, 1 tbsp flour' }) +
+        Kit.photo(IMG + 'fridge-shelf.jpg', { x: 980, y: 296, w: 760, h: 334, framed: true, cls: 'sm-shelf', alt: 'An open fridge shelf seen from above' }) +
+        chips +
+        div('callout sm-oc', 552, 540, 440, 'one name, many spellings') +
+        div('t-mono sm-g', 600, 788, 230, '<span class="sm-gv">0</span>') +
+        div('t-label c-teal sm-dl d1', 966, 644, 200, 'apple') +
+        div('t-label c-rust sm-dl d2', 1512, 644, 240, 'unknown item') +
+        div('sm-flist', 1139, 740, 420, '<div class="t-body">Food List</div><div class="t-label dim">a best guess</div>') +
+        // detection marks sit ON the photo, so they go in an overlay layer (KIT §6).
+        // Each box is tight on one object: the apples, and the upper of the two plain containers.
+        Kit.overlay(
+          '<g class="sm-box-a">' + Kit.rough.rect(1009, 316, 113, 232, { seed: 95, w: 'normal', stroke: C.tealT, overshoot: 0 }) + '</g>' +
+          '<g class="sm-box-b">' + Kit.rough.rect(1544, 314, 183, 145, { seed: 96, w: 'normal', stroke: C.rustT, overshoot: 0 }) + '</g>' +
+          '<g class="dd-unk">' + Kit.doodle.circle(1512, 646, 240, 24, { seed: 204, color: 'var(--rust-t)', w: 'heavy', rx: 148, ry: 32 }) + '</g>');
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.sm-cv, .sm-node, .sm-oc, .sm-g, .sm-box-a, .sm-box-b, .sm-dl, .sm-fcol, .sm-fla, .sm-flist, .sm-strip, .sm-fa1, .sm-fa2, .dd-unk'), { autoAlpha: 0 });
+      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
+      Kit.drop(tl, qa('.sm-card, .sm-shelf'), { at: .2, stagger: .14 });
+      Kit.draw(tl, qa('.sm-spf .rp'), { at: .6, duration: .4, stagger: .08 });
+      Kit.show(tl, qa('.sm-sp'), { at: .65, y: 14, stagger: .08, duration: .4 });
+
+      // [click 1] four spellings, one entity
+      ctx.pause();
+      tl.addLabel('c');
+      tl.to(qa('.sm-cv'), { autoAlpha: 1, duration: .01, stagger: .09 }, 'c');
+      Kit.draw(tl, qa('.sm-cv .rp'), { at: 'c', duration: .4, stagger: .09 });
+      tl.to(q('.sm-node'), { autoAlpha: 1, duration: .01 }, 'c+=.5');
+      Kit.draw(tl, qa('.sm-node .rp'), { at: 'c+=.5', duration: .5 });
+      Kit.show(tl, q('.sm-oc'), { at: 'c+=.8', y: 10 });
+
+      // [click 2] the camera names what it can, and says so when it cannot
+      ctx.pause();
+      tl.addLabel('d');
+      tl.to(qa('.sm-box-a, .sm-box-b'), { autoAlpha: 1, duration: .01, stagger: .2 }, 'd');
+      Kit.draw(tl, qa('.sm-box-a .rp'), { at: 'd', duration: .45 });
+      Kit.draw(tl, qa('.sm-box-b .rp'), { at: 'd+=.2', duration: .45 });
+      Kit.show(tl, qa('.sm-dl'), { at: 'd+=.4', y: 10, stagger: .18, duration: .4 });
+      tl.to(q('.dd-unk'), { autoAlpha: 1, duration: .01 }, 'd+=.75');
+      Kit.draw(tl, qa('.dd-unk .rp'), { at: 'd+=.75', duration: .5 });
+      // both labels, not just the rust one, collect into the Food List
+      tl.to(qa('.sm-fcol, .sm-fla, .sm-flist'), { autoAlpha: 1, duration: .01 }, 'd+=1.1');
+      Kit.draw(tl, qa('.sm-fcol .rp'), { at: 'd+=1.1', duration: .4 });
+      Kit.draw(tl, qa('.sm-fla .rp'), { at: 'd+=1.4', duration: .3 });
+      Kit.show(tl, q('.sm-flist'), { at: 'd+=1.55', y: 14 });
+
+      // [click 3] both lanes end in the same place
+      ctx.pause();
+      tl.addLabel('f');
+      tl.to(q('.sm-strip'), { autoAlpha: 1, duration: .01 }, 'f');
+      Kit.draw(tl, qa('.sm-strip .rp'), { at: 'f', duration: .7 });
+      tl.to(qa('.sm-fa1, .sm-fa2'), { autoAlpha: 1, duration: .01 }, 'f+=.3');
+      Kit.draw(tl, qa('.sm-fa1 .rp, .sm-fa2 .rp'), { at: 'f+=.3', duration: .4, stagger: .12 });
+      Kit.show(tl, q('.sm-g'), { at: 'f+=.5', y: 10 });
+      Kit.count(tl, q('.sm-gv'), { to: 15.6, decimals: 1, suffix: ' g', duration: .9, at: 'f+=.6' });
+    },
+    notes:
+      'Two inputs, one destination. ' +
+      '[click] One multimodal call reads the card. But "AP flour" is a string, not an ID, so it must still be linked. Whisk maps ingredients to more than 140,000 store items. ' +
+      '[click] The fridge camera knew thirty-three foods, then thirty-seven, plus fifty you name yourself. What it cannot place it calls an unknown item, and saying so is a feature. ' +
+      '[click] Every detection feeds the list, and both lanes end in the graph. The Food List is an estimate: the freezer and the door bins never pass the camera.'
+  };
+  Kit.withCrumbs(INPUTS, STEPS, [0, 1]);
+
+  /* ============================================================ 5 · RETRIEVE */
+  var HIDDEN = [
+    { t: 'salt', x: 620, w: 160 },
+    { t: 'oil', x: 806, w: 140 },
+    { t: 'oven temperature', x: 972, w: 360 },
+    { t: 'step order', x: 1358, w: 250 }
+  ];
+  var RETRIEVE = {
+    id: 'retrieve',
+    title: 'Recipe retrieval',
+    heading: 'Recipe retrieval',
+    budgetSec: 40,
+    html: function () {
+      var chipF = '', chips = '';
+      HIDDEN.forEach(function (h, i) {
+        chipF += '<g class="sm-hf g' + i + '">' + Kit.rough.rect(h.x, 436, h.w, 70, { seed: 111 + i, w: 'fine', stroke: C.rustT }) + '</g>';
+        chips += div('sm-hc n' + i, h.x, 436, h.w, '<span class="t-label c-rust">' + h.t + '</span>', 'height:70px;');
+      });
+      return phoneVideo('dish-retrieve.mp4', 174, 300, 300, 650) +
+        svg('sm-rt-svg',
+          '<g class="sm-wbox">' + Kit.rough.rect(600, 296, 1200, 250, { seed: 121, w: 'fine', stroke: C.text3 }) + '</g>' +
+          chipF +
+          '<g class="sm-fbox">' + Kit.rough.rect(600, 596, 1200, 404,
+            { seed: 122, w: 'heavy', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .16, hachureGap: 26 }) + '</g>' +
+          '<g class="dd-ok">' + Kit.doodle.mark(1700, 666, 34, 'check', { seed: 205, color: 'var(--rust-t)' }) + '</g>') +
+        div('t-caps faint sm-wk', 640, 334, 700, 'Generate a recipe') +
+        div('t-body dim sm-wl', 640, 382, 900, 'Has to guess what the photo hides') +
+        chips +
+        div('t-caps c-teal sm-fk', 640, 638, 700, 'Retrieve a recipe') +
+        div('bignum sm-fn', 640, 690, 520, '<div class="t-num sm-fv">0</div>') +
+        div('t-body sm-fl1', 1180, 744, 580, 'finds the right recipe among 1,000') +
+        div('t-label faint sm-fl2', 1180, 820, 580, 'only returns recipes that exist') +
+        div('t-body sm-rs s1', 640, 900, 400, 'image recognition' + tag('ml', 0, 0, 'in')) +
+        div('t-body sm-rs s2', 1150, 900, 520, 'embedding search' + tag('ml', 0, 0, 'in')) +
+        svg('sm-rs-svg', '<g class="sm-rsa">' + Kit.rough.arrow(1020, 922, 1130, 922, { seed: 124, w: 'normal', head: 16 }) + '</g>');
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      wireVideo(ctx);
+      gsap.set(qa('.sm-wbox, .sm-wk, .sm-wl, .sm-hf, .sm-hc, .sm-fbox, .sm-fk, .sm-fn, .sm-fl1, .sm-fl2, .dd-ok, .sm-rs, .sm-rsa'), { autoAlpha: 0 });
+      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
+      Kit.draw(tl, qa('.sm-frame .rp'), { at: .3, duration: .9 });
+      Kit.fade(tl, q('.sm-vid'), { at: .9 });
+
+      // [click 1] what a dish photo cannot tell you
+      ctx.pause();
+      tl.addLabel('w');
+      tl.to(q('.sm-wbox'), { autoAlpha: 1, duration: .01 }, 'w');
+      Kit.draw(tl, qa('.sm-wbox .rp'), { at: 'w', duration: .6 });
+      Kit.show(tl, qa('.sm-wk, .sm-wl'), { at: 'w+=.2', y: 12, stagger: .1, duration: .4 });
+      tl.to(qa('.sm-hf'), { autoAlpha: 1, duration: .01, stagger: .12 }, 'w+=.5');
+      Kit.draw(tl, qa('.sm-hf .rp'), { at: 'w+=.5', duration: .3, stagger: .12 });
+      Kit.show(tl, qa('.sm-hc'), { at: 'w+=.55', y: 10, stagger: .12, duration: .35 });
+
+      // [click 2] so the shipped feature searches instead
+      ctx.pause();
+      tl.addLabel('f');
+      tl.to(q('.sm-fbox'), { autoAlpha: 1, duration: .01 }, 'f');
+      Kit.draw(tl, qa('.sm-fbox .rp'), { at: 'f', duration: .8 });
+      Kit.show(tl, q('.sm-fk'), { at: 'f+=.3', y: 12 });
+      Kit.show(tl, q('.sm-fn'), { at: 'f+=.45', y: 16 });
+      Kit.count(tl, q('.sm-fv'), { to: 87.5, decimals: 1, suffix: '%', duration: 1.1, at: 'f+=.5' });
+      Kit.show(tl, qa('.sm-fl1, .sm-fl2'), { at: 'f+=.9', y: 12, stagger: .12, duration: .4 });
+      tl.to(q('.dd-ok'), { autoAlpha: 1, duration: .01 }, 'f+=1.4');
+      Kit.draw(tl, qa('.dd-ok .rp'), { at: 'f+=1.4', duration: .4 });
+      Kit.show(tl, q('.sm-rs.s1'), { at: 'f+=1.6', y: 10, duration: .4 });
+      tl.to(q('.sm-rsa'), { autoAlpha: 1, duration: .01 }, 'f+=1.9');
+      Kit.draw(tl, qa('.sm-rsa .rp'), { at: 'f+=1.9', duration: .3 });
+      Kit.show(tl, q('.sm-rs.s2'), { at: 'f+=2.1', y: 10, duration: .4 });
+    },
+    notes:
+      'Point the app at a finished dish and it does something narrower: it recognises the food, then looks for recipes that use it. ' +
+      '[click] Writing a recipe from a dish photo means guessing what the camera cannot see: the salt, the oil, the oven temperature, the step order. ' +
+      '[click] Searching only returns recipes that exist. In the clip, the pozole recipe lists salt and olive oil that the camera never saw. Two ML steps do this. Image recognition names the food. Embedding search turns photos and recipes into lists of numbers in one shared space and returns the closest recipe. The best research system picks the right one of a thousand recipes seven times in eight. Samsung has not said which search it uses.'
+  };
+  Kit.withCrumbs(RETRIEVE, STEPS, 1);
+
+  /* ================================================================ 6 · RANK */
+  // the order the score alone gives; the boost then lifts `Apple crumble` (index 2) into the first slot
+  var RES = ['Carrot soup', 'Kale salad', 'Apple crumble'];
+  var RSLOT = 212, RW = 206;
+  var RANK = {
+    id: 'rank',
+    title: 'Filtering and ranking',
+    heading: 'Filtering and ranking',
+    budgetSec: 60,
+    html: function () {
+      var resF = '', resC = '';
+      RES.forEach(function (t, i) {
+        resF += '<g class="sm-rf r' + i + '">' + Kit.rough.rect(320 + i * RSLOT, 924, RW, 86, { seed: 141 + i, w: 'fine', stroke: C.tealT }) + '</g>';
+        resC += div('sm-rc c' + i, 320 + i * RSLOT, 924, RW, '<span class="t-label">' + t + '</span>', 'height:86px;');
+      });
+      return svg('sm-rk-svg',
+        '<g class="sm-s1">' + Kit.rough.rect(200, 364, 760, 140,
+          { seed: 131, w: 'heavy', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .16, hachureGap: 24 }) + '</g>' +
+        '<g class="sm-s2">' + Kit.rough.rect(260, 556, 640, 140, { seed: 132, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .13, hachureGap: 24 }) + '</g>' +
+        '<g class="sm-s3">' + Kit.rough.rect(320, 748, 520, 130, { seed: 133, w: 'normal', stroke: C.text2 }) + '</g>' +
+        '<g class="sm-fa f1">' + Kit.rough.arrow(580, 512, 580, 548, { seed: 134, w: 'heavy', head: 20 }) + '</g>' +
+        '<g class="sm-fa f2">' + Kit.rough.arrow(580, 704, 580, 740, { seed: 135, w: 'heavy', head: 20 }) + '</g>' +
+        '<g class="sm-fa f3">' + Kit.rough.arrow(580, 886, 580, 912, { seed: 136, w: 'heavy', head: 20 }) + '</g>' +
+        resF +
+        '<g class="sm-ko">' + Kit.rough.rect(1160, 380, 520, 120, { seed: 137, w: 'normal', stroke: C.text3 }) + '</g>' +
+        '<g class="sm-koa">' + Kit.rough.arrow(975, 434, 1145, 434, { seed: 138, w: 'heavy', head: 24, stroke: C.rustT }) + '</g>' +
+        '<g class="dd-x">' + Kit.doodle.mark(1420, 440, 56, 'x', { seed: 206, color: 'var(--rust-t)' }) + '</g>' +
+        '<g class="sm-bar b1"><rect x="1300" y="668" width="400" height="26" rx="13" fill="' + C.teal + '"/></g>' +
+        '<g class="sm-bar b2"><rect x="1300" y="736" width="150" height="26" rx="13" fill="' + C.teal + '"/></g>' +
+        '<g class="sm-lift">' + Kit.rough.arrow(286, 1006, 286, 944, { seed: 139, w: 'normal', head: 18, stroke: C.rustT }) + '</g>' +
+        '<g class="dd-cap">' + Kit.doodle.underline(1166, 932, 500, { seed: 207, color: 'var(--rust-t)' }) + '</g>') +
+        div('t-h2 sm-top', 200, 296, 900, '<span class="sm-tv">0</span> recipes') +
+        div('t-caps c-rust sm-sk k1', 240, 404, 500, 'Hard filter') + tag('rule', 830, 400, 'sm-sk k1') +
+        div('t-body sm-sl l1', 240, 448, 600, 'nut allergy') +
+        div('t-caps c-teal sm-sk k2', 300, 596, 500, 'Score') +
+        div('t-body sm-sl l2', 300, 640, 600, 'collaborative filtering') + tag('ml', 790, 592, 'sm-sk k2') +
+        div('t-caps dim sm-sk k3', 360, 788, 500, 'Boost') +
+        div('t-body sm-sl l3', 360, 828, 520, 'apples, use by Thursday') + tag('ml', 740, 784, 'sm-sk k3', 'ML feature') +
+        div('t-body sm-kot', 1180, 420, 480, 'Taffy Apple Salad') +
+        div('t-caps faint sm-sg', 1160, 600, 640, 'Learned from') +
+        div('t-label sm-bl g1', 1160, 662, 130, 'save') +
+        div('t-label sm-bl g2', 1160, 730, 130, 'view') +
+        resC +
+        div('t-h2 sm-cap', 1160, 846, 640, 'Filter, then rank.');
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.sm-s1, .sm-s2, .sm-s3, .sm-sk, .sm-sl, .sm-fa, .sm-rf, .sm-rc, .sm-ko, .sm-kot, .sm-koa, .dd-x, .sm-sg, .sm-bl, .sm-bar, .sm-lift, .sm-cap, .dd-cap'), { autoAlpha: 0 });
+      gsap.set(qa('.sm-bar rect'), { scaleX: 0, transformOrigin: '0% 50%' });
+      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
+      Kit.show(tl, q('.sm-top'), { at: .25, y: 16 });
+      Kit.count(tl, q('.sm-tv'), { to: 160000, commas: true, suffix: '+', duration: 1.2, at: .3 });
+
+      // [click 1] the hard filter throws a recipe out
+      ctx.pause();
+      tl.addLabel('h');
+      tl.to(q('.sm-s1'), { autoAlpha: 1, duration: .01 }, 'h');
+      Kit.draw(tl, qa('.sm-s1 .rp'), { at: 'h', duration: .6 });
+      Kit.show(tl, qa('.k1, .l1'), { at: 'h+=.3', y: 12, stagger: .1, duration: .4 });
+      tl.to(qa('.sm-koa, .sm-ko'), { autoAlpha: 1, duration: .01 }, 'h+=.8');
+      Kit.draw(tl, qa('.sm-koa .rp'), { at: 'h+=.8', duration: .4 });
+      Kit.draw(tl, qa('.sm-ko .rp'), { at: 'h+=1', duration: .4 });
+      tl.fromTo(q('.sm-kot'), { autoAlpha: 0, x: -120 }, { autoAlpha: 1, x: 0, duration: .5, ease: Kit.ease.out }, 'h+=1');
+      tl.to(q('.dd-x'), { autoAlpha: 1, duration: .01 }, 'h+=1.4');
+      Kit.draw(tl, qa('.dd-x .rp'), { at: 'h+=1.4', duration: .4, stagger: .08 });
+
+      // [click 2] soft preferences go into a score, learned from weak signals
+      ctx.pause();
+      tl.addLabel('s');
+      tl.to(qa('.sm-fa.f1, .sm-s2'), { autoAlpha: 1, duration: .01 }, 's');
+      Kit.draw(tl, qa('.sm-fa.f1 .rp'), { at: 's', duration: .3 });
+      Kit.draw(tl, qa('.sm-s2 .rp'), { at: 's+=.2', duration: .5 });
+      Kit.show(tl, qa('.k2, .l2'), { at: 's+=.4', y: 12, stagger: .1, duration: .4 });
+      Kit.show(tl, qa('.sm-sg, .sm-bl'), { at: 's+=.7', y: 10, stagger: .1, duration: .35 });
+      tl.to(qa('.sm-bar'), { autoAlpha: 1, duration: .01 }, 's+=.8');
+      tl.to(q('.b1 rect'), { scaleX: 1, duration: .6, ease: 'power2.out' }, 's+=.9');
+      tl.to(q('.b2 rect'), { scaleX: 1, duration: .6, ease: 'power2.out' }, 's+=1.1');
+
+      // [click 3] context nudges the score
+      ctx.pause();
+      tl.addLabel('b');
+      tl.to(qa('.sm-fa.f2, .sm-s3'), { autoAlpha: 1, duration: .01 }, 'b');
+      Kit.draw(tl, qa('.sm-fa.f2 .rp'), { at: 'b', duration: .3 });
+      Kit.draw(tl, qa('.sm-s3 .rp'), { at: 'b+=.2', duration: .5 });
+      Kit.show(tl, qa('.k3, .l3'), { at: 'b+=.4', y: 12, stagger: .1, duration: .4 });
+      // the three survivors land in the order the score alone gives
+      tl.to(q('.sm-fa.f3'), { autoAlpha: 1, duration: .01 }, 'b+=.8');
+      Kit.draw(tl, qa('.sm-fa.f3 .rp'), { at: 'b+=.8', duration: .3 });
+      tl.to(qa('.sm-rf'), { autoAlpha: 1, duration: .01, stagger: .12 }, 'b+=1');
+      Kit.draw(tl, qa('.sm-rf .rp'), { at: 'b+=1', duration: .35, stagger: .12 });
+      Kit.show(tl, qa('.sm-rc'), { at: 'b+=1.05', y: 12, stagger: .12, duration: .4 });
+
+      // [click 4] the boost fires: the apple dish moves to the front, and the rule behind all of it
+      ctx.pause();
+      tl.addLabel('o');
+      tl.to(qa('.sm-rf.r2, .sm-rc.c2'), { x: -2 * RSLOT, duration: .7, ease: Kit.ease.out }, 'o');
+      tl.to(qa('.sm-rf.r0, .sm-rc.c0, .sm-rf.r1, .sm-rc.c1'), { x: RSLOT, duration: .7, ease: Kit.ease.out }, 'o');
+      tl.to(qa('.sm-rf.r2 .rp:not(.rp-hatch)'), { stroke: C.rustT, duration: .4 }, 'o+=.4');
+      tl.to(q('.sm-lift'), { autoAlpha: 1, duration: .01 }, 'o+=.6');
+      Kit.draw(tl, qa('.sm-lift .rp'), { at: 'o+=.6', duration: .4 });
+      Kit.show(tl, q('.sm-cap'), { at: 'o+=1', y: 14 });
+      tl.to(q('.dd-cap'), { autoAlpha: 1, duration: .01 }, 'o+=1.4');
+      Kit.draw(tl, qa('.dd-cap .rp'), { at: 'o+=1.4', duration: .5 });
+    },
+    notes:
+      'Ranking starts with every recipe in the catalogue. This household has a nut allergy. ' +
+      '[click] The first step is not ML at all. It is a rule. Our demo recipe has peanuts, so it must never appear, however well it matches. ' +
+      '[click] The score is the ML part: a recommender system. The usual technique is collaborative filtering. It learns a taste profile for each person and each recipe from what people saved and viewed, and scores the match. People rarely rate recipes, so a save counts for more than a view. Cookpad, a similar recipe site, published one built this way; Samsung has not named its model. ' +
+      '[click] Three come out in score order. Context is one more input to the score: Samsung\'s meal plans favour ingredients near their use-by date. ' +
+      '[click] So the apple dish moves to the front. Filter with rules, then rank with ML. The allergy and the date are mine, to make it concrete.'
+  };
+  Kit.withCrumbs(RANK, STEPS, 2);
+
+  /* =============================================================== 7 · CHECK */
+  var GATES = [
+    { t: 'Allergens', r: 'no nuts left', m: 'ok' },
+    { t: 'Nutrition', r: 'recomputed: 310 kcal', m: 'bad' },
+    { t: 'Units', r: 'scaled in code', m: 'ok' },
+    { t: 'Servings', r: 'ask the user', m: 'ask' }
+  ];
+  var GY = [300, 480, 660, 840], GH = 150;
+  var DRAFT = ['peanuts → sunflower seeds', 'serves: 0', '≈ 220 kcal'];
+  var CHECK = {
+    id: 'check',
+    title: 'Checking LLM output',
+    heading: 'Checking LLM output',
     budgetSec: 70,
     html: function () {
-      var boxes = '', arrows = '', dots = '';
-      CHAIN.forEach(function (t, i) {
-        var x = 400 + i * 340;
-        boxes += '<g class="sm-cb b' + i + '">' + Kit.rough.rect(x, 352, 290, 130,
-          { seed: 41 + i, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .12, hachureGap: 24 }) +
-          tx(x + 145, 428, t, { size: 36, anchor: 'middle', fill: C.text }) + '</g>';
-        if (i < 3) {
-          arrows += '<g class="sm-ca a' + i + '">' + Kit.rough.arrow(x + 302, 417, x + 336, 417, { seed: 51 + i, w: 'normal', head: 18 }) + '</g>';
-          dots += '<circle class="sm-dot d' + i + '" cx="' + (x + 319) + '" cy="' + 417 + '" r="10" fill="' + C.rust + '" stroke="#1E2124" stroke-width="3"/>';
-        }
+      var gF = '', gC = '', gM = '';
+      GATES.forEach(function (g, i) {
+        gF += '<g class="sm-gf f' + i + '">' + Kit.rough.rect(980, GY[i], 820, GH,
+          { seed: 151 + i, w: i === 1 ? 'heavy' : 'normal', stroke: i === 1 ? C.rustT : C.text2 }) + '</g>';
+        gM += '<g class="sm-gm m' + i + '">' + (g.m === 'ok'
+          ? Kit.doodle.mark(1030, GY[i] + GH / 2, 26, 'check', { seed: 161 + i, color: 'var(--sec-t)' })
+          : g.m === 'bad'
+            ? Kit.doodle.mark(1030, GY[i] + GH / 2, 24, 'x', { seed: 161 + i, color: 'var(--rust-t)' })
+            : tx(1030, GY[i] + GH / 2 + 16, '?', { size: 48, anchor: 'middle', fill: C.text2, weight: 700 })) + '</g>';
+        gC += div('sm-gc g' + i, 1080, GY[i], 700,
+          '<span class="t-body sm-gt">' + g.t + '</span><span class="t-label sm-gr' + (g.m === 'bad' ? ' c-rust' : ' dim') + '">' + Kit.esc(g.r) + '</span>',
+          'height:' + GH + 'px;');
       });
-      var inset =
-        '<g class="sm-inset">' +
-          Kit.rough.line(545, 486, 545, 510, { seed: 61, w: 'fine', stroke: C.text3 }) +
-          Kit.rough.line(545, 510, 885, 510, { seed: 62, w: 'fine', stroke: C.text3 }) +
-          Kit.rough.line(885, 510, 885, 532, { seed: 63, w: 'fine', stroke: C.text3 }) +
-          Kit.rough.line(545, 510, 545, 532, { seed: 68, w: 'fine', stroke: C.text3 }) +
-          Kit.rough.rect(400, 546, 290, 130, { seed: 64, w: 'fine', stroke: C.text2 }) +
-          Kit.rough.rect(740, 546, 290, 130, { seed: 65, w: 'fine', stroke: C.text2 }) +
-          tx(545, 598, 'encoder', { size: 28, anchor: 'middle', fill: C.tealT, weight: 700 }) +
-          tx(545, 638, 'looks at pixels', { size: 28, anchor: 'middle', fill: C.text2, weight: 500 }) +
-          tx(885, 598, 'decoder', { size: 28, anchor: 'middle', fill: C.tealT, weight: 700 }) +
-          tx(885, 638, 'writes characters', { size: 28, anchor: 'middle', fill: C.text2, weight: 500 }) +
-          Kit.rough.arrow(700, 612, 732, 612, { seed: 66, w: 'fine', head: 14, stroke: C.text2 }) +
-        '</g>' +
-        '<g class="sm-ik">' + Kit.rough.arrow(1104, 598, 1042, 612, { seed: 67, w: 'fine', stroke: C.rustT, head: 14, bend: -12 }) + '</g>';
-      var pathB =
-        '<g class="sm-bb">' + Kit.rough.rect(400, 782, 630, 150,
-            { seed: 71, w: 'heavy', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .12, hachureGap: 24 }) +
-          tx(715, 868, 'One model, one pass', { size: 36, anchor: 'middle', fill: C.text }) +
-          Kit.rough.arrow(1040, 857, 1104, 857, { seed: 72, w: 'heavy', head: 24, stroke: C.rustT }) + '</g>';
-      var feeds =
-        '<g class="sm-feed">' + Kit.rough.arrow(356, 520, 396, 440, { seed: 81, w: 'normal', head: 18, bend: 10, stroke: C.text2 }) + '</g>' +
-        '<g class="sm-feed2">' + Kit.rough.arrow(356, 716, 396, 806, { seed: 82, w: 'normal', head: 18, bend: -10, stroke: C.text2 }) + '</g>';
-      return svg('sm-read-svg', feeds + boxes + arrows + inset + pathB +
-        '<g class="sm-jbox2">' + Kit.rough.rect(1120, 782, 680, 150, { seed: 73, w: 'fine', stroke: C.text3 }) + '</g>' +
-        '<g class="sm-dots">' + dots + '</g>') +
-        '<div class="t-caps dim sm-pagek">One page</div>' +
-        Kit.photo(IMG + 'page.jpg', { x: 120, y: 440, w: 262, h: 357, rot: -2, framed: true, cls: 'sm-page', alt: 'A printed recipe page' }) +
-        div('t-caps sm-lane l1', 400, 296, 700, 'Path A · a chain') +
-        div('t-caps sm-lane l2', 400, 726, 700, 'Path B · one model') +
-        div('t-label sm-fail f1 c-teal', 1100, 298, 700, 'fails by misreading a character') +
-        div('t-label sm-fail f2 c-rust', 1100, 728, 700, 'fails by inventing a line') +
-        div('sm-jchip', 1120, 782, 680, '<div class="t-mono"><div>{ "title": "…",</div><div>&nbsp;&nbsp;"ingredients": [ … ] }</div></div>', 'height:150px;') +
-        div('callout sm-ck', 1118, 560, 0, 'pixels in, characters out');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-cb, .sm-ca, .sm-inset, .sm-ik, .sm-bb, .sm-jchip, .sm-jbox2, .sm-ck, .sm-fail, .sm-dots, .sm-feed2, .sm-lane.l2'), { autoAlpha: 0 });
-      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.fade(tl, q('.sm-pagek'), { at: .2 });
-      Kit.drop(tl, q('.sm-page'), { at: .2, rot: -2 });
-      Kit.fade(tl, q('.sm-lane.l1'), { at: .5 });
-      Kit.draw(tl, qa('.sm-feed .rp'), { at: .6, duration: .5, stagger: .08 });
-
-      // [click 1] the chain draws, left to right
-      ctx.pause();
-      tl.addLabel('ch');
-      tl.to(qa('.sm-cb'), { autoAlpha: 1, duration: .01, stagger: .22 }, 'ch');
-      Kit.draw(tl, qa('.sm-cb .rp'), { at: 'ch', duration: .45, stagger: .22 });
-      tl.to(qa('.sm-ca'), { autoAlpha: 1, duration: .01, stagger: .22 }, 'ch+=.3');
-      Kit.draw(tl, qa('.sm-ca .rp'), { at: 'ch+=.3', duration: .3, stagger: .11 });
-
-      // [click 2] the OCR box opens into encoder and decoder
-      ctx.pause();
-      tl.addLabel('oc');
-      tl.to(q('.sm-inset'), { autoAlpha: 1, duration: .01 }, 'oc');
-      Kit.draw(tl, qa('.sm-inset .rp'), { at: 'oc', duration: .55, stagger: .05 });
-      tl.to(qa('.b0 .rp:not(.rp-hatch)'), { stroke: C.tealT, duration: .4 }, 'oc');
-      Kit.show(tl, q('.sm-ck'), { at: 'oc+=.7', y: 10 });
-      tl.to(q('.sm-ik'), { autoAlpha: 1, duration: .01 }, 'oc+=.7');
-      Kit.draw(tl, qa('.sm-ik .rp'), { at: 'oc+=.7', duration: .4 });
-
-      // [click 3] path B: one model writes the record
-      ctx.pause();
-      tl.addLabel('pb');
-      Kit.show(tl, q('.sm-lane.l2'), { at: 'pb', y: 0, duration: .35 });
-      tl.to(qa('.sm-feed2, .sm-bb'), { autoAlpha: 1, duration: .01 }, 'pb+=.1');
-      Kit.draw(tl, qa('.sm-feed2 .rp'), { at: 'pb+=.1', duration: .4 });
-      Kit.draw(tl, qa('.sm-bb .rp'), { at: 'pb+=.2', duration: .6, stagger: .04 });
-      tl.to(q('.sm-jbox2'), { autoAlpha: 1, duration: .01 }, 'pb+=.5');
-      Kit.draw(tl, qa('.sm-jbox2 .rp'), { at: 'pb+=.5', duration: .45 });
-      Kit.show(tl, q('.sm-jchip'), { at: 'pb+=.6', y: 18 });
-
-      // [click 4] the two failure modes, and where a chain passes an error on
-      ctx.pause();
-      tl.addLabel('tr');
-      Kit.show(tl, qa('.sm-fail'), { at: 'tr', y: 0, stagger: .18 });
-      tl.to(q('.sm-dots'), { autoAlpha: 1, duration: .01 }, 'tr+=.2');
-      tl.fromTo(qa('.sm-dot'), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .35, stagger: .12, ease: 'back.out(2)' }, 'tr+=.2');
-    },
-    notes:
-      'Step one, read. There are two ways to do it, and they are different designs. ' +
-      '[click] Path A is a chain of specialists. One model reads characters off the image, the next finds the layout, the next parses lines, the last links ingredients. ' +
-      '[click] That first box is optical character recognition. TrOCR, from Microsoft, is two halves: an encoder that looks at pixels, and a decoder that writes characters. Translation, where the source language is a picture. That matters, because people photograph handwriting. ' +
-      '[click] Path B skips all of it. One model looks at the page and writes the record in one pass. Donut did that in 2022, straight from a receipt image to JSON. That record is my sketch. ' +
-      '[click] They fail differently: the chain misreads a character, the one model invents a line. In a chain, a wrong character at the first join is passed down every join after. Samsung has never said which path it uses.'
-  };
-  Kit.withCrumbs(READ, STEPS, 0);
-
-  /* =============================================================== 5 · PARSE */
-  var LINE = '1 pound carrots, young ones if possible';
-  var CH = 21.6, X0 = 700, LY = 404;      // mono advance at 36 px, line origin
-  function cx(a, b) { return X0 + (a + b) / 2 * CH; }
-  // tx = where the tag sits, nudged apart from its span centre so the four tags never touch
-  var TOKENS = [
-    { t: 'QTY', a: 0, b: 1, tx: 697 }, { t: 'UNIT', a: 2, b: 7, tx: 812 },
-    { t: 'NAME', a: 8, b: 15, tx: 968 }, { t: 'COMMENT', a: 17, b: 39, tx: 1305 }
-  ];
-  var FIELDS = [
-    { k: 'quantity', v: '1', c: .98 }, { k: 'unit', v: 'pound', c: .95 },
-    { k: 'name', v: 'carrots', c: .93 }, { k: 'comment', v: 'young ones if possible', c: .71 }
-  ];
-  var FY = 586, FGAP = 94;
-  var PARSE = {
-    id: 'parse',
-    title: 'Parsing ingredient lines',
-    heading: 'Parsing ingredient lines',
-    budgetSec: 45,
-    html: function () {
-      // left: a sketched page with three blocks
-      var rules = '';
-      function rule(x1, x2, y, wt, cls, seed) {
-        rules += '<g class="' + cls + '">' + Kit.rough.line(x1, y, x2, y, { seed: seed, w: wt, stroke: C.text2, rough: 1.4 }) + '</g>';
-      }
-      rule(160, 400, 400, 'normal', 'sm-ru rt', 91);
-      [484, 524, 564, 604].forEach(function (y, i) { rule(160, i === 0 ? 430 : 424 + (i % 2) * 26, y, 'fine', 'sm-ru ri ri' + i, 101 + i); });
-      [700, 740, 780, 820, 860].forEach(function (y, i) { rule(160, 470 + (i % 3) * 24, y, 'fine', 'sm-ru rm', 111 + i); });
-      var tags = TOKENS.map(function (t, i) {
-        return '<g class="sm-tk k' + i + '">' +
-          Kit.rough.line(X0 + t.a * CH + 2, 452, X0 + t.b * CH - 2, 452, { seed: 121 + i, w: 'normal', stroke: C.tealT }) +
-          Kit.rough.line(cx(t.a, t.b), 456, t.tx, 478, { seed: 125 + i, w: 'fine', stroke: C.tealT, rough: .6 }) +
-          tx(t.tx, 508, t.t, { size: 28, anchor: 'middle', fill: C.tealT, weight: 700, ls: '.1em' }) + '</g>';
+      var lines = DRAFT.map(function (l, i) {
+        return div('t-mono sm-dr r' + i, 160, 500 + i * 58, 580, Kit.esc(l));
       }).join('');
-      var fields = FIELDS.map(function (f, i) {
-        return div('sm-fr r' + i, 700, FY + i * FGAP, 1060,
-          '<span class="t-label dim sm-fk">' + f.k + '</span>' +
-          '<span class="t-mono sm-fv">' + Kit.esc(f.v) + '</span>' +
-          '<span class="sm-bar"><i style="background:' + (f.c < .8 ? C.rust : C.teal) + '"></i></span>');
-      }).join('');
-      return svg('sm-parse-svg',
-        '<g class="sm-page2">' + Kit.rough.rect(120, 330, 460, 600, { seed: 90, w: 'heavy' }) + '</g>' + rules + tags +
-        '<g class="dd-low">' + Kit.doodle.circle(1592, FY + 3 * FGAP + 2, 176, 34, { seed: 204, color: 'var(--rust-t)', w: 'heavy', pad: 6 }) + '</g>') +
-        div('t-label sm-bl b0 c-teal', 160, 356, 300, 'title') +
-        div('t-label sm-bl b1 c-teal', 160, 436, 300, 'ingredients') +
-        div('t-label sm-bl b2 c-teal', 160, 652, 300, 'method') +
-        div('t-mono sm-line', X0, LY, 1100, Kit.esc(LINE)) +
-        div('t-caps faint sm-conf', 1600, 536, 200, 'confidence') +
-        fields;
+      return svg('sm-ck-svg',
+        '<g class="sm-draft">' + Kit.rough.rect(120, 390, 640, 300,
+          { seed: 171, w: 'heavy', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .13, hachureGap: 26 }) + '</g>' +
+        gF + gM +
+        '<g class="sm-back">' + Kit.rough.arrow(970, 560, 780, 620, { seed: 172, w: 'heavy', head: 24, bend: 40, stroke: C.rustT }) + '</g>' +
+        '<g class="sm-ca">' + Kit.rough.arrow(430, 724, 540, 650, { seed: 173, w: 'normal', head: 16, bend: 14, stroke: C.rustT }) + '</g>' +
+        '<g class="dd-last">' + Kit.doodle.underline(126, 940, 670, { seed: 208 }) + '</g>') +
+        div('chip sm-req', 120, 296, 0, '<span class="dot"></span>Make it nut-free') +
+        div('t-caps c-rust sm-dk', 160, 428, 500, 'LLM draft') + lines +
+        div('callout sm-cc', 140, 726, 420, 'LLMs guess numbers') +
+        div('t-h2 sm-last', 120, 862, 760, 'The LLM drafts. Code checks.') +
+        Kit.photo(IMG + 'still-servings.webp', { x: 1560, y: 876, w: 230, h: 62, framed: true, cls: 'sm-sv', alt: 'The servings field, left at 0 persons' }) +
+        gC;
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-bl, .sm-line, .sm-tk, .sm-fr, .sm-conf, .dd-low'), { autoAlpha: 0 });
-      gsap.set(qa('.sm-bar i'), { scaleX: 0, transformOrigin: '0% 50%' });
+      gsap.set(qa('.sm-draft, .sm-dk, .sm-dr, .sm-gf, .sm-gc, .sm-gm, .sm-back, .sm-cc, .sm-ca, .sm-last, .dd-last, .sm-sv'), { autoAlpha: 0 });
       Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.draw(tl, qa('.sm-page2 .rp'), { at: .2, duration: .7 });
-      Kit.draw(tl, qa('.sm-ru .rp'), { at: .4, duration: .35, stagger: .03 });
+      Kit.show(tl, q('.sm-req'), { at: .3, y: 14 });
 
-      // [click 1] Sort: the three blocks get names
+      // [click 1] the model writes a draft
       ctx.pause();
-      Kit.show(tl, qa('.sm-bl'), { y: 10, stagger: .12, duration: .45 });
+      tl.addLabel('d');
+      tl.to(q('.sm-draft'), { autoAlpha: 1, duration: .01 }, 'd');
+      Kit.draw(tl, qa('.sm-draft .rp'), { at: 'd', duration: .7 });
+      Kit.show(tl, q('.sm-dk'), { at: 'd+=.3', y: 10 });
+      tl.fromTo(qa('.sm-dr'), { autoAlpha: 0, x: -16 }, { autoAlpha: 1, x: 0, duration: .35, stagger: .18 }, 'd+=.5');
 
-      // [click 2] one ingredient line lifts out of the page
+      // [click 2] two gates read the graph and pass
       ctx.pause();
-      tl.addLabel('lf');
-      tl.to(qa('.ri0 .rp'), { stroke: C.rustT, duration: .3 }, 'lf');
-      tl.fromTo(q('.sm-line'), { autoAlpha: 0, x: -540, y: 76, scale: .55 },
-        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .85, ease: 'power2.inOut' }, 'lf+=.2');
-      tl.to(qa('.ri0 .rp'), { stroke: C.text2, duration: .4 }, 'lf+=.9');
-
-      // [click 3] every word gets a tag
-      ctx.pause();
-      tl.addLabel('tg');
-      tl.to(qa('.sm-tk'), { autoAlpha: 1, duration: .01, stagger: .1 }, 'tg');
-      Kit.draw(tl, qa('.sm-tk .rp'), { at: 'tg', duration: .3, stagger: .1 });
-      tl.fromTo(qa('.sm-tk text'), { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: .3, stagger: .1 }, 'tg+=.15');
-
-      // [click 4] the typed fields assemble, with a confidence each
-      ctx.pause();
-      tl.addLabel('fl');
-      Kit.show(tl, qa('.sm-conf, .sm-fr'), { at: 'fl', y: 14, stagger: .14, duration: .4 });
-      FIELDS.forEach(function (f, i) {
-        tl.to(q('.r' + i + ' .sm-bar i'), { scaleX: f.c, duration: .5, ease: 'power2.out' }, 'fl+=' + (.25 + i * .14));
+      tl.addLabel('p');
+      [0, 2].forEach(function (i, k) {
+        tl.to(q('.sm-gf.f' + i), { autoAlpha: 1, duration: .01 }, 'p+=' + k * .35);
+        Kit.draw(tl, qa('.sm-gf.f' + i + ' .rp'), { at: 'p+=' + k * .35, duration: .4 });
+        Kit.show(tl, q('.sm-gc.g' + i), { at: 'p+=' + (k * .35 + .1), y: 10, duration: .4 });
+        tl.to(q('.sm-gm.m' + i), { autoAlpha: 1, duration: .01 }, 'p+=' + (k * .35 + .3));
+        Kit.draw(tl, qa('.sm-gm.m' + i + ' .rp'), { at: 'p+=' + (k * .35 + .3), duration: .3 });
       });
-      tl.to(q('.dd-low'), { autoAlpha: 1, duration: .01 }, 'fl+=1.1');
-      Kit.draw(tl, qa('.dd-low .rp'), { at: 'fl+=1.1', duration: .7 });
-    },
-    notes:
-      'Steps two and three. Sorting first: you have to know which part of the page is which. ' +
-      '[click] Title, ingredients, method. Harder than it sounds. One rival app warns that a two-column list must be selected twice. ' +
-      '[click] Take one line out of the ingredient block. ' +
-      '[click] An ingredient line has a tiny grammar, so a model can label every word: quantity, unit, name, comment. The Times open-sourced a tagger for exactly this, trained on hand-tagged lines. ' +
-      '[click] Out comes a typed record with a confidence for every field. I made the bars up, but the shape is real: the comment is always the shakiest.'
-  };
-  Kit.withCrumbs(PARSE, STEPS, [1, 2]);
 
-  /* ================================================================ 6 · LINK */
-  var SPELLINGS = ['plain flour', 'all-purpose flour', 'AP flour', '2 c. flour'];
-  var OUTS = [
-    { t: 'Nutrition', s: 'per 100 g' },
-    { t: 'A store product', s: 'from <b class="sm-cnt">0</b> items', count: true },
-    { t: 'Oven settings', s: 'time and temperature' }
-  ];
-  var SPY = 380, SPG = 118, OTY = 340, OTG = 210, OTH = 170;
-  var LINK = {
-    id: 'link',
-    title: 'Linking to a food graph',
-    heading: 'Linking to a food graph',
-    budgetSec: 45,
-    html: function () {
-      var spFrames = '', chips = '';
-      SPELLINGS.forEach(function (s, i) {
-        spFrames += '<g class="sm-spf p' + i + '">' + Kit.rough.rect(120, SPY + i * SPG, 480, 84, { seed: 171 + i, w: 'fine', stroke: C.text3 }) + '</g>';
-        chips += div('sm-sp s' + i, 120, SPY + i * SPG, 480, '<span class="t-mono">' + Kit.esc(s) + '</span>');
-      });
-      var conv = '', fan = '', outFrames = '';
-      SPELLINGS.forEach(function (s, i) {
-        conv += '<g class="sm-cv c' + i + '">' + Kit.rough.arrow(618, SPY + i * SPG + 42, 744, 560,
-          { seed: 131 + i, w: 'normal', head: 16, bend: 18 - i * 12, stroke: C.text2 }) + '</g>';
-      });
-      [425, 635, 845].forEach(function (y, i) {
-        fan += '<g class="sm-fn n' + i + '">' + Kit.rough.arrow(1028, 560, 1092, y, { seed: 141 + i, w: 'normal', head: 16, bend: 14 - i * 14, stroke: C.tealT }) + '</g>';
-        outFrames += '<g class="sm-of o' + i + 'f">' + Kit.rough.rect(1100, OTY + i * OTG, 700, OTH, { seed: 145 + i, w: 'fine', stroke: C.text3 }) + '</g>';
-      });
-      var node = '<g class="sm-node">' + Kit.rough.rect(760, 470, 260, 180,
-          { seed: 151, w: 'heavy', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 20 }) +
-        '<text class="disp" x="890" y="558" font-size="52" font-weight="700" text-anchor="middle" fill="' + C.text + '">flour</text>' +
-        '<text class="mono" x="890" y="606" font-size="28" text-anchor="middle" fill="' + C.text3 + '">id 20081</text></g>';
-      var cards = OUTS.map(function (o, i) {
-        return div('sm-out o' + i, 1100, OTY + i * OTG, 700,
-          '<div class="t-body sm-ot">' + o.t + '</div><div class="t-label dim sm-os">' + o.s + '</div>', 'height:' + OTH + 'px;');
-      }).join('');
-      return svg('sm-link-svg', conv + outFrames + spFrames + node + fan) + chips + cards +
-        div('callout sm-lk', 672, 366, 0, 'one name, many spellings') +
-        div('t-body sm-lcap', 120, 868, 600, 'Four spellings, one entity.') +
-        svg('sm-link-svg2',
-          '<g class="sm-lka">' + Kit.rough.arrow(886, 428, 896, 462, { seed: 161, w: 'fine', stroke: C.rustT, head: 13, bend: 10 }) + '</g>' +
-          '<g class="dd-cat">' + Kit.doodle.underline(1132, 700, 296, { seed: 205, color: 'var(--rust-t)' }) + '</g>' +
-          '<g class="dd-one">' + Kit.doodle.underline(126, 930, 400, { seed: 206 }) + '</g>');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-cv, .sm-node, .sm-fn, .sm-out, .sm-of, .sm-lk, .sm-lka, .sm-lcap, .dd-cat, .dd-one'), { autoAlpha: 0 });
-      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
-      Kit.draw(tl, qa('.sm-spf .rp'), { at: .2, duration: .45, stagger: .1 });
-      Kit.show(tl, qa('.sm-sp'), { at: .25, y: 18, stagger: .1, duration: .5 });
-
-      // [click 1] four spellings converge on one entity
-      ctx.pause();
-      tl.addLabel('cv');
-      tl.to(qa('.sm-cv'), { autoAlpha: 1, duration: .01, stagger: .1 }, 'cv');
-      Kit.draw(tl, qa('.sm-cv .rp'), { at: 'cv', duration: .45, stagger: .1 });
-      tl.to(q('.sm-node'), { autoAlpha: 1, duration: .01 }, 'cv+=.5');
-      Kit.draw(tl, qa('.sm-node .rp'), { at: 'cv+=.5', duration: .5 });
-      tl.fromTo(qa('.sm-node text'), { autoAlpha: 0, scale: .7, transformOrigin: '50% 50%' },
-        { autoAlpha: 1, scale: 1, duration: .4, stagger: .1, ease: 'back.out(2)' }, 'cv+=.7');
-      Kit.show(tl, q('.sm-lk'), { at: 'cv+=.9', y: 8 });
-      tl.to(q('.sm-lka'), { autoAlpha: 1, duration: .01 }, 'cv+=.9');
-      Kit.draw(tl, qa('.sm-lka .rp'), { at: 'cv+=.9', duration: .35 });
-      Kit.show(tl, q('.sm-lcap'), { at: 'cv+=1.1', y: 12 });
-      tl.to(q('.dd-one'), { autoAlpha: 1, duration: .01 }, 'cv+=1.3');
-      Kit.draw(tl, qa('.dd-one .rp'), { at: 'cv+=1.3', duration: .5 });
-
-      // [click 2] the three things the entity unlocks
-      ctx.pause();
-      tl.addLabel('ot');
-      tl.to(qa('.sm-fn'), { autoAlpha: 1, duration: .01, stagger: .12 }, 'ot');
-      Kit.draw(tl, qa('.sm-fn .rp'), { at: 'ot', duration: .4, stagger: .12 });
-      tl.to(qa('.sm-of'), { autoAlpha: 1, duration: .01, stagger: .14 }, 'ot+=.15');
-      Kit.draw(tl, qa('.sm-of .rp'), { at: 'ot+=.15', duration: .4, stagger: .14 });
-      Kit.show(tl, qa('.sm-out'), { at: 'ot+=.2', y: 16, stagger: .14, duration: .45 });
-
-      // [click 3] the size of the catalogue behind one match
-      ctx.pause();
-      Kit.count(tl, q('.sm-cnt'), { to: 140000, commas: true, suffix: '+', duration: 1.1 });
-      tl.to(q('.o1 .sm-os'), { color: C.tealT, duration: .4 }, '<');
-      tl.to(q('.dd-cat'), { autoAlpha: 1, duration: .01 }, '>-.1');
-      Kit.draw(tl, qa('.dd-cat .rp'), { at: '<', duration: .7 });
-    },
-    notes:
-      'Step four, the one that makes the record worth having. The same ingredient is written four ways on four pages. ' +
-      '[click] Linking means deciding all four are the same thing, and attaching them to one entry in a food database. Whisk built this layer; Samsung bought Whisk and renamed it Samsung Food. The id is a stand-in. ' +
-      'One dataset cut sixteen thousand ingredient names down to fifteen hundred. ' +
-      '[click] Only then can you look anything up: nutrition, a product you can buy, a time and temperature for the oven. ' +
-      '[click] Whisk maps ingredients to more than a hundred and forty thousand store items.'
-  };
-  Kit.withCrumbs(LINK, STEPS, 3);
-
-  /* ============================================================== 7 · ERRORS */
-  var STRIP = ['confidence per field', 'low-confidence fields flagged', 'the user saves and edits'];
-  var ERRORS = {
-    id: 'errors',
-    title: 'Two kinds of error',
-    heading: 'Two kinds of error',
-    budgetSec: 45,
-    html: function () {
-      var frames = '', tiles = '', links = '';
-      STRIP.forEach(function (t, i) {
-        frames += '<g class="sm-sf g' + i + '">' + Kit.rough.rect(120 + i * 570, 848, 520, 130, { seed: 175 + i, w: 'fine', stroke: C.text3 }) + '</g>';
-        tiles += div('sm-st t' + i, 120 + i * 570, 848, 520, '<span class="t-label">' + t + '</span>', 'height:130px;');
-        if (i < 2) links += '<g class="sm-sa">' + Kit.rough.arrow(656 + i * 570, 913, 682 + i * 570, 913, { seed: 171 + i, w: 'normal', head: 16, stroke: C.text2 }) + '</g>';
-      });
-      var inv = ['2 cups flour', '1 tsp baking soda', '180 g butter'].map(function (t, i) {
-        return '<text class="mono sm-iv v' + i + '" x="1020" y="' + (474 + i * 54) + '" font-size="32" fill="' + C.text + '">' + Kit.esc(t) + '</text>';
-      }).join('') +
-        '<text class="mono sm-iv4" x="1020" y="640" font-size="32" fill="' + C.rustT + '">1 tsp vanilla extract</text>';
-      return svg('sm-err-svg',
-        '<g class="sm-p1">' + Kit.rough.rect(120, 320, 800, 420, { seed: 181, w: 'normal', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .1, hachureGap: 28 }) + '</g>' +
-        '<g class="sm-p2">' + Kit.rough.rect(980, 320, 820, 420, { seed: 182, w: 'normal', stroke: C.rustT, hatch: 'var(--rust-t)', fillOpacity: .1, hachureGap: 28 }) + '</g>' +
-        '<g class="sm-mis">' + Kit.rough.arrow(448, 452, 510, 452, { seed: 183, w: 'heavy', head: 22, stroke: C.rustT }) + '</g>' +
-        inv +
-        '<g class="sm-iva">' + Kit.rough.arrow(1500, 648, 1436, 636, { seed: 184, w: 'fine', head: 14, bend: -10, stroke: C.rustT }) + '</g>' +
-        '<g class="dd-sod">' + Kit.doodle.circle(444, 532, 142, 38, { seed: 207, color: 'var(--rust-t)', w: 'heavy', rx: 92, ry: 40 }) + '</g>' +
-        frames + links) + tiles +
-        div('t-caps c-teal sm-ph p1', 160, 362, 600, 'Misread') +
-        div('t-caps c-rust sm-ph p2', 1020, 362, 600, 'Invented') +
-        div('t-mono sm-ms a', 160, 430, 280, '&frac12; tsp salt') +
-        div('t-mono sm-ms b', 544, 430, 360, '<b class="c-rust">12</b> tsp salt') +
-        div('sm-na', 160, 530, 740, '<span class="t-label dim">sodium</span><span class="t-mono sm-nav0">190 mg</span>' +
-          '<span class="t-label dim sm-narr">&rarr;</span><span class="t-mono sm-nav">190 mg</span>') +
-        div('t-body sm-mline', 160, 622, 700, 'Everything after it is correct. The recipe is ruined.') +
-        div('callout sm-ik2', 1512, 602, 0, 'not on the page');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-ms.b, .sm-mis, .sm-na, .sm-mline, .sm-iv, .sm-iv4, .sm-iva, .sm-ik2, .sm-st, .sm-sa, .sm-sf, .dd-sod'), { autoAlpha: 0 });
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.draw(tl, qa('.sm-p1 .rp, .sm-p2 .rp'), { at: .2, duration: .7, stagger: .06 });
-      Kit.fade(tl, qa('.sm-ph'), { at: .4, stagger: .1 });
-      Kit.show(tl, q('.sm-ms.a'), { at: .5, y: 10 });
-
-      // [click 1] one character flips, and the number downstream follows it
-      ctx.pause();
-      tl.addLabel('ms');
-      tl.to(q('.sm-mis'), { autoAlpha: 1, duration: .01 }, 'ms');
-      Kit.draw(tl, qa('.sm-mis .rp'), { at: 'ms', duration: .35 });
-      Kit.show(tl, q('.sm-ms.b'), { at: 'ms+=.3', y: 0 });
-      Kit.show(tl, q('.sm-na'), { at: 'ms+=.7', y: 10 });
-      Kit.count(tl, q('.sm-nav'), { to: 4560, commas: true, suffix: ' mg', duration: .9, at: 'ms+=1.1' });
-      tl.to(q('.sm-nav'), { color: C.rustT, duration: .4 }, 'ms+=1.1');
-      tl.to(q('.dd-sod'), { autoAlpha: 1, duration: .01 }, 'ms+=1.9');
-      Kit.draw(tl, qa('.dd-sod .rp'), { at: 'ms+=1.9', duration: .6 });
-      Kit.show(tl, q('.sm-mline'), { at: 'ms+=1.6', y: 12 });
-
-      // [click 2] three real lines, then one the model wrote
-      ctx.pause();
-      tl.addLabel('iv');
-      tl.fromTo(qa('.sm-iv'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .3, stagger: .14 }, 'iv');
-      tl.fromTo(q('.sm-iv4'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .45 }, 'iv+=.7');
-      Kit.show(tl, q('.sm-ik2'), { at: 'iv+=.9', y: 8 });
-      tl.to(q('.sm-iva'), { autoAlpha: 1, duration: .01 }, 'iv+=.9');
-      Kit.draw(tl, qa('.sm-iva .rp'), { at: 'iv+=.9', duration: .35 });
-
-      // [click 3] what both paths do about it
-      ctx.pause();
-      tl.addLabel('st');
-      tl.to(qa('.sm-sf'), { autoAlpha: 1, duration: .01, stagger: .3 }, 'st');
-      Kit.draw(tl, qa('.sm-sf .rp'), { at: 'st', duration: .4, stagger: .3 });
-      Kit.show(tl, qa('.sm-st'), { at: 'st+=.1', y: 14, stagger: .3, duration: .45 });
-      tl.to(qa('.sm-sa'), { autoAlpha: 1, duration: .01, stagger: .3 }, 'st+=.35');
-      Kit.draw(tl, qa('.sm-sa .rp'), { at: 'st+=.35', duration: .3, stagger: .3 });
-    },
-    notes:
-      'So choosing between those paths is choosing between two failures. Both examples here are made up. ' +
-      '[click] In a chain, an early mistake poisons everything after it. Read a half as a twelve: the parser tags it perfectly, the nutrition is computed perfectly, and the dish is inedible. ' +
-      '[click] A big model rarely misreads a character. It writes a fluent line that was never on the page. The FIRE authors call hallucination a critical challenge. ' +
-      '[click] Confidence per field comes free in a chain, and is much harder from one big model. ' +
-      'The defences differ; both end the same way: the last validator is a person.'
-  };
-
-  /* ================================================================ 8 · DISH */
-  var DISH = {
-    id: 'dish',
-    title: 'Recipes from a dish photo',
-    heading: 'Recipes from a dish photo',
-    budgetSec: 30,
-    html: function () {
-      return svg('sm-dish-svg',
-        '<g class="sm-dk">' + Kit.rough.arrow(344, 868, 410, 800, { seed: 191, w: 'fine', stroke: C.rustT, head: 14, bend: 14 }) + '</g>' +
-        '<g class="dd-f1">' + Kit.doodle.circle(780, 358, 260, 112, { seed: 208, color: 'var(--rust-t)', w: 'heavy', rx: 165, ry: 82 }) + '</g>' +
-        '<g class="dd-dl">' + Kit.doodle.underline(786, 918, 560, { seed: 209 }) + '</g>') +
-        Kit.photo(IMG + 'dish.jpg', { x: 120, y: 340, w: 600, h: 460, rot: -3, framed: true, cls: 'sm-dish', alt: 'A finished stew' }) +
-        div('callout sm-dq', 124, 856, 0, 'what is in it?') +
-        div('bignum sm-bn n1', 780, 352, 460, '<div class="t-num sm-v1">0</div><div class="t-label">ingredient F1, best system</div>') +
-        div('bignum sm-bn n2', 1320, 352, 480, '<div class="t-num sm-v2">0</div><div class="t-label">generated recipes judged to match the photo</div>') +
-        div('t-label faint sm-ref sm-ref1', 780, 646, 460, '100 = a perfect ingredient list.') +
-        div('t-label faint sm-ref', 1320, 646, 480, 'The real recipe scored 80%.') +
-        div('t-h2 c-teal sm-dline', 780, 790, 1020, 'Samsung\'s dish-photo feature finds existing recipes.');
-    },
-    build: function (ctx) {
-      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
-      gsap.set(qa('.sm-bn, .sm-ref, .sm-dline, .dd-f1, .dd-dl'), { autoAlpha: 0 });
-      Kit.rise(tl, qa('.hd > *'), { at: 0, stagger: .1 });
-      Kit.drop(tl, q('.sm-dish'), { at: .2, rot: -3 });
-      Kit.show(tl, q('.sm-dq'), { at: .7, y: 10 });
-      Kit.draw(tl, qa('.sm-dk .rp'), { at: .75, duration: .4 });
-
+      // [click 3] the nutrition gate fails and sends the draft back
       ctx.pause();
       tl.addLabel('n');
-      Kit.show(tl, qa('.sm-bn'), { at: 'n', y: 16, stagger: .25, duration: .4 });
-      Kit.count(tl, q('.sm-v1'), { to: 49.3, decimals: 1, duration: 1.1, at: 'n+=.2' });
-      Kit.count(tl, q('.sm-v2'), { to: 55, suffix: '%', duration: 1.1, at: 'n+=.45' });
-      Kit.show(tl, qa('.sm-ref'), { at: 'n+=1.4', y: 10, stagger: .1 });
-      tl.to(q('.dd-f1'), { autoAlpha: 1, duration: .01 }, 'n+=1.5');
-      Kit.draw(tl, qa('.dd-f1 .rp'), { at: 'n+=1.5', duration: .7 });
+      tl.to(q('.sm-gf.f1'), { autoAlpha: 1, duration: .01 }, 'n');
+      Kit.draw(tl, qa('.sm-gf.f1 .rp'), { at: 'n', duration: .45 });
+      Kit.show(tl, q('.sm-gc.g1'), { at: 'n+=.15', y: 10, duration: .4 });
+      tl.to(q('.sm-gm.m1'), { autoAlpha: 1, duration: .01 }, 'n+=.4');
+      Kit.draw(tl, qa('.sm-gm.m1 .rp'), { at: 'n+=.4', duration: .3, stagger: .06 });
+      tl.to(q('.sm-dr.r2'), { color: C.rustT, textDecoration: 'line-through', duration: .4 }, 'n+=.6');
+      tl.to(q('.sm-back'), { autoAlpha: 1, duration: .01 }, 'n+=.8');
+      Kit.draw(tl, qa('.sm-back .rp'), { at: 'n+=.8', duration: .5 });
+      Kit.show(tl, q('.sm-cc'), { at: 'n+=1.1', y: 10 });
+      tl.to(q('.sm-ca'), { autoAlpha: 1, duration: .01 }, 'n+=1.1');
+      Kit.draw(tl, qa('.sm-ca .rp'), { at: 'n+=1.1', duration: .35 });
 
+      // [click 4] a missing field goes to the user
       ctx.pause();
-      tl.addLabel('d2');
-      tl.to(q('.sm-dish'), { opacity: .4, duration: .5 }, 'd2');
-      Kit.show(tl, q('.sm-dline'), { at: 'd2', y: 14 });
-      tl.to(q('.dd-dl'), { autoAlpha: 1, duration: .01 }, 'd2+=.5');
-      Kit.draw(tl, qa('.dd-dl .rp'), { at: 'd2+=.5', duration: .5 });
+      tl.addLabel('a');
+      tl.to(q('.sm-gf.f3'), { autoAlpha: 1, duration: .01 }, 'a');
+      Kit.draw(tl, qa('.sm-gf.f3 .rp'), { at: 'a', duration: .45 });
+      Kit.show(tl, q('.sm-gc.g3'), { at: 'a+=.15', y: 10, duration: .4 });
+      tl.to(q('.sm-gm.m3'), { autoAlpha: 1, duration: .4 }, 'a+=.35');
+      Kit.drop(tl, q('.sm-sv'), { at: 'a+=.5' });
+      Kit.show(tl, q('.sm-last'), { at: 'a+=.9', y: 16 });
+      tl.to(q('.dd-last'), { autoAlpha: 1, duration: .01 }, 'a+=1.3');
+      Kit.draw(tl, qa('.dd-last .rp'), { at: 'a+=1.3', duration: .5 });
     },
     notes:
-      'One thing Samsung does not do: look at a photo of a finished dish and write the recipe. ' +
-      '[click] Both numbers are from research papers, not from Samsung. The best system gets about half the ingredients right; salt and oil are never visible. Asked whether a generated recipe matched its photo, people said yes about half the time, against eighty per cent for the real recipe. ' +
-      '[click] What Samsung ships is recognition plus search.'
+      'An LLM, a large language model like the one behind ChatGPT, writes fluent text. Samsung\'s Personalize feature uses one to adapt a recipe to a diet. What sits after the model is my inference, but it is the defensible design. ' +
+      '[click] Here is the draft. A swap, a serving count, a calorie figure. The calories and the sunflower seeds are made up, to show the shape. ' +
+      '[click] Allergens first. US law names nine major allergens, and a miss is a safety incident, so this is a lookup in the food graph, not the model\'s opinion. Units next: scaling a recipe is arithmetic, exact in code and unreliable as text prediction. ' +
+      '[click] Nutrition fails. In a 2025 benchmark, general-purpose models were off on nutrition by twenty-four to forty-four percent, so you recompute from the linked ingredients and send the draft back. ' +
+      '[click] And remember the demo left servings at zero. When a field is missing, the honest move is to ask. Retrieval cuts down invented content, but only checks make a generated recipe true.'
   };
+  Kit.withCrumbs(CHECK, STEPS, 3);
+
+  /* ================================================================= 8 · ACT */
+  var SPANS = [
+    { t: 'Bake', x: 150, tag: 'Action', tagx: 206 },
+    { t: 'at 180°', x: 300, tag: 'Temp', tagx: 388 },
+    { t: 'for 25 minutes.', x: 520, tag: 'Time', tagx: 672 }
+  ];
+  var JSONL = ['device: oven', 'action: bake', 'temp_c: 180', 'min: 25', 'confirm: true'];
+  var ACT = {
+    id: 'act',
+    title: 'Oven commands',
+    heading: 'Oven commands',
+    budgetSec: 30,
+    html: function () {
+      var words = '', tags = '';
+      SPANS.forEach(function (s, i) {
+        words += tx(s.x, 392, s.t, { size: 52, fill: C.text, cls: 'disp', weight: 600 });
+        tags += '<g class="sm-tg t' + i + '">' +
+          Kit.rough.line(s.tagx, 410, s.tagx, 440, { seed: 181 + i, w: 'fine', stroke: C.tealT }) +
+          tx(s.tagx, 478, s.tag.toUpperCase(), { size: 28, anchor: 'middle', fill: C.tealT, weight: 700, ls: '.1em' }) + '</g>';
+      });
+      var lines = JSONL.map(function (l, i) {
+        return div('t-mono sm-jl2 j' + i, 164, 624 + i * 60, 520, Kit.esc(l));
+      }).join('');
+      return svg('sm-act-svg', words + tags +
+        '<g class="sm-da">' + Kit.rough.arrow(250, 502, 250, 556, { seed: 184, w: 'heavy', head: 22 }) + '</g>' +
+        '<g class="sm-jbox">' + Kit.rough.rect(120, 560, 600, 430,
+          { seed: 185, w: 'heavy', hatch: 'var(--sec-t)', fillOpacity: .15, hachureGap: 26 }) + '</g>' +
+        '<g class="sm-ga">' + Kit.rough.arrow(736, 770, 806, 770, { seed: 186, w: 'heavy', head: 22 }) + '</g>' +
+        '<g class="sm-gate">' + Kit.rough.rect(820, 690, 380, 160, { seed: 187, w: 'normal', stroke: C.text2 }) + '</g>' +
+        '<g class="sm-oa">' + Kit.rough.arrow(1216, 770, 1286, 770, { seed: 188, w: 'heavy', head: 22 }) + '</g>' +
+        '<g class="sm-oven">' + Kit.rough.rect(1310, 650, 300, 250, { seed: 189, w: 'heavy', stroke: C.tealT }) +
+          Kit.rough.line(1336, 722, 1584, 722, { seed: 190, w: 'normal', stroke: C.tealT }) +
+          Kit.rough.circle(1556, 686, 26, { seed: 191, w: 'fine', stroke: C.tealT }) +
+          Kit.rough.rect(1352, 760, 216, 106, { seed: 192, w: 'fine', stroke: C.text3, overshoot: 0 }) + '</g>' +
+        // the gate has two outcomes, so the passing path gets a visible result too
+        '<g class="sm-lit">' + Kit.rough.rect(1356, 764, 208, 98,
+          { seed: 194, w: 'fine', stroke: C.tealT, hatch: 'var(--sec-t)', fillOpacity: .34, hachureGap: 14, overshoot: 0 }) + '</g>' +
+        '<g class="dd-pass">' + Kit.doodle.mark(1152, 800, 26, 'check', { seed: 195, color: 'var(--sec-t)' }) + '</g>' +
+        '<g class="sm-rej">' + Kit.rough.arrow(1110, 684, 1290, 452, { seed: 193, w: 'normal', head: 18, bend: 36, stroke: C.rustT }) + '</g>' +
+        '<g class="dd-rx">' + Kit.doodle.mark(1476, 418, 30, 'x', { seed: 209, color: 'var(--rust-t)' }) + '</g>') +
+        div('t-caps dim sm-ak', 120, 296, 700, 'One recipe step') +
+        lines +
+        div('t-body sm-gt2', 840, 756, 340, 'Range check') + tag('rule', 1090, 704, 'sm-gtag') +
+        tag('ml', 470, 290, 'sm-tg-ml', 'ML · sequence labeling') +
+        div('t-label faint sm-ovl', 1310, 926, 300, 'the oven') +
+        div('chip sm-conf', 820, 900, 0, '<span class="dot"></span>user confirms') +
+        div('callout sm-rk2', 1290, 326, 460, 'out of range') +
+        div('t-mono sm-rv', 1290, 400, 240, '1,800');
+    },
+    build: function (ctx) {
+      var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
+      gsap.set(qa('.sm-tg, .sm-tg-ml, .sm-gtag, .sm-da, .sm-jbox, .sm-jl2, .sm-ga, .sm-gate, .sm-gt2, .sm-oa, .sm-oven, .sm-lit, .dd-pass, .sm-ovl, .sm-conf, .sm-rej, .sm-rv, .sm-rk2, .dd-rx'), { autoAlpha: 0 });
+      Kit.rise(tl, qa('.hd > *, .crumbs'), { at: 0, stagger: .08 });
+      Kit.fade(tl, q('.sm-ak'), { at: .25 });
+      tl.fromTo(qa('.sm-act-svg text.disp'), { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .12 }, .35);
+
+      // [click 1] every span is a slot
+      ctx.pause();
+      tl.addLabel('t');
+      tl.to(qa('.sm-tg'), { autoAlpha: 1, duration: .01, stagger: .14 }, 't');
+      Kit.show(tl, q('.sm-tg-ml'), { at: 't+=.5', y: 8, duration: .35 });
+      Kit.draw(tl, qa('.sm-tg .rp'), { at: 't', duration: .3, stagger: .14 });
+
+      // [click 2] the slots become a typed command
+      ctx.pause();
+      tl.addLabel('j');
+      tl.to(qa('.sm-da, .sm-jbox'), { autoAlpha: 1, duration: .01 }, 'j');
+      Kit.draw(tl, qa('.sm-da .rp'), { at: 'j', duration: .3 });
+      Kit.draw(tl, qa('.sm-jbox .rp'), { at: 'j+=.2', duration: .7 });
+      tl.fromTo(qa('.sm-jl2'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .3, stagger: .12 }, 'j+=.5');
+
+      // [click 3] nothing reaches the oven until it is checked and confirmed
+      ctx.pause();
+      tl.addLabel('g');
+      tl.to(qa('.sm-ga, .sm-gate'), { autoAlpha: 1, duration: .01 }, 'g');
+      Kit.draw(tl, qa('.sm-ga .rp'), { at: 'g', duration: .3 });
+      Kit.draw(tl, qa('.sm-gate .rp'), { at: 'g+=.2', duration: .45 });
+      Kit.show(tl, qa('.sm-gt2, .sm-gtag'), { at: 'g+=.4', y: 10 });
+      tl.to(q('.sm-rej'), { autoAlpha: 1, duration: .01 }, 'g+=.7');
+      Kit.draw(tl, qa('.sm-rej .rp'), { at: 'g+=.7', duration: .45 });
+      Kit.show(tl, qa('.sm-rv, .sm-rk2'), { at: 'g+=1', y: 12, stagger: .1, duration: .4 });
+      tl.to(q('.dd-rx'), { autoAlpha: 1, duration: .01 }, 'g+=1.3');
+      Kit.draw(tl, qa('.dd-rx .rp'), { at: 'g+=1.3', duration: .3, stagger: .06 });
+      tl.to(qa('.sm-oa, .sm-oven'), { autoAlpha: 1, duration: .01 }, 'g+=1.4');
+      Kit.draw(tl, qa('.sm-oa .rp'), { at: 'g+=1.4', duration: .3 });
+      Kit.draw(tl, qa('.sm-oven .rp'), { at: 'g+=1.6', duration: .5, stagger: .1 });
+      // the other half of the gate: 180 passes, so the check marks and the oven window lights
+      tl.to(q('.dd-pass'), { autoAlpha: 1, duration: .01 }, 'g+=2');
+      Kit.draw(tl, qa('.dd-pass .rp'), { at: 'g+=2', duration: .3 });
+      tl.to(q('.sm-lit'), { autoAlpha: 1, duration: .01 }, 'g+=2.1');
+      Kit.draw(tl, qa('.sm-lit .rp'), { at: 'g+=2.1', duration: .5 });
+      Kit.show(tl, qa('.sm-ovl, .sm-conf'), { at: 'g+=2.4', y: 10, stagger: .12, duration: .4 });
+    },
+    notes:
+      'Samsung confirms a recipe can send settings to a SmartThings oven; its patents describe turning recipe text into device commands. ' +
+      '[click] An ML model tags each word of "Bake at 180": action, temperature, duration. The technique is called sequence labeling. ' +
+      '[click] Those slots become a typed object. Not a sentence an oven has to interpret. ' +
+      '[click] Then a rule, not a model, range-checks it against this oven\'s limits. Eighteen hundred bounces off; one hundred and eighty passes, and the oven lights. Starting a cycle is still yours.'
+  };
+  Kit.withCrumbs(ACT, STEPS, 4);
 
   /* =========================================================== 9 · TAKEAWAYS */
-  // one row per takeaway: number · rule · tag · one line (KIT §7, same grammar as the giuseppe pilot)
+  // one row per takeaway: number · rule · tag · one line (KIT §7)
   var TK = [
-    ['01', 'Structure is what makes data usable.', 'document understanding', 'A record you can compute with beats text you can read.'],
-    ['02', 'Chains misread. Big models invent.', 'two failure modes', 'Check for both, and keep a person at the end.']
+    ['01', 'Build a system, not one model', 'system design', 'Typed data between parts lets you swap any model.'],
+    ['02', 'Check LLM output with code', 'validation', 'Allergens, nutrition and oven settings are computed, not generated.']
   ];
-  var MARKS = [['Read', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
+  var MARKS = [['Cook', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
   var TAKE = {
     id: 'takeaways',
     title: 'Takeaways',
     heading: 'Takeaways',
-    budgetSec: 35,
+    budgetSec: 40,
     html: function () {
       var rows = TK.map(function (r, i) {
         return '<div class="tk-row t' + i + '" style="top:' + (344 + i * 256) + 'px">' +
@@ -670,8 +822,8 @@
       }).join('');
       return '<div class="sm-bg" style="background-image:url(' + IMG + 'cookbook.jpg)"></div><div class="sm-veil"></div>' +
         svg('sm-tk-svg',
-          '<g class="dd-t0">' + Kit.doodle.underline(252, 416, 844, { seed: 210 }) + '</g>' +
-          '<g class="dd-t1">' + Kit.doodle.underline(252, 672, 800, { seed: 211 }) + '</g>') +
+          '<g class="dd-t0">' + Kit.doodle.underline(252, 416, 1120, { seed: 210 }) + '</g>' +
+          '<g class="dd-t1">' + Kit.doodle.underline(252, 672, 700, { seed: 211 }) + '</g>') +
         rows + '<div class="tk-strip">' + strip + '</div>';
     },
     build: function (ctx) {
@@ -694,20 +846,21 @@
       tl.to(q('.k1 .t-caps'), { color: C.oliveT, duration: .5 }, '>-.1');
     },
     notes:
-      'Two things to take away, and neither of them is a fact about Samsung. ' +
-      '[click] First: structure is what makes data usable. A record you can compute with beats text you can read. ' +
-      '[click] Second: the two designs fail in two ways. A chain misreads what is on the page. One big model writes what is not. Check for both, and keep a person at the end. ' +
-      'That is reading. Next: finding something that does not exist yet.'
+      'Two things to take away, and neither is a fact about Samsung. ' +
+      '[click] First: build a system, not one model. Samsung owns the graph the models write into and read from, so it can swap any model. ' +
+      '[click] Second: check LLM output with code. Allergens, nutrition and oven settings are computed, because a fluent answer can still be wrong. ' +
+      'Samsung reported over six million users in July 2024, but it publishes no accuracy figures, so adoption is not accuracy. ' +
+      'Next, Shiru: finding an ingredient nobody has used yet.'
   };
 
   Deck.section({
-    id: 'samsung', order: 1, num: '01', kicker: 'Read', title: 'Samsung Food', color: 'teal',
+    id: 'samsung', order: 1, num: '01', kicker: 'Cook', title: 'Samsung Food', color: 'teal',
     toss: 'assets/img/intro/card.webp',
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Section one: Read. A recipe written for people has to become a record a computer can use, and Samsung Food does that from a single photo.'
+        'Section one: Cook. Samsung Food helps a household decide what to cook tonight, and then connects that choice to the kitchen itself.'
     },
-    slides: [DEMO, PROBLEM, APPROACH, READ, PARSE, LINK, ERRORS, DISH, TAKE]
+    slides: [DEMO, PROBLEM, SYSTEM, INPUTS, RETRIEVE, RANK, CHECK, ACT, TAKE]
   });
 })();

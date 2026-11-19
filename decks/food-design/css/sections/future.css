@@ -1,47 +1,73 @@
 /* future section styles — scope every rule under .slide[data-sec="future"] */
 .slide[data-sec="future"] .fu-svg { position: absolute; left: 0; top: 0; overflow: visible; }
 .slide[data-sec="future"] svg .rp-fill { fill: var(--chalk); }
+.slide[data-sec="future"] .fu-svg text.caps { font-family: var(--font); text-transform: uppercase; }
 .slide[data-sec="future"] .hd { z-index: 3; }
 .slide[data-sec="future"] .callout { z-index: 4; }
-.slide[data-sec="future"] .fu-sub { position: absolute; left: 120px; top: 288px; color: var(--text-3); }
-.slide[data-sec="future"] .fu-bet { position: absolute; left: 120px; top: 288px; color: var(--plum-t); }
 
-/* ---------- forces ---------- */
-.slide[data-sec="future"] .fu-name { position: absolute; top: 348px; width: 310px; color: var(--text-2); }
-.slide[data-sec="future"] .fu-num { position: absolute; top: 440px; width: 330px; font-size: 52px; line-height: 1.1;
-  color: var(--plum-t); letter-spacing: -.04em; }
-.slide[data-sec="future"] .fu-lab { position: absolute; top: 566px; width: 300px; color: var(--text-3); line-height: 1.3; }
-.slide[data-sec="future"] .fu-barlab { font-size: 28px; font-weight: 700; letter-spacing: .12em; fill: #22262A; }
-.slide[data-sec="future"] .fu-candy { z-index: 2; }
-.slide[data-sec="future"] .fu-bend { position: absolute; left: 1424px; top: 964px; width: 360px; }
+/* ---------- question (statement + the section's roadmap) ---------- */
+.slide[data-sec="future"] .fu-q1,
+.slide[data-sec="future"] .fu-q2 { position: absolute; left: 120px; width: 1680px; text-align: center; }
+.slide[data-sec="future"] .fu-q1 { top: 268px; color: var(--text); }
+.slide[data-sec="future"] .fu-q2 { top: 348px; color: var(--rust-t); }
+.slide[data-sec="future"] .fu-bar { z-index: 2; }
+.slide[data-sec="future"] .fu-bt { position: absolute; color: var(--plum-t); }
+.slide[data-sec="future"] .fu-bs { position: absolute; }
+.slide[data-sec="future"] .fu-ch { position: absolute; color: var(--text); font-weight: 600; white-space: nowrap; }
 
-/* ---------- engine ---------- */
-.slide[data-sec="future"] .fu-node { position: absolute; color: var(--text); text-align: center; font-weight: 600; }
-.slide[data-sec="future"] .fu-tag { position: absolute; color: var(--text-3); }
-.slide[data-sec="future"] .fu-score { position: absolute; left: 652px; top: 668px; width: 480px; color: var(--text); }
-.slide[data-sec="future"] .fu-cardh { position: absolute; color: var(--text); }
-.slide[data-sec="future"] .fu-cardb { position: absolute; width: 490px; color: var(--text-2); line-height: 1.3; }
-.slide[data-sec="future"] .fu-cap { position: absolute; left: 120px; top: 846px; color: var(--text); }
-.slide[data-sec="future"] .fu-c1 { position: absolute; left: 150px; top: 736px; }
+/* ---------- the shared technique pipeline (tailor + library) ---------- */
+.slide[data-sec="future"] .fu-pt { position: absolute; line-height: 1.04; color: var(--text); }
+.slide[data-sec="future"] .fu-pf { position: absolute; line-height: 1.25; }
+.slide[data-sec="future"] .fu-pd { position: absolute; line-height: 1.3; color: var(--text); }
+.slide[data-sec="future"] .fu-pe { position: absolute; line-height: 1.3; color: var(--rust-t); font-weight: 600; }
+.slide[data-sec="future"] .fu-bandt { position: absolute; text-align: center; color: var(--text); font-weight: 600; }
+.slide[data-sec="future"] .fu-bands { position: absolute; text-align: center; color: var(--rust-t); }
 
-/* ---------- parity ---------- */
-.slide[data-sec="future"] .fu-ptitle { position: absolute; top: 352px; color: var(--text-2); }
-.slide[data-sec="future"] .fu-rlab { position: absolute; color: var(--text-2); }
-.slide[data-sec="future"] .fu-foot2 { position: absolute; top: 688px; color: var(--text-3); }
-.slide[data-sec="future"] .fu-bignum { font-family: var(--mono); font-size: 52px; font-weight: 600; letter-spacing: -.04em;
-  fill: var(--plum-t); paint-order: stroke; stroke: var(--bg); stroke-width: 10px; }
-.slide[data-sec="future"] .fu-vq { position: absolute; left: 164px; top: 846px; color: var(--rust-t); }
-.slide[data-sec="future"] .fu-chc { position: absolute; left: 1556px; top: 520px; width: 250px; line-height: 1.15; }
-.slide[data-sec="future"] .fu-vt { position: absolute; right: 164px; top: 886px; color: var(--text-2); }
+/* ---------- personal ---------- */
+.slide[data-sec="future"] .pe-k { position: absolute; left: 588px; width: 330px; }
+.slide[data-sec="future"] .pe-ct { position: absolute; left: 178px; top: 696px; color: var(--plum-t); }
+.slide[data-sec="future"] .pe-cl { position: absolute; left: 178px; color: var(--text); }
+.slide[data-sec="future"] .pe-cl.c1 { top: 762px; }
+.slide[data-sec="future"] .pe-cl.c2 { top: 822px; }
+.slide[data-sec="future"] .pe-st { position: absolute; left: 1020px; top: 330px; color: var(--text-3); }
+.slide[data-sec="future"] .pe-eq { position: absolute; left: 1020px; font-size: 44px; color: var(--text); }
+.slide[data-sec="future"] .pe-eq.e1 { top: 384px; }
+.slide[data-sec="future"] .pe-eq.e2 { top: 440px; }
+.slide[data-sec="future"] .pe-res { position: absolute; left: 1020px; width: 500px; display: flex; align-items: baseline;
+  justify-content: space-between; gap: 30px; }
+.slide[data-sec="future"] .pe-res.r1 { top: 530px; }
+.slide[data-sec="future"] .pe-res.r2 { top: 660px; }
+.slide[data-sec="future"] .pe-rl { color: var(--text-2); }
+.slide[data-sec="future"] .pe-rv { font-size: 52px; font-weight: 600; letter-spacing: -.03em; color: var(--text); }
+.slide[data-sec="future"] .pe-c1 { position: absolute; left: 1252px; top: 830px; }
+.slide[data-sec="future"] .pe-c2 { position: absolute; left: 1252px; top: 894px; }
 
-/* ---------- avoid ---------- */
-.slide[data-sec="future"] .fu-cname { position: absolute; color: var(--text); }
-.slide[data-sec="future"] .fu-cmoney { position: absolute; font-size: 52px; line-height: 1.1; color: var(--text-2); letter-spacing: -.04em; }
-.slide[data-sec="future"] .fu-cout { position: absolute; width: 470px; color: var(--text-3); line-height: 1.3; }
-.slide[data-sec="future"] .fu-work { position: absolute; left: 168px; top: 736px; color: var(--rust-t); }
-.slide[data-sec="future"] .fu-chef { position: absolute; left: 168px; right: 168px; top: 822px; display: flex; align-items: baseline; justify-content: space-between; gap: 36px; }
-.slide[data-sec="future"] .fu-chef b { color: var(--rust-t); font-weight: 700; }
-.slide[data-sec="future"] .fu-chef span { color: var(--text-2); }
+/* ---------- tailor ---------- */
+.slide[data-sec="future"] .ta-c1,
+.slide[data-sec="future"] .ta-c2 { position: absolute; }
+
+/* ---------- backup ---------- */
+.slide[data-sec="future"] .bk-k { position: absolute; left: 180px; top: 288px; color: var(--text-3); }
+.slide[data-sec="future"] .bk-peak { position: absolute; left: 640px; top: 284px; font-size: 44px; color: var(--plum-t); }
+.slide[data-sec="future"] .bk-peakl { position: absolute; left: 640px; top: 344px; }
+.slide[data-sec="future"] .bk-fall { position: absolute; left: 1240px; top: 436px; font-size: 44px; color: var(--plum-t); }
+.slide[data-sec="future"] .bk-both { position: absolute; left: 990px; top: 300px; width: 240px; }
+.slide[data-sec="future"] .bk-eul { position: absolute; left: 1524px; top: 344px; color: var(--rust-t); }
+.slide[data-sec="future"] .bk-eud { position: absolute; left: 1524px; top: 394px; color: var(--text-2); }
+.slide[data-sec="future"] .bk-ct { position: absolute; text-align: center; color: var(--text); }
+.slide[data-sec="future"] .bk-bis { z-index: 2; }
+.slide[data-sec="future"] .bk-jobs { position: absolute; left: 120px; top: 938px; width: 1680px; text-align: center; color: var(--text); }
+
+/* ---------- library (pipeline + the trade-off chart it hands back) ---------- */
+.slide[data-sec="future"] .lb-k { position: absolute; color: var(--text-3); }
+.slide[data-sec="future"] .lb-h { position: absolute; color: var(--text); }
+.slide[data-sec="future"] .lb-s { position: absolute; }
+.slide[data-sec="future"] .lb-palm { z-index: 2; }
+.slide[data-sec="future"] .lb-c1,
+.slide[data-sec="future"] .lb-c2 { position: absolute; }
+.slide[data-sec="future"] .lb-dim .rp-fill { fill: var(--text-3); }
+.slide[data-sec="future"] .lb-dot .rp-fill { fill: var(--plum-t); }
+.slide[data-sec="future"] .lb-keep .rp-fill { fill: var(--rust-t); }
 
 /* ---------- summary (recap rows copy the intro agenda's tiles and rules) ---------- */
 .slide[data-sec="future"] .su-bg { position: absolute; inset: 0; background-size: cover; background-position: right 8% center; opacity: .3; }

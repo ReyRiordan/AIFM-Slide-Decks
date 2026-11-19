@@ -26,7 +26,7 @@
           '<g class="pb-arrow">' + Kit.rough.arrow(776, 884, 1160, 812, { seed: 31, w: 'normal', stroke: C.rustT, head: 18, bend: 46 }) + '</g>' +
           '<g class="dd-many">' + Kit.doodle.underline(1000, 948, 756, { seed: 41 }) + '</g>' +
         '</svg>' +
-        '<div class="t-caps faint pb-k pb-k1">What food leans on</div>' +
+        '<div class="t-caps faint pb-k pb-k1">What food uses today</div>' +
         '<div class="pb-animal">' +
           Kit.photo(IMG + 'egg.webp', { x: 130, y: 350, w: 380, rot: -3, alt: 'egg' }) +
           Kit.photo('assets/img/giuseppe/milk.webp', { x: 640, y: 322, w: 200, rot: 2, alt: 'glass of milk' }) +
@@ -305,7 +305,7 @@
         '<div class="em-note"><span class="t-label dim">one protein → about 1,000 numbers</span></div>' +
         '<div class="t-caps faint em-k em-k2">A third sequence</div>' +
         row('C', C.rustT, SEQ_C, sharedC, 2) +
-        '<div class="t-h2 c-olive em-pay">Different letters. Same neighbourhood.</div>';
+        '<div class="t-h2 c-olive em-pay">Different letters. Same neighborhood.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -400,7 +400,7 @@
           '<div class="sr-bar"><span class="t-mono dim">letter-by-letter</span><b class="t-mono dim">34.5%</b></div>' +
           '<div class="t-label faint">top-1 accuracy, 2022</div>' +
         '</div>' +
-        '<div class="t-body dim sr-cav">On long, multi-part proteins, letter matching still wins.</div>';
+        '<div class="t-body dim sr-cav">On long, multi-part proteins, letter-by-letter matching still wins.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -420,7 +420,7 @@
       tl.fromTo(q('.sr-q'), { autoAlpha: 0, scale: .4, transformOrigin: QP[0] + 'px ' + QP[1] + 'px' },
         { autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, 'q');
 
-      // [click 2] the neighbourhood, and the first drop in the funnel
+      // [click 2] the neighborhood, and the first drop in the funnel
       ctx.pause();
       tl.addLabel('r');
       tl.to(q('.sr-ring'), { autoAlpha: 1, duration: .2 }, 'r');
@@ -487,7 +487,7 @@
           '<g class="fl-labbox">' + Kit.rough.rect(1500, 612, 300, 152,
             { seed: 126, w: 'normal', hatch: 'var(--sec-t)', fillOpacity: .18, hachureGap: 20 }) + '</g>' +
           '<g class="fl-loop">' + Kit.rough.arrow(1560, 606, 686, 404, { seed: 131, w: 'normal', stroke: C.rustT, head: 18, bend: 400 }) + '</g>' +
-          '<g class="dd-pay">' + Kit.doodle.underline(124, 984, 788, { seed: 141 }) + '</g>' +
+          '<g class="dd-pay">' + Kit.doodle.underline(124, 984, 566, { seed: 141 }) + '</g>' +
         '</svg>' +
         '<div class="bignum fl-in"><div class="t-num fl-c">0</div><div class="t-label">sequences in the index</div></div>' +
         GATES.map(function (g, i) {
@@ -499,7 +499,7 @@
         '<div class="fl-lab"><div class="t-caps">Lab</div><div class="t-label dim fl-lab-s">express · purify · assay</div></div>' +
         '<div class="t-h2 c-rust fl-one">1 ingredient</div>' +
         '<div class="fl-note"><span class="t-label dim">Filters trained on a few hundred measured proteins</span></div>' +
-        '<div class="t-h2 c-olive fl-pay">The lab, not the model, sets the pace.</div>';
+        '<div class="t-h2 c-olive fl-pay">The lab is the slow step.</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -620,10 +620,10 @@
   /* number · rule · tag · one line — the deck-wide takeaway row (KIT §7) */
   var TKROWS = [
     ['01', 'Pre-training', 'Learn the data first.', 'When one label costs weeks, do not start by labelling.'],
-    ['02', 'Embedding search', 'It finds what letters miss.', 'But only near something that already works.']
+    ['02', 'Embedding search', 'Vectors find what letters miss.', 'But only near something that already works.']
   ];
   var THRU = [
-    { t: 'Read', cls: '' }, { t: 'Find', cls: 'tk-on' }, { t: 'Mix', cls: 'tk-next' },
+    { t: 'Cook', cls: '' }, { t: 'Find', cls: 'tk-on' }, { t: 'Mix', cls: 'tk-next' },
     { t: 'Sell', cls: '' }, { t: 'Next', cls: '' }
   ];
 
@@ -648,7 +648,7 @@
       }).join('');
       var svg = '<svg class="sh-svg" width="1920" height="1080" viewBox="0 0 1920 1080">' +
         '<g class="dd-u0">' + Kit.doodle.underline(252, 416, 476, { seed: 161 }) + '</g>' +
-        '<g class="dd-u1">' + Kit.doodle.underline(252, 672, 612, { seed: 162 }) + '</g>' +
+        '<g class="dd-u1">' + Kit.doodle.underline(252, 672, 730, { seed: 162 }) + '</g>' +
       '</svg>';
       return Kit.photo(IMG + 'legumes.webp', { x: 1250, y: 300, w: 560, cls: 'tk-img', alt: '' }) +
         svg + rows + '<div class="tk-thru">' + strip + '</div>';

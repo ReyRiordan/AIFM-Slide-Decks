@@ -27,7 +27,7 @@
         '<svg class="ttl-svg" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;overflow:visible">' +
           '<g class="dd-promise">' + Kit.doodle.underline(132, 612, 616, { seed: 21, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
         '</svg>' +
-        '<p class="t-h2 ttl-sub">How AI reads, finds and mixes what we eat</p>' +
+        '<p class="t-h2 ttl-sub">How AI cooks, finds and mixes what we eat</p>' +
         '<div class="t-label ttl-by">Rey Riordan</div>';
     },
     build: function (ctx) {
@@ -52,7 +52,7 @@
 
   /* AGENDA: rows match the section markers exactly (num · kicker · section title). */
   var ROWS = [
-    { num: '01', kicker: 'Read', title: 'Samsung Food', color: 'teal', img: 'card.webp', x: 170, w: 400, rot: -4 },
+    { num: '01', kicker: 'Cook', title: 'Samsung Food', color: 'teal', img: 'card.webp', x: 170, w: 400, rot: -4 },
     { num: '02', kicker: 'Find', title: 'Shiru', color: 'olive', img: 'beans.webp', x: 760, w: 380, rot: 3 },
     { num: '03', kicker: 'Mix', title: 'NotCo Giuseppe', color: 'saffron', img: 'bowl.webp', x: 1320, w: 380, rot: -2 },
     { num: '04', kicker: 'Sell', title: 'NotCo', color: 'cranberry' }
@@ -126,7 +126,7 @@
     },
     notes:
       'Here\'s the plan. Each section turns food into data, one step more abstract than the last. ' +
-      '[click] First, Read. Samsung Food takes a photo of a recipe card and turns it into a record a computer can use. ' +
+      '[click] First, Cook. Samsung Food helps a household decide what to cook, and it connects that choice to the kitchen. ' +
       '[click] Second, Find. Shiru turns proteins into lists of numbers and searches them for new ingredients. ' +
       '[click] Third, Mix. NotCo\'s Giuseppe turns whole recipes into points on a map and searches for new ones. ' +
       '[click] Then Sell: what NotCo did with that AI. ' +

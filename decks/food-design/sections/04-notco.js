@@ -160,8 +160,8 @@
       }).join('');
 
       return svg +
-        '<div class="t-caps faint nc-lane nc-lane1">Food · markets it runs itself</div>' + mk +
-        '<div class="t-caps faint nc-lane nc-lane2">AI · what it sells to others</div>' + ai +
+        '<div class="t-caps faint nc-lane nc-lane1">Food · markets NotCo ran</div>' + mk +
+        '<div class="t-caps faint nc-lane nc-lane2">AI · what NotCo sells to others</div>' + ai +
         '<div class="nc-cap">' +
           '<div class="t-h2">One food market left.</div>' +
           '<div class="t-h2 c-cranberry">Giuseppe is the product.</div>' +
@@ -324,14 +324,14 @@
 
       return svg +
         '<div class="t-h2 nc-b-l1">The food business is almost gone.</div>' +
-        '<div class="t-h2 nc-b-l2">The AI it built is the product.</div>' +
+        '<div class="t-h2 nc-b-l2">The AI NotCo built is the product.</div>' +
         Kit.photo(IMG + 'glass-milk.jpg', { x: 170, y: 360, w: 280, h: 314, rot: 3, framed: true, cls: 'nc-b-img', alt: 'glass of plant milk' }) +
         '<div class="t-label dim nc-b-cap">the food business</div>' +
         '<div class="t-caps faint nc-b-bk">NotCo AI requests \u00b7 2025</div>' +
         '<div class="t-num nc-b-pct"><span class="v">0</span>%</div>' +
         '<div class="t-label dim nc-b-pl">are not plant-based</div>' +
         '<div class="t-label faint nc-b-bl2">plant-based</div>' +
-        '<div class="t-h1 c-rust nc-b-l3">Who else needs it?</div>';
+        '<div class="t-h1 c-rust nc-b-l3">Who else needs one?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;

@@ -10,8 +10,8 @@ This is a new ~27-minute lecture deck for students with no ML background. It is 
 | Order | Intro → Samsung Food → Shiru → NotCo Giuseppe → NotCo (company) → Future |
 | Budgets | Intro 1:00 · Read 6:30 · Find 6:30 · Mix 6:30 · Sell 2:45 · Next 3:45 = 27:00 |
 | Throughline | Food turned into data, more abstract each section: recipe card → typed record, protein → vector, recipe → point on a map |
-| Markers | Read · Find · Mix · Sell · Next |
-| Title | **Food, Decoded**. Subtitle: *How AI reads, finds and mixes what we eat* |
+| Markers | Cook · Find · Mix · Sell · Next (Read until the Nov 2026 redo) |
+| Title | **Food, Decoded**. Subtitle: *How AI cooks, finds and mixes what we eat* |
 | Samsung focus | "Add recipe from photo" scanner (document understanding), not the whole system |
 | Samsung demo | Placeholder slide for now; decide later |
 | Canvas | Dark slate stone `#2A2E31` (faint texture), raised `#33383C`, cream ink `#F3EBDD`. A light "paper" variant is opt-in per slide only |
@@ -67,15 +67,15 @@ Section ids and files: `intro` (`00-intro.js`) · `samsung` (`01-samsung.js`) ·
 |---|---|---|---|---|
 | Intro | `title` | (none: title slide) | 20 | — |
 | Intro | `agenda` | Agenda | 40 | — |
-| Read | `demo` | Recipe from a photo | 45 | — |
-| Read | `problem` | The recipe problem | 45 | — |
-| Read | `approach` | How the scanner works | 30 | — |
-| Read | `read` | Reading the page | 75 | Read |
-| Read | `parse` | Parsing ingredient lines | 45 | Sort, Parse |
-| Read | `link` | Linking to a food graph | 45 | Link |
-| Read | `errors` | Two kinds of error | 45 | — |
-| Read | `dish` | Recipes from a dish photo | 30 | — |
-| Read | `takeaways` | Takeaways | 35 | — |
+| Cook | `demo` | Demo | 30 | — |
+| Cook | `problem` | The meal-planning problem | 35 | — |
+| Cook | `system` | How Samsung Food works | 45 | — |
+| Cook | `inputs` | The food graph | 40 | Understand, Sense |
+| Cook | `retrieve` | Recipe retrieval | 40 | Sense |
+| Cook | `rank` | Filtering and ranking | 60 | Rank |
+| Cook | `check` | Checking LLM output | 70 | Check |
+| Cook | `act` | Oven commands | 30 | Act |
+| Cook | `takeaways` | Takeaways | 40 | — |
 | Find | `problem` | The protein problem | 45 | — |
 | Find | `approach` | How Shiru searches | 30 | — |
 | Find | `learn` | Proteins as language | 75 | Learn |
@@ -96,10 +96,11 @@ Section ids and files: `intro` (`00-intro.js`) · `samsung` (`01-samsung.js`) ·
 | Sell | `pivot` | From food to software | 50 | — |
 | Sell | `today` | NotCo today | 45 | — |
 | Sell | `bridge` | (none: statement slide) | 30 | — |
-| Next | `forces` | Five forces at once | 60 | — |
-| Next | `engine` | A reformulation engine | 45 | — |
-| Next | `parity` | Parity testing | 45 | — |
-| Next | `avoid` | What not to build | 30 | — |
+| Next | `question` | (none: statement slide) | 20 | — |
+| Next | `personal` | Personalized food | 45 | — |
+| Next | `tailor` | Personalized recipe search | 35 | — |
+| Next | `backup` | Supply shocks | 45 | — |
+| Next | `library` | Backup formulas | 35 | — |
 | Next | `summary` | Summary | 45 | — |
 
-Read roadmap cards: Read → Sort → Parse → Link. "Sort" (layout: which text is title, ingredients, steps) is covered inside `read` and `parse`; it keeps its roadmap card, and the crumb on `parse` lights Sort + Parse.
+**Redo (Nov 2026):** Samsung's marker is now **Cook** (was Read) and the section is rebuilt as a system of parts; Future is rebuilt around the two directions. See `specs/samsung.md` and `specs/future.md` (v2). Cook roadmap boxes: Understand · Sense · Rank · Check · Act around a central Food graph.
