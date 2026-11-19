@@ -148,10 +148,11 @@
       });
     },
     notes:
-      'NotCo asked who else needs the engine. Two answers. ' +
-      '[click] One person, where a care plan forces the change. ' +
-      '[click] One factory, where a price shock does. ' +
-      'Each box names the models. The next slide in each pair shows them working.'
+      'So here\'s the core idea for both futures: change the recipe, but keep the taste. Remember NotCo was left asking who else needs ' +
+      'this kind of AI, and we have two answers here.' +
+      '[click] The first is one person, where a care plan forces the recipe to change.' +
+      '[click] And the second is one factory, where a price shock forces the change. Each box names the models involved, and the next ' +
+      'slide in each pair shows those models working together.'
   };
 
   /* ----------------------------------------------------------- PERSONAL */
@@ -241,11 +242,13 @@
       Kit.show(tl, qa('.pe-c1, .pe-c2'), { at: 'r+=1.8', y: 10, stagger: .15, duration: .45 });
     },
     notes:
-      'A person picks a food they love and names what has to stay: the cocoa aroma, the snap, the melt. ' +
-      '[click] Their care team sets the limits. ' +
-      '[click] Dates look like the obvious sugar swap. But dates are two-thirds sugar themselves, and a fifth water. ' +
-      '[click] So ten grams of purée for ten grams of sugar cuts only three and a half grams of sugar, and adds two grams of water. ' +
-      'That softens the snap and shortens shelf life. One change, three problems.'
+      'Let\'s start with the personal one. Say someone picks a food they love, like this chocolate, and names what has to stay the ' +
+      'same: the cocoa aroma, the snap and the melt.' +
+      '[click] Then their care team sets the limits, like the carbs per serving and no peanuts.' +
+      '[click] Now dates look like the obvious swap for sugar. But dates are about two-thirds sugar themselves, and a fifth water.' +
+      '[click] So if you swap in 10 grams of date purée for 10 grams of sugar, you only cut about three and a half grams of sugar, and ' +
+      'you add 2 grams of water. That water softens the snap and shortens the shelf life. So one simple swap ends up causing three new ' +
+      'problems.'
   };
 
   /* ------------------------------------------------------------- TAILOR
@@ -311,14 +314,19 @@
       Kit.show(tl, q('.ta-c2'), { at: 'b+=.7', y: 10, duration: .45 });
     },
     notes:
-      'Here is the AI behind it. Four parts. ' +
-      '[click] A taste model predicts how close a candidate is to your bar: one hierarchical model, everyone’s taste plus your own offsets. ' +
-      'A blood-sugar model predicts your glucose response. ' +
-      'A search loop picks what to make and taste next. A bandit picks which variant you get. ' +
-      '[click] Two of these are proven. Zeevi’s team trained on eight hundred people and forty-seven thousand meals, and predicted each person’s glucose. ' +
-      'And Bayesian optimization lifted a plant-based yogurt’s sensory score twenty-nine percent in ten rounds. ' +
-      '[click] The care plan is a hard filter, not a score, like Samsung’s allergy rule. ' +
-      '[click] Your ratings and reorders go back in. First buyers: medically tailored meals, where Massachusetts Medicaid saw thirty-one percent fewer hospital stays.'
+      'Here\'s the AI that could handle this, and there are four parts.' +
+      '[click] First, a taste model predicts how close a candidate tastes to your bar. It\'s one model for everyone, tuned to you, so ' +
+      'it learns everyone\'s general taste and then adds your own personal offsets on top. Second, a blood-sugar model predicts your ' +
+      'glucose response to a recipe. Third, a search loop picks which recipe to make and taste next, which is the same Bayesian ' +
+      'optimization idea we saw with Giuseppe. And last, a bandit picks which variant actually gets sent to you. The name comes from ' +
+      'slot machines, aka one-armed bandits, where you\'re balancing trying new options against sticking with what\'s worked so far.' +
+      '[click] Two of these parts are already proven. Zeevi\'s team trained a model on 800 people and about 47,000 meals, and it ' +
+      'predicted each person\'s glucose response. And Bayesian optimization improved a plant-based yogurt\'s taste score by 29% in just ' +
+      '10 rounds.' +
+      '[click] The care plan works as a hard filter instead of a score, the same way Samsung handled the allergy, so every candidate ' +
+      'already passes it.' +
+      '[click] And then your ratings and reorders go back into the models. The first buyers here would probably be medically tailored ' +
+      'meals, where Massachusetts Medicaid saw 31% fewer hospital stays.'
   };
 
   /* ------------------------------------------------------------- BACKUP */
@@ -408,12 +416,14 @@
       Kit.draw(tl, qa('.dd-jobs .rp'), { at: 'r+=1.9', duration: .5 });
     },
     notes:
-      'Now the factory. ' +
-      '[click] Cocoa topped twelve thousand dollars a tonne in December 2024, then fell about seventy percent. ' +
-      'A manufacturer has to move both ways, fast. ' +
-      '[click] And from the end of December 2026, the EU forest law applies to large and medium companies. ' +
-      '[click] But you cannot just swap cocoa out. In a coating it does four jobs: the snap and melt, the roasted aroma, ' +
-      'colour and bitterness, and how the coating flows on the line. A substitute has to pass all four.'
+      'Now for the factory, where the problem is supply.' +
+      '[click] Cocoa prices went over $12,000 a tonne in December 2024, and then fell about 70%. So a manufacturer has to be able to ' +
+      'move both ways, and fast.' +
+      '[click] On top of that, from the end of December 2026, the EU deforestation law applies to large and medium companies, which ' +
+      'puts rules on where ingredients like cocoa can come from.' +
+      '[click] But you can\'t just swap cocoa out. In a coating like the one on this biscuit, it does four jobs: the snap and melt, the ' +
+      'roasted aroma, the colour and bitterness, and how the coating flows on the production line. So any substitute has to pass all ' +
+      'four.'
   };
 
   /* ------------------------------------------------------------ LIBRARY
@@ -500,14 +510,18 @@
       Kit.show(tl, q('.lb-c2'), { at: 'k+=1.2', y: 10, duration: .5 });
     },
     notes:
-      'Same shape for the factory. ' +
-      '[click] A price forecast gives the chance each ingredient spikes. A smell model asks if a substitute smells like cocoa. ' +
-      'The search loop picks the next blend and roast. A pass-fail predictor flags the candidates worth testing. ' +
-      '[click] Both are proven. Ivory Coast cocoa arrivals: fifty-five thousand tonnes in one week, against a hundred and seven thousand a year earlier. ' +
-      'And a graph neural network matched trained tasters on four hundred new molecules. ' +
-      '[click] What comes out is a trade-off, not a winner. ' +
-      '[click] Oil palm gives more than twice the oil per hectare of soy or rapeseed, so swapping it out can use more land. ' +
-      'Deforestation-free palm cuts emissions ninety-two percent. So it must be allowed to answer: keep palm, change the source.'
+      'The AI for the factory has the same shape as the personal one.' +
+      '[click] A price forecast gives the chance that each ingredient spikes. A smell model checks whether a substitute smells like ' +
+      'cocoa. The search loop picks the next blend and roast to try, and a pass-fail predictor flags which candidates are worth ' +
+      'testing in the lab.' +
+      '[click] Two of these are already proven. For the price forecast, the signal is already out there, for example Ivory Coast cocoa ' +
+      'arrivals were 55,000 tonnes in one week, compared to 107,000 a year earlier. And a graph neural network matched trained tasters ' +
+      'on 400 new molecules. The intuition for a graph neural network is that a molecule is naturally a graph, with atoms as the nodes ' +
+      'and bonds as the edges, so the model can learn smell straight from that structure.' +
+      '[click] What comes out of all this is a trade-off between taste, cost, land and forest risk, rather than one winner.' +
+      '[click] For example, oil palm gives more than twice the oil per hectare of soy or rapeseed, so swapping it out can actually use ' +
+      'more land. And deforestation-free palm cuts emissions by 92%. So the search has to be allowed to give an answer like keep the ' +
+      'palm, and just change where it comes from.'
   };
 
   /* ------------------------------------------------------------ SUMMARY */
@@ -585,15 +599,15 @@
       Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=1.1', duration: .6 });
     },
     notes:
-      'Four sections, all doing the same thing. ' +
-      '[click] Cook: a kitchen became a graph. ' +
-      '[click] Find: a protein became a vector. ' +
-      '[click] Mix: a recipe became a point on a map. ' +
-      '[click] And Sell: the engine outlived the milk. ' +
-      'Each step made food more abstract, which is what let a machine search it. ' +
-      'None of it removes the cook: the camera cannot see salt, the protein search only finds what is near a known hit, ' +
-      'and every swap still needs a human tasting. ' +
-      '[click] Both futures end the same way. A model chose what is in it. Would you trust it enough to eat it?'
+      'So let\'s bring it all together, because all four sections were doing the same thing.' +
+      '[click] With Cook, a kitchen became a graph.' +
+      '[click] With Find, a protein became a vector.' +
+      '[click] With Mix, a recipe became a point on a map.' +
+      '[click] And with Sell, the engine ended up outliving the milk. Each step made food more abstract, and that\'s what let a machine ' +
+      'search it. But none of this removes the cook. The camera can\'t see the salt, the protein search only finds things near a known ' +
+      'hit, and every swap still needs a human to taste it.' +
+      '[click] And both futures end the same way, with a model choosing what\'s in your food. So would you eat it? Thank you, and I\'m ' +
+      'happy to take any questions.'
   };
 
   Deck.section({
@@ -602,7 +616,9 @@
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Last section: Next. Two futures for this work. Food fitted to one person, and formulas that survive a supply shock.'
+        'Okay, so we\'ve now seen AI cook, find and mix, and we\'ve seen NotCo turn that into the thing it sells. For our last section, ' +
+        'let\'s look at where this could go next, with two possible futures: food fitted to one person, and recipes that survive a supply ' +
+        'shock.'
     },
     slides: [QUESTION, PERSONAL, TAILOR, BACKUP, LIBRARY, SUMMARY]
   });
