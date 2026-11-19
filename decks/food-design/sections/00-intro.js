@@ -45,9 +45,7 @@
       }
     },
     notes:
-      'Hi everyone, I\'m Rey. Today is about AI in food design. ' +
-      'Four real products, and each one teaches a real machine learning technique. No math background needed. ' +
-      'One note on the pictures: every bit of food you will see is generated, so none of it is a real product shot.'
+      'Hi everyone, I\'m Rey. Our topic today is AI in food design.'
   };
 
   /* AGENDA: rows match the section markers exactly (num · kicker · section title). */
@@ -125,12 +123,15 @@
       tl.fromTo(q('.i4'), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, 'nx+=.1');
     },
     notes:
-      'Here\'s the plan. Each section turns food into data, one step more abstract than the last. ' +
-      '[click] First, Cook. Samsung Food helps a household decide what to cook, and it connects that choice to the kitchen. ' +
-      '[click] Second, Find. Shiru turns proteins into lists of numbers and searches them for new ingredients. ' +
-      '[click] Third, Mix. NotCo\'s Giuseppe turns whole recipes into points on a map and searches for new ones. ' +
-      '[click] Then Sell: what NotCo did with that AI. ' +
-      '[click] And we\'ll finish with what comes next.'
+      'Let\'s start with what we mean by AI in food design. We\'re interpreting it pretty broadly here, as AI that helps decide what ' +
+      'goes into our food, all the way from what you cook tonight to what a factory puts in a chocolate bar. Each of our applications ' +
+      'turns food into data in some way, and each one gets a bit more abstract than the last.' +
+      '[click] First we\'ll look at how AI helps you cook with Samsung Food, which helps a household decide what to make and connects ' +
+      'that choice to the kitchen.' +
+      '[click] Then we\'ll look at finding new ingredients with Shiru, which turns proteins into lists of numbers and searches them.' +
+      '[click] Third is mixing, with NotCo\'s AI Giuseppe, which does the same kind of thing for whole recipes.' +
+      '[click] Then we\'ll look at how NotCo actually sells that AI as a business.' +
+      '[click] And finally we\'ll finish with where all of this could go next.'
   };
 
   Deck.section({
