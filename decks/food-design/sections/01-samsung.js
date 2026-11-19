@@ -120,9 +120,7 @@
     },
     notes:
       'Let\'s start by seeing what it actually does. You point your phone at a handwritten recipe card, and a few seconds later the app ' +
-      'has a recipe it can work with. Samsung shipped this in July 2025, and you get three free scans before you need the paid tier. ' +
-      'Watch what comes back after the scan: ingredient icons, the shopping list grouped by aisle, a health score, and some ' +
-      'recommendations.' +
+      'has a recipe it can work with. This is a feature Samsung shipped in July 2025. ' +
       '[click] So photo in, structured recipe out. The rest of this section is basically what\'s going on behind that wait.'
   };
 
@@ -199,8 +197,8 @@
     notes:
       'So what problem is Samsung actually trying to solve? It\'s the question of what should I cook tonight, which sounds pretty ' +
       'simple.' +
-      '[click] But the answer needs five things that normally never talk to each other: what the household likes, what recipes exist, ' +
-      'what\'s actually in the kitchen, the health goals, and what the oven can do.' +
+      '[click] But the answer needs 5 things: what the household likes, what recipes exist, what\'s actually in the kitchen, the health ' +
+      'goals, and what the oven can do.' +
       '[click] A recipe app knows the catalogue but has no idea what\'s in your fridge. And a fridge camera knows a bit about your ' +
       'fridge but nothing about your taste.' +
       '[click] So Samsung\'s bet is that holding several of these at once is worth more than doing any one of them really well.'
@@ -297,12 +295,10 @@
     },
     notes:
       'So how does Samsung Food actually work? The key thing is that Samsung doesn\'t build one big model. It builds a system of parts ' +
-      'around one shared food graph. Samsung doesn\'t publish its architecture, so this diagram is my best reconstruction from how the ' +
-      'product behaves.' +
+      'around one shared food graph. ' +
       '[click] There are five parts here: understand, sense, rank, check and act, and each one uses a different kind of model.' +
-      '[click] What flows between the parts is structured data, like an ingredient ID, a quantity with a unit, or a temperature. These ' +
-      'typed hand-offs are what let one part check another part\'s work.' +
-      '[click] You actually already saw three of these parts in the demo.' +
+      '[click] What flows between the parts is structured data, like an ingredient ID, a quantity with a unit, or a temperature. ' +
+      '[click] You actually already saw these 3 parts in the demo.' +
       '[click] And the models themselves are swappable. Gemini runs the 2026 fridge camera, and Samsung\'s terms also allow OpenAI for ' +
       'recipes, so either one could be replaced next year while the graph and the rules stay the same.'
   };
@@ -398,15 +394,15 @@
       Kit.count(tl, q('.sm-gv'), { to: 15.6, decimals: 1, suffix: ' g', duration: .9, at: 'f+=.6' });
     },
     notes:
-      'Let\'s start with how food gets into that graph. There are two inputs here, and they end up in the same place.' +
-      '[click] The first is the recipe card from the demo. One multimodal model call reads the card, but what comes out is still just ' +
-      'text. Something like "AP flour" is a string, not an ingredient ID, so it has to be linked to the graph. Whisk, the startup ' +
-      'Samsung bought and turned into Samsung Food, maps ingredients to more than 140,000 store items.' +
-      '[click] The second input is the fridge camera. It started out knowing 33 foods, then 37, plus 50 more you can name yourself. ' +
-      'Anything it can\'t place, it labels as an unknown item, and that\'s actually a good thing, because you\'d rather it admit it ' +
-      'doesn\'t know than guess.' +
-      '[click] Every detection feeds into the Food List, and both inputs end up in the graph. Note that the Food List is only ever a ' +
-      'best guess, since the freezer and the door bins never pass in front of the camera.'
+      'Let\'s start with how food gets into that graph. There are two inputs here (recipe card on the left and fridge camera on the ' +
+      'right), and they both end up in the food graph.' +
+      '[click] One multimodal model call reads the recipe card, but what comes out is initially a string e.g. "AP flour" which needs ' +
+      'to be mapped to an ingredient ID so that it can be linked to the food graph. Whisk, the startup Samsung bought and turned into ' +
+      'Samsung Food, maps ingredients to more than 140,000 store items.' +
+      '[click] The second input is the fridge camera. It has a set number of known items and anything it can\'t place, it labels as an ' +
+      'unknown item.' +
+      '[click] Every detection feeds into the Food List which is then mapped to an ingredient ID, and both inputs end up in the Food ' +
+      'graph. '
   };
   Kit.withCrumbs(INPUTS, STEPS, [0, 1]);
 
@@ -481,16 +477,15 @@
       Kit.show(tl, q('.sm-rs.s2'), { at: 'f+=2.1', y: 10, duration: .4 });
     },
     notes:
-      'Now what if you point the app at a finished dish instead of a recipe card? It does something narrower here. It recognises the ' +
-      'food, and then it looks for existing recipes that use it.' +
-      '[click] The reason is that writing a recipe from a photo of a dish means guessing everything the camera can\'t see, like the ' +
-      'salt, the oil, the oven temperature and the order of the steps.' +
+      'Now what if you point the app at a finished dish instead of a recipe card? It recognises the food, and then it looks for ' +
+      'existing recipes that use it.' +
+      '[click] Finding a recipe from a just a photo of a dish means guessing everything the camera can\'t see, like the salt, the oil, ' +
+      'the oven temperature and the order of the steps.' +
       '[click] Searching only ever returns recipes that already exist. You can see this in the clip, where the pozole recipe lists ' +
-      'salt and olive oil that the camera never saw. There are two ML steps here. Image recognition names the food, and then embedding ' +
-      'search finds the recipe. The rough intuition for embedding search is that you turn both photos and recipes into lists of ' +
-      'numbers in one shared space, so that a dish and its recipe land close together, and then you just return the closest recipe. ' +
-      'The best research system for this picks the right recipe out of 1,000 about 7 times in 8. Samsung hasn\'t said which search ' +
-      'method it actually uses.'
+      'salt and olive oil that the camera never saw. There are two ML steps here. \n1. Image recognition names the food, and then\n2. ' +
+      'embedding search finds the recipe. \nThe rough intuition for embedding search is that you turn both photos and recipes into ' +
+      'lists of numbers in one shared space, so that a dish and its recipe land close together, and then you just return the closest ' +
+      'recipe. The best research system for this picks the right recipe 7 out of 8 times. '
   };
   Kit.withCrumbs(RETRIEVE, STEPS, 1);
 
@@ -606,10 +601,9 @@
       '[click] The scoring is where the ML comes in, with a recommender system. The usual technique is called collaborative filtering. ' +
       'It learns a taste profile for each person and each recipe from what people saved and viewed, and the score is how well the two ' +
       'profiles match. The intuition is that if people with similar taste to you saved a recipe, you\'ll probably like it too, even if ' +
-      'you\'ve never seen it. People rarely actually rate recipes, so a save counts for more than a view. Cookpad, a similar recipe ' +
-      'site, published a system built this way, but Samsung hasn\'t named its model.' +
-      '[click] So the top three come out in score order. Context is one more input to the score. For example, Samsung\'s meal plans ' +
-      'favour ingredients that are close to their use-by date.' +
+      'you\'ve never seen it. People rarely actually rate recipes, so a save counts for more than a view. ' +
+      '[click] So the top three come out in score order. In addition, samsung\'s meal plans feature favours ingredients that are close ' +
+      'to their use-by date.' +
       '[click] So the apple dish moves to the front. The general pattern here is to filter with rules first, and then rank with ML.'
   };
   Kit.withCrumbs(RANK, STEPS, 2);
@@ -712,17 +706,14 @@
       Kit.draw(tl, qa('.dd-last .rp'), { at: 'a+=1.3', duration: .5 });
     },
     notes:
-      'Next is checking the output of an LLM, which is a large language model like the one behind ChatGPT. LLMs are great at writing ' +
-      'fluent text, and Samsung\'s Personalize feature uses one to adapt a recipe to a diet. Samsung doesn\'t say what happens after the ' +
-      'model, so this part is my guess at the sensible design.' +
-      '[click] Here\'s a draft from the model, with an ingredient swap, a serving count and a calorie figure.' +
-      '[click] The first check is allergens. US law names nine major allergens, and missing one is a safety incident, so this check is ' +
-      'a lookup in the food graph instead of trusting the model\'s opinion. Units are next. Scaling a recipe is just arithmetic, which ' +
-      'is exact in code but unreliable when a model does it by predicting text.' +
+      'Next is checking the output of an LLM. LLMs are great at writing fluent text, and Samsung\'s Personalize feature uses one to ' +
+      'adapt a recipe to a diet. ' +
+      '[click] Here we can see a draft recipe for Taffy Apple salad from the LLM. There is a hard rule about a peanut allergy so it ' +
+      'has replaced peanuts with sunflower seeds and is drafting a serving count and a calorie figure. ' +
+      '[click] The first check is allergens which is verified through the food graph. Units are next which are scaled using code. \n ' +
+      '\nSTOP HERE' +
       '[click] Here the nutrition check fails. In a 2025 benchmark, general-purpose models were off on nutrition by 24 to 44%, so you ' +
-      'recompute it from the linked ingredients and send the draft back to the model.' +
-      '[click] And remember the demo left the servings at zero. When a field is missing, the right move is to just ask the user. ' +
-      'Retrieval cuts down on invented content, but only checks like these can actually make a generated recipe correct.'
+      'recompute it from the linked ingredients and send the draft back to the model.\n\n'
   };
   Kit.withCrumbs(CHECK, STEPS, 3);
 
@@ -820,14 +811,13 @@
       Kit.show(tl, qa('.sm-ovl, .sm-conf'), { at: 'g+=2.4', y: 10, stagger: .12, duration: .4 });
     },
     notes:
-      'The last part is acting on the recipe. Samsung confirms a recipe can send settings to a SmartThings oven, and its patents ' +
-      'describe turning recipe text into device commands.' +
+      'The last part is acting on the recipe. Samsung can send settings to a SmartThings oven, and turn recipe text into device ' +
+      'commands.' +
       '[click] So an ML model tags each word of something like "Bake at 180" as an action, a temperature or a duration. This technique ' +
       'is called sequence labeling, where instead of one label for the whole sentence, you get one label per word.' +
       '[click] Those tagged pieces then become a typed object, kind of like a little form with an action field, a temperature field ' +
       'and a time field, so the oven never has to interpret a sentence.' +
-      '[click] Then a simple rule checks that object against this oven\'s limits. So 1800 degrees gets rejected, 180 passes, and the ' +
-      'oven lights up. Actually starting the cooking is still up to you.'
+      '[click] Then a simple rule checks that object against this oven\'s limits and starts the oven.'
   };
   Kit.withCrumbs(ACT, STEPS, 4);
 
@@ -835,7 +825,7 @@
   // one row per takeaway: number · rule · tag · one line (KIT §7)
   var TK = [
     ['01', 'Build a system, not one model', 'system design', 'Typed data between parts lets you swap any model.'],
-    ['02', 'Check LLM output with code', 'validation', 'Allergens, nutrition and oven settings are computed, not generated.']
+    ['02', 'Guardrails are important.', 'validation', 'Allergens, nutrition and oven settings are computed.']
   ];
   var MARKS = [['Cook', 'teal'], ['Find', 'olive'], ['Mix', 'saffron'], ['Sell', 'cranberry'], ['Next', 'plum']];
   var TAKE = {
@@ -883,11 +873,9 @@
     },
     notes:
       'Two takeaways from this section.' +
-      '[click] #1, build a system instead of one model. Samsung owns the graph that the models write into and read from, so it can ' +
-      'swap out any of the models whenever something better comes along.' +
-      '[click] #2, check LLM output with code. Allergens, nutrition and oven settings are all computed, because a fluent answer can ' +
-      'still be wrong. Samsung reported over 6 million users in July 2024, but it doesn\'t publish any accuracy numbers, so we can\'t ' +
-      'really say how well this works in practice.'
+      '[click] #1, The unique selling point is the unique interconnected system they have built not the ML Model itself.' +
+      '[click] #2,  02 — GUARDRAILS are important. Code checks the LLM’s nutrition and the oven settings.\n\nSamsung reported over 6 ' +
+      'million users in July 2024.'
   };
 
   Deck.section({
