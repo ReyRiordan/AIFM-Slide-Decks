@@ -625,7 +625,7 @@
         gF + gM +
         '<g class="sm-back">' + Kit.rough.arrow(970, 560, 780, 620, { seed: 172, w: 'heavy', head: 24, bend: 40, stroke: C.rustT }) + '</g>' +
         '<g class="sm-ca">' + Kit.rough.arrow(430, 724, 540, 650, { seed: 173, w: 'normal', head: 16, bend: 14, stroke: C.rustT }) + '</g>' +
-        '<g class="dd-last">' + Kit.doodle.underline(126, 1004, 560, { seed: 208 }) + '</g>') +
+        '<g class="dd-last">' + Kit.doodle.underline(126, 940, 670, { seed: 208 }) + '</g>') +
         div('chip sm-req', 120, 296, 0, '<span class="dot"></span>Make it nut-free') +
         div('t-caps c-rust sm-dk', 160, 428, 500, 'LLM draft') + lines +
         div('callout sm-cc', 140, 726, 420, 'LLMs guess numbers') +
