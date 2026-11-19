@@ -62,12 +62,12 @@ Every stroke is `Kit.rough` / `Kit.doodle` (rough.js), drawn on with `Kit.draw`.
 
 ### 1 · `title` — 20 s
 
-**The one idea:** this talk is about AI that reads, finds and mixes food.
+**The one idea:** this talk is about AI that cooks, finds and mixes food.
 
 **On screen.** No `heading` (full-bleed title, KIT §5).
 - `title-dish.jpg` full-bleed, positioned `right 10% / cover`, with a left-to-right slate gradient over it so the left third stays dark enough for text.
 - Headline, Fraunces heavy, two lines, x 120, y 300, `font-size` 132, `line-height` 1.0: `Food,` / `Decoded` with the period in rust.
-- Subtitle `t-h2` at x 120, y 560, w 900, `--text-2`: `How AI reads, finds and mixes what we eat`.
+- Subtitle `t-h2` at x 120, y 560, w 900, `--text-2`: `How AI cooks, finds and mixes what we eat`.
 - Byline `t-label` at x 120, y 720: `Rey Riordan`.
 - One doodle: a heavy rust `Kit.doodle.underline` under `Decoded.`, drawn on last. Nothing else is marked.
 

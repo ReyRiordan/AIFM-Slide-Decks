@@ -11,7 +11,7 @@ This is a new ~27-minute lecture deck for students with no ML background. It is 
 | Budgets | Intro 1:00 · Read 6:30 · Find 6:30 · Mix 6:30 · Sell 2:45 · Next 3:45 = 27:00 |
 | Throughline | Food turned into data, more abstract each section: recipe card → typed record, protein → vector, recipe → point on a map |
 | Markers | Cook · Find · Mix · Sell · Next (Read until the Nov 2026 redo) |
-| Title | **Food, Decoded**. Subtitle: *How AI reads, finds and mixes what we eat* |
+| Title | **Food, Decoded**. Subtitle: *How AI cooks, finds and mixes what we eat* |
 | Samsung focus | "Add recipe from photo" scanner (document understanding), not the whole system |
 | Samsung demo | Placeholder slide for now; decide later |
 | Canvas | Dark slate stone `#2A2E31` (faint texture), raised `#33383C`, cream ink `#F3EBDD`. A light "paper" variant is opt-in per slide only |

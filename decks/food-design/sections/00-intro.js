@@ -27,7 +27,7 @@
         '<svg class="ttl-svg" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;overflow:visible">' +
           '<g class="dd-promise">' + Kit.doodle.underline(132, 612, 616, { seed: 21, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
         '</svg>' +
-        '<p class="t-h2 ttl-sub">How AI reads, finds and mixes what we eat</p>' +
+        '<p class="t-h2 ttl-sub">How AI cooks, finds and mixes what we eat</p>' +
         '<div class="t-label ttl-by">Rey Riordan</div>';
     },
     build: function (ctx) {
