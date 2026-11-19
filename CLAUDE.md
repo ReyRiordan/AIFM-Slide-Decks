@@ -3,7 +3,7 @@
 Rey's animated HTML lecture decks. Each deck is a ~27-minute talk to students with no ML background that teaches real ML techniques through real products.
 A deck is static HTML/CSS/JS built on GSAP. It has no build step and opens directly from `file://`.
 
-Food design deck live site: https://ai-automated-selling-deck-food-desi.vercel.app/
+Food design deck live site: https://aifm-slide-decks-food-design.vercel.app/#/intro/title
 
 **Read `HANDOFF.md` first.** It covers how to start a deck, the process and its approval gates, the lessons from deck 1, and the tools.
 
