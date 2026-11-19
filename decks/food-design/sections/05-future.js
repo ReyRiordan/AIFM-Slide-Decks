@@ -421,7 +421,7 @@
      trade-off chart, not a winner: one point says keep the ingredient and
      change where it is bought.                                            */
   var LPARTS = [
-    { t: 'Price<br>forecast', m: 'quantile forecast', d: 'the chance a price spikes', e: 'cocoa arrivals, one week<br>55,317 t (107,139 t in 2025)' },
+    { t: 'Price<br>forecast', m: 'quantile forecast', d: 'the chance a price spikes', e: 'cocoa arrivals<br>55,317 t vs 107,139 t' },
     { t: 'Smell<br>model', m: 'graph neural network', d: 'does the substitute smell right', e: 'matched trained tasters on 400 new molecules' },
     { t: 'Search<br>loop', m: 'Bayesian optimization', d: 'which blend and roast to try next' },
     { t: 'Pass/fail<br>predictor', m: 'classifiers', d: 'which candidates pass the lab tests' }
