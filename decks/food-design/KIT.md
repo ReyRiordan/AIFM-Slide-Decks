@@ -16,7 +16,7 @@ Reference implementations: `sections/01-example.js` shows one slide per pattern.
 2. **One idea per slide.** At most ~12 words of body text on screen. Prefer big numbers, diagrams and labels to sentences. Never use bullet lists of prose.
 3. **The story comes before the technique.** Each section follows its story spine: problem, why this technique, how it works in N steps, results, takeaway. Never open a technique slide without the reason it is needed. Define every term the first time it appears ("gradient", "boosted").
 4. **Animation must earn its place.** Every motion shows a change, a relationship, a sequence or a cause. Reveal reasons and parts one per click. Decorative motion is limited to entrances of ≤ .9 s and the engine's section sweep. No looping motion behind teaching content. Slow ambient drift is allowed only on image-led slides (title, section openers).
-5. **Honesty.** Every number traces to a report line in `sources/` and is cited in the References appendix (`99-refs.js`). **No source text on slides** (Rey, Nov 2026): no footer, no `Kit.src`, no "Inferred / Illustrative / Self-reported / Estimate" chips. Caveats are said aloud: the speaker notes carry them ("Samsung hasn't published this, so this is my reconstruction", "these numbers are made up to show the idea", "NotCo's own figure"). Never invent statistics or quotes. Name the real technique: a live API lookup is a tool call, not retrieval.
+5. **Honesty.** Every number traces to a report line in `sources/` and is cited in the References appendix (`99-refs.js`). **No source text on slides** (Rey, Nov 2026): no footer, no `Kit.src`, no "Inferred / Illustrative / Self-reported / Estimate" chips. Caveats that matter are said aloud in the speaker notes: self-reported or press-only results and big claims ("that's NotCo's own figure", "take it with a grain of salt"), and mechanisms the company never published ("Samsung doesn't publish this, so this is my reconstruction"). Obviously made-up teaching examples need no caveat (Rey, Nov 2026). Never invent statistics or quotes. Name the real technique: a live API lookup is a tool call, not retrieval.
 6. **At most one equation in the whole talk**, revealed after its visual. Pseudo-diagrams such as `noise → face` are fine.
 7. **Images of real things.** This deck (plan, approved): small real logos and real product photos for results are allowed, credited in References. Never generate an imitation of a real product, package or brand UI. No founder or other real-person photos. Generated food is generic (References notes that food photos are generated). Rey's own captures and demo clips are always allowed.
 
@@ -24,7 +24,7 @@ Reference implementations: `sections/01-example.js` shows one slide per pattern.
 - **Headings** are plain topic labels: sentence case, ≤ ~6 words, no metaphors, puns or teaser questions. "The loss function", not "Grading a price nobody sees". The section tag already names the section, so repeated headings such as "Results" and "Takeaways" are fine.
 - **Section markers** (the `kicker`) name what the section's product does, and must cover everything in it ("Assist", not "Answer", when the section also covers reminders and buying).
 - Body labels and subtitles get the same plain treatment.
-- All on-screen text and speaker notes follow `.claude/skills/technical-writing` and `.claude/skills/anti-slop`.
+- All on-screen text follows `.claude/skills/technical-writing` and `.claude/skills/anti-slop`. Speaker notes follow Rey's spoken voice instead (§10).
 - The heading map in the plan is the source of truth. Builders use it exactly. A reviewer may change a heading only for clarity, and must report the change.
 
 ## 4. Files you own
@@ -99,9 +99,11 @@ $G "<scene + where to leave empty slate>. $(cat design/style-prefix.txt)" $PWD/d
 - Food cut-outs are the deck's grammar and don't count against a cap; full scenes stay at 1–3 per section. Images never contain text, logos, brand packaging or real people.
 
 ## 10. Speaker notes
-- A natural spoken script in Rey's voice. Write `[click]` exactly where each `ctx.pause()` happens, so a slide with N pauses has N markers.
-- Length: about 135 words per minute of `budgetSec`. A section's `budgetSec` values sum to its budget in the plan (±5 s).
-- The notes carry what the slide leaves out (the extra sentence, the caveat, the "who measured this" and "this is illustrative"), so the slide stays sparse. Since slides carry no source marks, every caveat that used to be a flag must be said in the notes. They connect each slide to the section's problem and roadmap.
+- A natural spoken script in Rey's voice. The reference is his rewrite of `decks/automated-selling` (Nov 2026): long spoken sentences with connectives ("So…", "Alright,", "And then…"), contractions, digits (77M, 92%), casual words like "basically", "pretty much", "aka". Still cut AI tells: em dashes, "not X, it's Y" contrasts, forced triplets, dramatic one-word fragments.
+- Write `[click]` exactly where each `ctx.pause()` happens, so a slide with N pauses has N markers.
+- Length is not fixed: write what the slide needs in that voice and keep `budgetSec` in step with it (Rey's selling deck runs at about 160 wpm).
+- Technique slides explain the intuition beyond the slide ("the rough intuition here is…", why the name fits, how the standard method works). It must not contradict the slide, and every fact or number traces to `sources/`. At most one question to the room per section.
+- Caveats only where they matter (§2.5). Section openers recap the earlier sections with the agenda verbs (Cook → Find → Mix → Sell → Next) and bridge into the new one. Takeaways read "#1, … #2, …" and stop there, with no "Next:" line.
 - Keep `notes` a plain `'…' + '…'` string literal. The script editor (`tools/script-editor.py`) reads and writes it.
 - **Rey owns the script.** If Rey edited a slide's notes, change the slide to match them, not the notes. Never edit notes while Rey has the script editor open.
 

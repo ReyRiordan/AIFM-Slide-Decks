@@ -26,8 +26,8 @@ Food design deck live site: https://aifm-slide-decks-food-design.vercel.app/#/in
 - Story before technique: problem → roadmap → technique slides with crumbs → results → 2 takeaways.
 - Headings are plain topic labels in sentence case, ≤ ~6 words.
 - Every number traces to a report in `sources/`. Never invent stats or quotes. In food-design (since Nov 2026) slides carry **no** source text or provenance flags: citations go in the References appendix and caveats in the speaker notes. Other decks follow their own KIT.
-- On-screen text and speaker notes follow `.claude/skills/technical-writing` and `.claude/skills/anti-slop`.
-- Speaker notes mark each `ctx.pause()` with `[click]`. Length is about 135 words per minute of `budgetSec`. Rey owns the script: match slides to his notes.
+- On-screen text follows `.claude/skills/technical-writing` and `.claude/skills/anti-slop`. Speaker notes follow Rey's spoken voice from the automated-selling deck (food-design KIT §10).
+- Speaker notes mark each `ctx.pause()` with `[click]`. Rey owns the script: match slides to his notes.
 - Free reign over GPT image generation until all images are perfect (use GPT image bridge skill).
 
 ## Run and check (from a deck folder)
