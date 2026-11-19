@@ -84,7 +84,7 @@ Deck.section({ id: 'future', order: 5, num: '05', kicker: 'Next', title: 'Future
 **Source.** `future-directions.md` §2 and "First market"; `formulation-report.md` Example 1 (Planet A $30M, Nestlé Germany April 2026), Example 2 (>2× oil per hectare; 92%). Land-bar lengths are illustrative of the ">2×" ratio.
 
 ## 6 · `summary` · 45 s · "Summary" (deck close, kept)
-Keep the v1 build (agenda-geometry rows, close-table photo, `A model chose what's in it.` / `Would you notice?`). Changes:
+Keep the v1 build (agenda-geometry rows, close-table photo, `A model chose what's in it.` / `Would you eat it?`; was `Would you notice?` until Nov 2026). Changes:
 - Row 01: kicker `Cook`, text `a kitchen` + ` becomes a graph` (was `Read` · `a recipe card becomes a typed record`).
 - Notes: drop the parity and taste-model lines; the limits sentence becomes "the camera can't see salt, the protein search only finds what's near something that works, and every swap still needs a human tasting." The close ties back to `question`: "both futures end the same way: something people choose again."
 

@@ -540,7 +540,7 @@
             '<text class="mono" x="158" y="' + (scy(i) + 9) + '" text-anchor="middle" font-size="28" fill="' + C[r.color + 'T'] + '">' + r.num + '</text>' +
           '</g>';
         }).join('') +
-        '<g class="dd-q">' + Kit.doodle.underline(128, 946, 980, { seed: 71, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+        '<g class="dd-q">' + Kit.doodle.underline(128, 946, 920, { seed: 71, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
       '</svg>';
       var rows = SUM.map(function (r, i) {
         return '<div class="su-in i' + i + '" style="top:' + (scy(i) - 30) + 'px">' +
@@ -551,7 +551,7 @@
       return '<div class="su-bg" style="background-image:url(' + IMG + 'close-table.jpg)"></div>' +
         '<div class="su-scrim"></div>' + svg + rows +
         '<div class="t-h2 su-line1">A model chose what’s in it.</div>' +
-        '<div class="t-h1 su-line2">Would you notice?</div>';
+        '<div class="t-h1 su-line2">Would you eat it?</div>';
     },
     build: function (ctx) {
       var tl = ctx.tl, q = ctx.q, qa = ctx.qa;
@@ -593,7 +593,7 @@
       'Each step made food more abstract, which is what let a machine search it. ' +
       'None of it removes the cook: the camera cannot see salt, the protein search only finds what is near a known hit, ' +
       'and every swap still needs a human tasting. ' +
-      '[click] Both futures end the same way. A model chose what is in it. Would you notice?'
+      '[click] Both futures end the same way. A model chose what is in it. Would you trust it enough to eat it?'
   };
 
   Deck.section({
