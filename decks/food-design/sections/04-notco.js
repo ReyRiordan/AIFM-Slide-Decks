@@ -99,11 +99,13 @@
       Kit.show(tl, q('.nc-o-chip'), { at: 'c3+=.2', y: 16 });
     },
     notes:
-      'NotCo starts in Santiago in 2015. Muchnick had already built and sold a plant-based mayo brand. Pichara is a computer scientist. ' +
-      '[click] Pichara built the AI and named it Giuseppe, after Arcimboldo, the painter who made portraits out of vegetables. ' +
-      '[click] The first product was NotMayo, chickpea and lupin. It took about eight percent of Chile\'s mayo market in eight months. ' +
-      'That share comes from press reports, not from NotCo. ' +
-      '[click] Four years later, investors valued the company at one and a half billion dollars. A food brand, with an AI designing its products.'
+      'NotCo started in Santiago in 2015. Muchnick, the CEO, had already built and sold a plant-based mayo brand, and Pichara, the ' +
+      'CTO, is a computer scientist.' +
+      '[click] Pichara built the AI and named it Giuseppe, after Arcimboldo, the painter who made portraits out of vegetables.' +
+      '[click] Their first product was NotMayo, made from chickpea and lupin. It took about 8% of Chile\'s mayo market in 8 months, but ' +
+      'that number comes from press reports, not from NotCo.' +
+      '[click] Four years later, investors valued the company at $1.5 billion. So at this point it\'s a food brand, with an AI ' +
+      'designing its products.'
   };
 
   /* ----------------------------------------------------------------- PIVOT */
@@ -221,12 +223,15 @@
       Kit.draw(tl, qa('.dd-cap .rp'), { at: 'cap+=.5', duration: .5 });
     },
     notes:
-      'Now watch the company. On top, the markets where NotCo sells its own food. ' +
-      '[click] In 2022 it sets up a joint venture with Kraft Heinz. First time the AI works for somebody else. ' +
-      '[click] Then it makes that a business: its own AI unit, a portal called Concept Quant, and a chocolate deal with Barry Callebaut. ' +
-      '[click] And the food lane empties. Kraft Heinz takes over US sales. Argentina and Uruguay go to Molinos. ' +
-      'Mexico is reportedly closed with no buyer; that one is press only, NotCo has never confirmed it. Brazil goes to Ferrara. ' +
-      '[click] Chile is the only market it still runs. The AI is what is left.'
+      'Now let\'s look at how the company changed over time. On top we have the markets where NotCo sells its own food, and below that ' +
+      'is the AI side.' +
+      '[click] In 2022 it set up a joint venture with Kraft Heinz, which was the first time the AI worked for somebody else.' +
+      '[click] Then it turned that into a business, with its own AI unit, a portal called Concept Quant, and a chocolate deal with ' +
+      'Barry Callebaut.' +
+      '[click] Meanwhile the food side empties out. Kraft Heinz takes over US sales, and Argentina and Uruguay go to Molinos. Mexico ' +
+      'was reportedly closed with no buyer, though that\'s only from the press and NotCo has never confirmed it. And Brazil goes to ' +
+      'Ferrara.' +
+      '[click] So now Chile is the only market NotCo still runs itself, and the AI is basically what\'s left.'
   };
 
   /* ----------------------------------------------------------------- TODAY */
@@ -294,12 +299,13 @@
       Kit.draw(tl, qa('.dd-n2 .rp'), { at: 'n2+=.5', duration: .6 });
     },
     notes:
-      'So who pays for Giuseppe now? The companies NotCo used to compete with. ' +
-      '[click] Ferrero is the clearest case. After cocoa prices spiked in 2024, it asked NotCo to find substitutes across more than thirty thousand recipes a year. ' +
-      'Most of this work is no longer plant-based. It is cost and supply. ' +
-      'NotCo says its largest single contract is thirty million dollars over eighteen months. ' +
-      '[click] Forbes reported in March 2026 that seven of the twenty largest packaged-goods companies work with NotCo. ' +
-      '[click] And about half the revenue now comes from the AI side. That one is an estimate, and total revenue has fallen since 2022.'
+      'So who pays for Giuseppe now? Funnily enough, it\'s the companies NotCo used to compete with.' +
+      '[click] Ferrero is the clearest example. After cocoa prices spiked in 2024, it asked NotCo to find substitutes across more than ' +
+      '30,000 recipes a year. Note that most of this work isn\'t even plant-based anymore, it\'s about cost and supply. NotCo says its ' +
+      'largest single contract is $30 million over 18 months.' +
+      '[click] Forbes reported in March 2026 that 7 of the 20 largest packaged-goods companies work with NotCo.' +
+      '[click] And about half the revenue now comes from the AI side. That one\'s an estimate though, and total revenue has actually ' +
+      'fallen since 2022, so the pivot isn\'t purely a success story.'
   };
 
   /* ---------------------------------------------------------------- BRIDGE */
@@ -365,10 +371,11 @@
       Kit.draw(tl, qa('.dd-q .rp'), { at: 'q+=.5', duration: .5 });
     },
     notes:
-      'So here is where NotCo lands. The food business is nearly gone, and the engine built to serve it is now the thing it sells. ' +
-      '[click] The work has drifted, too. A NotCo executive said in 2025 that ninety percent of their requests are no longer plant-based. ' +
-      'That is their own figure, unchecked. ' +
-      '[click] Which leaves one question. If this engine is worth that much to Ferrero, who else needs one?'
+      'So here\'s where NotCo lands. The food business is almost gone, and the AI it built to serve that business is now the product it ' +
+      'sells.' +
+      '[click] The type of work has changed too. A NotCo executive said in 2025 that 90% of their requests are no longer plant-based, ' +
+      'but that\'s their own figure.' +
+      '[click] Which leaves us with one question. If this AI is worth that much to Ferrero, who else needs one?'
   };
 
   Deck.section({
@@ -377,7 +384,8 @@
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Section four: Sell. We have seen what Giuseppe does. Now, what NotCo did with it as a business.'
+        'So far we\'ve seen AI help us cook, find new ingredients, and mix them into recipes with Giuseppe. Now let\'s look at what NotCo ' +
+        'actually did with that AI as a business, because the story is pretty surprising.'
     },
     slides: [ORIGIN, PIVOT, TODAY, BRIDGE]
   });
