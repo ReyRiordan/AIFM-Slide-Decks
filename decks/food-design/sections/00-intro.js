@@ -47,7 +47,7 @@
       }
     },
     notes:
-      'Hi everyone, I\'m Rey. Our topic today is AI in food design.'
+      'Hi everyone, today I\'ll be presenting on AI in Food Design with my team Rey, Ashiqa, Emin and Nolan.'
   };
 
   /* AGENDA: rows match the section markers exactly (num · kicker · section title). */
@@ -125,14 +125,13 @@
       tl.fromTo(q('.i4'), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: .55, ease: Kit.ease.out }, 'nx+=.1');
     },
     notes:
-      'Let\'s start with what we mean by AI in food design. We\'re interpreting it pretty broadly here, as AI that helps decide what ' +
-      'goes into our food, all the way from what you cook tonight to what a factory puts in a chocolate bar. Each of our applications ' +
-      'turns food into data in some way, and each one gets a bit more abstract than the last.' +
+      'Let\'s start with what we mean by AI in Food. We\'ve decided to interpret it pretty broadly here, as AI that helps decide what ' +
+      'goes into our food, all the way from what you cook tonight to what a factory puts in a chocolate bar. ' +
       '[click] First we\'ll look at how AI helps you cook with Samsung Food, which helps a household decide what to make and connects ' +
-      'that choice to the kitchen.' +
+      'that choice directly  to the kitchen.' +
       '[click] Then we\'ll look at finding new ingredients with Shiru, which turns proteins into lists of numbers and searches them.' +
       '[click] Third is mixing, with NotCo\'s AI Giuseppe, which does the same kind of thing for whole recipes.' +
-      '[click] Then we\'ll look at how NotCo actually sells that AI as a business.' +
+      '[click] Then we\'ll look at how NotCo actually sells AI as a business.' +
       '[click] And finally we\'ll finish with where all of this could go next.'
   };
 

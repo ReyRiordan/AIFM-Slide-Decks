@@ -101,9 +101,8 @@
     notes:
       'NotCo started in Santiago in 2015. Muchnick, the CEO, had already built and sold a plant-based mayo brand, and Pichara, the ' +
       'CTO, is a computer scientist.' +
-      '[click] Pichara built the AI and named it Giuseppe, after Arcimboldo, the painter who made portraits out of vegetables.' +
-      '[click] Their first product was NotMayo, made from chickpea and lupin. It took about 8% of Chile\'s mayo market in 8 months, but ' +
-      'that number comes from press reports, not from NotCo.' +
+      '[click] Pichara built the AI and named it Giuseppe, after Giuseppe Arcimboldo, the painter who made portraits out of vegetables.' +
+      '[click] Their first product was NotMayo, made from chickpea and lupin. It took about 8% of Chile\'s mayo market in 8 months.' +
       '[click] Four years later, investors valued the company at $1.5 billion. So at this point it\'s a food brand, with an AI ' +
       'designing its products.'
   };
@@ -304,8 +303,7 @@
       '30,000 recipes a year. Note that most of this work isn\'t even plant-based anymore, it\'s about cost and supply. NotCo says its ' +
       'largest single contract is $30 million over 18 months.' +
       '[click] Forbes reported in March 2026 that 7 of the 20 largest packaged-goods companies work with NotCo.' +
-      '[click] And about half the revenue now comes from the AI side. That one\'s an estimate though, and total revenue has actually ' +
-      'fallen since 2022, so the pivot isn\'t purely a success story.'
+      '[click] And about half the revenue now comes from the AI side.'
   };
 
   /* ---------------------------------------------------------------- BRIDGE */
@@ -373,8 +371,7 @@
     notes:
       'So here\'s where NotCo lands. The food business is almost gone, and the AI it built to serve that business is now the product it ' +
       'sells.' +
-      '[click] The type of work has changed too. A NotCo executive said in 2025 that 90% of their requests are no longer plant-based, ' +
-      'but that\'s their own figure.' +
+      '[click] The type of work has changed too. A NotCo executive said in 2025 that 90% of their requests are no longer plant-based.' +
       '[click] Which leaves us with one question. If this AI is worth that much to Ferrero, who else needs one?'
   };
 

@@ -201,7 +201,7 @@
       'goals, and what the oven can do.' +
       '[click] A recipe app knows the catalogue but has no idea what\'s in your fridge. And a fridge camera knows a bit about your ' +
       'fridge but nothing about your taste.' +
-      '[click] So Samsung\'s bet is that holding several of these at once is worth more than doing any one of them really well.'
+      '[click] So Samsung\'s idea is that holding several of these at once is worth more than doing any one of them really well.'
   };
 
   /* ============================================================== 3 · SYSTEM */
@@ -484,8 +484,8 @@
       '[click] Searching only ever returns recipes that already exist. You can see this in the clip, where the pozole recipe lists ' +
       'salt and olive oil that the camera never saw. There are two ML steps here. \n1. Image recognition names the food, and then\n2. ' +
       'embedding search finds the recipe. \nThe rough intuition for embedding search is that you turn both photos and recipes into ' +
-      'lists of numbers in one shared space, so that a dish and its recipe land close together, and then you just return the closest ' +
-      'recipe. The best research system for this picks the right recipe 7 out of 8 times. '
+      'embeddings in one shared space, so that a dish and its recipe land close together, and then you just return the closest recipe. ' +
+      'The best research system for this picks the right recipe 7 out of 8 times. '
   };
   Kit.withCrumbs(RETRIEVE, STEPS, 1);
 
@@ -872,10 +872,10 @@
       tl.to(q('.k1 .t-caps'), { color: C.oliveT, duration: .5 }, '>-.1');
     },
     notes:
-      'Two takeaways from this section.' +
-      '[click] #1, The unique selling point is the unique interconnected system they have built not the ML Model itself.' +
-      '[click] #2,  02 — GUARDRAILS are important. Code checks the LLM’s nutrition and the oven settings.\n\nSamsung reported over 6 ' +
-      'million users in July 2024.'
+      ' Two takeaways from this section.' +
+      '[click] #1, The selling point is the unique interconnected system they have built not the ML Model itself.  ' +
+      '[click] #2,  02 — GUARDRAILS are important. Code checks the allergens, nutrition and the oven ' +
+      'settings.\n\n\n----------------------------------------------------\n\nSamsung reported over 6 million users in July 2024.'
   };
 
   Deck.section({
