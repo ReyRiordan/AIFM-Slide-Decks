@@ -21,11 +21,11 @@
         '<div class="ttl-bg" style="background-image:url(' + IMG + 'title-dish.jpg)"></div>' +
         '<div class="ttl-shade"></div>' +
         '<h1 class="t-hero ttl-h">' +
-          '<span class="ln"><span>Food,</span></span>' +
-          '<span class="ln"><span>Decoded<b class="c-rust">.</b></span></span>' +
+          '<span class="ln"><span>AI for</span></span>' +
+          '<span class="ln"><span>Food<b class="c-rust">.</b></span></span>' +
         '</h1>' +
         '<svg class="ttl-svg" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;overflow:visible">' +
-          '<g class="dd-promise">' + Kit.doodle.underline(132, 612, 616, { seed: 21, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
+          '<g class="dd-promise">' + Kit.doodle.underline(132, 612, 360, { seed: 21, color: 'var(--rust-t)', w: 'heavy' }) + '</g>' +
         '</svg>' +
         '<p class="t-h2 ttl-sub">How AI cooks, finds and mixes what we eat</p>' +
 
