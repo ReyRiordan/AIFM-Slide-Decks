@@ -1,15 +1,27 @@
 /* future section styles — scope every rule under .slide[data-sec="future"] */
 .slide[data-sec="future"] .fu-svg { position: absolute; left: 0; top: 0; overflow: visible; }
 .slide[data-sec="future"] svg .rp-fill { fill: var(--chalk); }
+.slide[data-sec="future"] .fu-svg text.caps { font-family: var(--font); text-transform: uppercase; }
 .slide[data-sec="future"] .hd { z-index: 3; }
 .slide[data-sec="future"] .callout { z-index: 4; }
 
-/* ---------- question (statement slide) ---------- */
+/* ---------- question (statement + the section's roadmap) ---------- */
 .slide[data-sec="future"] .fu-q1,
 .slide[data-sec="future"] .fu-q2 { position: absolute; left: 120px; width: 1680px; text-align: center; }
-.slide[data-sec="future"] .fu-q1 { top: 420px; color: var(--text); }
-.slide[data-sec="future"] .fu-q2 { top: 540px; color: var(--rust-t); }
-.slide[data-sec="future"] .fu-qtl { position: absolute; top: 812px; text-align: center; color: var(--plum-t); }
+.slide[data-sec="future"] .fu-q1 { top: 268px; color: var(--text); }
+.slide[data-sec="future"] .fu-q2 { top: 348px; color: var(--rust-t); }
+.slide[data-sec="future"] .fu-bar { z-index: 2; }
+.slide[data-sec="future"] .fu-bt { position: absolute; color: var(--plum-t); }
+.slide[data-sec="future"] .fu-bs { position: absolute; }
+.slide[data-sec="future"] .fu-ch { position: absolute; color: var(--text); font-weight: 600; white-space: nowrap; }
+
+/* ---------- the shared technique pipeline (tailor + library) ---------- */
+.slide[data-sec="future"] .fu-pt { position: absolute; line-height: 1.04; color: var(--text); }
+.slide[data-sec="future"] .fu-pf { position: absolute; line-height: 1.25; }
+.slide[data-sec="future"] .fu-pd { position: absolute; line-height: 1.3; color: var(--text); }
+.slide[data-sec="future"] .fu-pe { position: absolute; line-height: 1.3; color: var(--rust-t); font-weight: 600; }
+.slide[data-sec="future"] .fu-bandt { position: absolute; text-align: center; color: var(--text); font-weight: 600; }
+.slide[data-sec="future"] .fu-bands { position: absolute; text-align: center; color: var(--rust-t); }
 
 /* ---------- personal ---------- */
 .slide[data-sec="future"] .pe-k { position: absolute; left: 588px; width: 330px; }
@@ -31,15 +43,8 @@
 .slide[data-sec="future"] .pe-c2 { position: absolute; left: 1252px; top: 894px; }
 
 /* ---------- tailor ---------- */
-.slide[data-sec="future"] .ta-n { position: absolute; text-align: center; color: var(--text); font-weight: 600; }
-.slide[data-sec="future"] .ta-tl { position: absolute; left: 400px; top: 602px; width: 300px; text-align: center; color: var(--text); }
-.slide[data-sec="future"] .ta-c1 { position: absolute; left: 190px; top: 930px; width: 720px; }
-.slide[data-sec="future"] .ta-c2 { position: absolute; left: 626px; top: 282px; width: 310px; }
-.slide[data-sec="future"] .ta-ft { position: absolute; left: 1100px; top: 376px; color: var(--plum-t); }
-.slide[data-sec="future"] .ta-fb { position: absolute; left: 1100px; top: 436px; width: 660px; color: var(--text); }
-.slide[data-sec="future"] .ta-num { position: absolute; left: 1100px; top: 620px; }
-.slide[data-sec="future"] .ta-nl { margin-top: 48px; }
-.slide[data-sec="future"] .ta-ns { margin-top: 10px; }
+.slide[data-sec="future"] .ta-c1,
+.slide[data-sec="future"] .ta-c2 { position: absolute; }
 
 /* ---------- backup ---------- */
 .slide[data-sec="future"] .bk-k { position: absolute; left: 180px; top: 288px; color: var(--text-3); }
@@ -53,20 +58,16 @@
 .slide[data-sec="future"] .bk-bis { z-index: 2; }
 .slide[data-sec="future"] .bk-jobs { position: absolute; left: 120px; top: 938px; width: 1680px; text-align: center; color: var(--text); }
 
-/* ---------- library ---------- */
-.slide[data-sec="future"] .lb-k { position: absolute; left: 140px; top: 268px; color: var(--text-3); }
-.slide[data-sec="future"] .lb-n { position: absolute; left: 180px; color: var(--text); font-weight: 600; }
-.slide[data-sec="future"] svg .lb-cl { fill: var(--text-3); letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
-.slide[data-sec="future"] .lb-c1 { position: absolute; left: 790px; top: 376px; width: 212px; }
-.slide[data-sec="future"] .lb-tn { position: absolute; left: 176px; top: 864px; color: var(--text); font-weight: 600; }
-.slide[data-sec="future"] .lb-ts { position: absolute; left: 176px; top: 916px; }
-.slide[data-sec="future"] .lb-sun { z-index: 2; }
-.slide[data-sec="future"] .lb-lk { position: absolute; left: 1040px; top: 420px; color: var(--text-3); }
-.slide[data-sec="future"] .lb-bl { position: absolute; left: 1040px; color: var(--text-2); }
-.slide[data-sec="future"] .lb-bl.b0 { top: 462px; }
-.slide[data-sec="future"] .lb-bl.b1 { top: 588px; }
-.slide[data-sec="future"] .lb-ans { position: absolute; left: 1040px; top: 784px; width: 640px; color: var(--rust-t);
-  transform: rotate(-2deg); }
+/* ---------- library (pipeline + the trade-off chart it hands back) ---------- */
+.slide[data-sec="future"] .lb-k { position: absolute; color: var(--text-3); }
+.slide[data-sec="future"] .lb-h { position: absolute; color: var(--text); }
+.slide[data-sec="future"] .lb-s { position: absolute; }
+.slide[data-sec="future"] .lb-palm { z-index: 2; }
+.slide[data-sec="future"] .lb-c1,
+.slide[data-sec="future"] .lb-c2 { position: absolute; }
+.slide[data-sec="future"] .lb-dim .rp-fill { fill: var(--text-3); }
+.slide[data-sec="future"] .lb-dot .rp-fill { fill: var(--plum-t); }
+.slide[data-sec="future"] .lb-keep .rp-fill { fill: var(--rust-t); }
 
 /* ---------- summary (recap rows copy the intro agenda's tiles and rules) ---------- */
 .slide[data-sec="future"] .su-bg { position: absolute; inset: 0; background-size: cover; background-position: right 8% center; opacity: .3; }

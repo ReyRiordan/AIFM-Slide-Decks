@@ -447,7 +447,7 @@
         '<div class="t-caps sc-k sc-k3">Target · milk</div>' +
         Kit.photo(IMG + 'milk.webp', { x: 1302, y: 268, w: 66, rot: -3, cls: 'sc-milk', alt: 'glass of milk' }) +
         '<div class="sc-score"><div class="t-num c-rust"><span class="v">0.41</span></div>' +
-          '<div class="t-label dim sc-sl">leftover distance to the target — lower is closer</div></div>' +
+          '<div class="t-label dim sc-sl">distance left to milk — lower is closer</div></div>' +
         '<div class="t-body sc-cap">Model picks which. Solver picks how much.</div>';
     },
     build: function (ctx) {
@@ -570,7 +570,7 @@
             '<div class="t-caps c-saffron">' + c[0] + '</div><div class="t-label dim">' + c[1] + '</div></div>';
         }).join('') +
         '<div class="callout st-c3">worse — back off</div>' +
-        '<div class="t-caps st-lk">Its guess</div>' +
+        '<div class="t-caps st-lk">The model\'s guess</div>' +
         '<div class="t-label dim st-ll">where good scores probably are</div>' +
         '<div class="t-body st-cap">Bayesian optimization:<br>learn where to try next.</div>';
     },
@@ -774,7 +774,7 @@
         '<div class="callout rs-c1">pineapple + cabbage → lactones</div>' +
         '<div class="t-label dim rs-c1l">aroma compounds found in dairy</div>' +
         '<div class="callout rs-c2">the first batch came out green</div>' +
-        '<div class="t-label dim rs-c2l">the score does not model colour</div>' +
+        '<div class="t-label dim rs-c2l">the score does not include colour</div>' +
         '<div class="rs-num"><div class="t-num c-saffron">10 → <span class="v">10</span></div>' +
           '<div class="t-label dim">months to develop a milk product</div></div>';
     },

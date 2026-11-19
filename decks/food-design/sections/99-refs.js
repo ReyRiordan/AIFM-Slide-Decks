@@ -100,11 +100,12 @@
     'CT Mirror / Stateline, <i>Massachusetts Medicaid meals</i>, Jul 2026',
     'KFF Health News, <i>Medicaid meal cuts</i>, Sep 2026',
     'Zeevi et al., <i>Personalized nutrition</i>, Cell 2015',
+    'The Plant Base, <i>Expert-guided Bayesian optimization</i>, 2026',
     'ConfectioneryNews, <i>Cocoa prices crash</i>, Mar 2026',
+    'Barchart via Webull, <i>Ivory Coast port arrivals</i>, Nov 2026',
+    'Lee et al., <i>A principal odor map</i>, Science 2023',
     'European Commission, <i>EUDR delayed to 30 Dec 2026</i>',
     'Kalischek et al., <i>Cocoa and forest loss</i>, Nature Food 2023',
-    'World Fund, <i>Planet A Foods raises $30M</i>',
-    'Munich Startup, <i>Nestlé Germany launches ChoViva</i>, Apr 2026',
     'Science of the Total Environment, <i>Replacing palm oil</i>, 2024',
     'Wageningen via Food Ingredients First, <i>Palm oil land efficiency</i>'
   ];

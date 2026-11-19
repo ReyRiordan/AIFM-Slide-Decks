@@ -114,3 +114,55 @@ Keep the v1 build (agenda-geometry rows, close-table photo, `A model chose what'
 
 ## Copy pass (Nov 2026, Rey: "simpler, clearer, straight to the point")
 Headings: Personalized food · Personalized recipe search · Supply shocks · Backup formulas. Statement slide: `Change the recipe. / Keep the taste.` Callouts made literal: `hard filter`, `Giuseppe’s loop, your target`, `prices swing`, `EU forest law`, `Pre-tested backups`, `Land per tonne of oil`, `or keep palm, buy deforestation-free`.
+
+---
+
+## v3 revision (Nov 2026, Rey): clearer AI/ML techniques, a fuller question slide
+
+Rey: "more clear ideas on what kind of AI/ML techniques might actually help solve these problems — right now it's 99% about the problems." Slide 37 (`question`) "is quite empty, be more creative."
+
+**Principle.** Each direction keeps its problem slide, then a technique slide built like Samsung's `system` slide: a small pipeline of named techniques. Each technique gets **a plain name, what it predicts or decides, and one real piece of evidence**. Say what each one does in a single sentence, with no math or architecture internals. Reuse the deck's vocabulary where it fits: Giuseppe's Bayesian optimization loop, Samsung's hard filter and rule checks, Shiru's embeddings.
+
+**Budget (225 s, unchanged):** question 15 · personal 35 · tailor 50 · backup 35 · library 50 · summary 40. Clicks are the builder's call; keep one [click] per pause.
+
+### `question` · 15 s · statement slide → the section's roadmap
+- Top: `Change the recipe.` / `Keep the taste.` (kept).
+- Centre: the `cocoa-bar.webp` cut-out. Two hand-drawn branches grow out of it:
+  - left → `for one person` / `a care plan forces the change` → three small technique chips previewing `tailor`: `taste model` · `blood-sugar model` · `search loop`
+  - right → `for a factory` / `a price shock forces the change` → chips previewing `library`: `price forecast` · `smell model` · `pass/fail predictor`
+- Build: the two lines, then one branch per click, with its chips writing on. The chips' text must match the step names on the later slides exactly, so they work like crumbs.
+- Notes: answer NotCo's bridge, then name both futures and say "the second slide of each shows the AI that could do it."
+
+### `personal` · 35 s · "Personalized food" (problem, trimmed)
+Keep the date swap (−3.4 g sugar, +2.1 g water) and the care-plan card. Notes trimmed to fit 35 s.
+
+### `tailor` · 50 s · heading `How AI could personalize food`
+A left-to-right pipeline of four technique boxes, with the care plan as a rust hard filter in front of the search:
+| box | technique (plain name) | predicts / decides | evidence (on screen, short) |
+|---|---|---|---|
+| 1 | Taste model | how close a candidate tastes to *your* bar: starts from everyone's ratings, adjusts to yours | — (spoken: population model + personal offsets) |
+| 2 | Blood-sugar model | your glucose response to a recipe | `800 people · 46,898 meals` |
+| 3 | Search loop (Bayesian optimization) | which recipe to make and taste next | `+29% taste score in 10 rounds` (plant-based yogurt) |
+| 4 | Next-variant picker (contextual bandit) | which safe variant to send you next | — (spoken) |
+Feedback arrow: `your ratings + reorders` → back to box 1. Keep the `medically tailored meals` / `31%` buyer card, smaller, or move it to the notes if space is tight.
+Notes: one sentence per box. Zeevi (Cell 2015): the same meal gives very different glucose responses, and a model trained on 800 people predicted each person's response, validated on 100 more. The microbiome explains only 6% of glycemic variance against 15.4% for macronutrients, so it stays an optional input. The bandit only picks from variants that already pass the care plan, the Samsung hard-filter idea. Funding fragility (NC) stays spoken.
+Sources: formulation-report.md lines 12–13, 88–98, 113.
+
+### `backup` · 35 s · "Supply shocks" (problem, trimmed)
+Keep the price curve, the EU law marker and cocoa's four jobs. Notes trimmed.
+
+### `library` · 50 s · heading `How AI could build backups`
+Pipeline of four technique boxes, then the output:
+| box | technique | predicts / decides | evidence |
+|---|---|---|---|
+| 1 | Price forecast | the chance each ingredient's price spikes | `cocoa arrivals: 55,317 t vs 107,139 t a year ago` |
+| 2 | Smell model (graph neural network) | whether a substitute smells like the original (the roasted-aroma job) | `matched trained tasters on 400 new molecules` |
+| 3 | Search loop | which blend and roast to try next (Giuseppe's loop again) | — |
+| 4 | Pass/fail predictor (classifiers) | which candidates will pass shelf-life, line and label tests, so only likely passes get tested | — |
+Output: a small trade-off chart (sensory distance × land per tonne, a Pareto front). One labelled point reads `keep palm, buy deforestation-free` (keeps the palm twist: oil palm >2× oil per hectare; deforestation-free palm −92% emissions). Optional fifth chip: `satellite farm maps` (deep learning on satellite images, 100,000+ cocoa farms) feeding the land axis. ChoViva / Nestlé moves to the notes as proof that substitutes scale.
+Sources: formulation-report.md lines 11, 65, 127–136, 155–163.
+
+### `summary` · 40 s
+Unchanged visually; notes trimmed by about 5 s.
+
+**Delete** the old `tailor` loop and `library` card shelf, and their CSS.
