@@ -148,11 +148,10 @@
       });
     },
     notes:
-      'So here\'s the core idea for both futures: change the recipe, but keep the taste. Remember NotCo was left asking who else needs ' +
-      'this kind of AI, and we have two answers here.' +
-      '[click] The first is one person, where a care plan forces the recipe to change.' +
-      '[click] And the second is one factory, where a price shock forces the change. Each box names the models involved, and the next ' +
-      'slide in each pair shows those models working together.'
+      'So the core idea for both future markets: change the recipe, but keep the taste. We’ll look at two possibilities. ' +
+      '[click] The first is adapting someone’s favorite food to their dietary needs.' +
+      '[click] The second is helping manufacturers reduce their reliance on ingredients linked to environmental damage/ price shifts ' +
+      'while preserving the taste and texture people love. '
   };
 
   /* ----------------------------------------------------------- PERSONAL */
@@ -315,18 +314,18 @@
     },
     notes:
       'Here\'s the AI that could handle this, and there are four parts.' +
-      '[click] First, a taste model predicts how close a candidate tastes to your bar. It\'s one model for everyone, tuned to you, so ' +
-      'it learns everyone\'s general taste and then adds your own personal offsets on top. Second, a blood-sugar model predicts your ' +
-      'glucose response to a recipe. Third, a search loop picks which recipe to make and taste next, which is the same Bayesian ' +
-      'optimization idea we saw with Giuseppe. And last, a bandit picks which variant actually gets sent to you. The name comes from ' +
-      'slot machines, aka one-armed bandits, where you\'re balancing trying new options against sticking with what\'s worked so far.' +
-      '[click] Two of these parts are already proven. Zeevi\'s team trained a model on 800 people and about 47,000 meals, and it ' +
-      'predicted each person\'s glucose response. And Bayesian optimization improved a plant-based yogurt\'s taste score by 29% in just ' +
-      '10 rounds.' +
-      '[click] The care plan works as a hard filter instead of a score, the same way Samsung handled the allergy, so every candidate ' +
-      'already passes it.' +
-      '[click] And then your ratings and reorders go back into the models. The first buyers here would probably be medically tailored ' +
-      'meals, where Massachusetts Medicaid saw 31% fewer hospital stays.'
+      '[click] First, a taste model predicts how close a candidate tastes to your bar: one model for everyone, with your personal ' +
+      'offsets on top. Second, a blood-sugar model predicts your glucose response. Third, a search loop picks what to make and taste ' +
+      'next — the same Bayesian optimization we saw with Giuseppe. And last, a variant picker decides which safe variant gets sent to ' +
+      'you. (It’s called a bandit, after one-armed bandits — slot machines — because it’s balancing trying something new against ' +
+      'sticking with what works.)' +
+      '[click] Two of these are already proven. Zeevi’s team trained on 800 people and 47,000 meals and predicted individual glucose ' +
+      'response. And Bayesian optimization lifted a plant-based yogurt’s taste score 29% in 10 rounds.' +
+      '[click] The care plan is a hard filter, not a score — same as Samsung’s peanut allergy. Everything you’re offered has already ' +
+      'passed it.' +
+      '[click] And then your ratings and reorders go back into the models. Massachusetts Medicaid already funds medically tailored ' +
+      'meals, and members who got them had 31% fewer hospitalizations. Those are designed by dietitians, not AI  but it shows someone ' +
+      'is already paying for food built around one person’s biology.'
   };
 
   /* ------------------------------------------------------------- BACKUP */
@@ -510,18 +509,17 @@
       Kit.show(tl, q('.lb-c2'), { at: 'k+=1.2', y: 10, duration: .5 });
     },
     notes:
-      'The AI for the factory has the same shape as the personal one.' +
+      'The factory version has the same shape as the personal one.' +
       '[click] A price forecast gives the chance that each ingredient spikes. A smell model checks whether a substitute smells like ' +
       'cocoa. The search loop picks the next blend and roast to try, and a pass-fail predictor flags which candidates are worth ' +
       'testing in the lab.' +
       '[click] Two of these are already proven. For the price forecast, the signal is already out there, for example Ivory Coast cocoa ' +
       'arrivals were 55,000 tonnes in one week, compared to 107,000 a year earlier. And a graph neural network matched trained tasters ' +
-      'on 400 new molecules. The intuition for a graph neural network is that a molecule is naturally a graph, with atoms as the nodes ' +
-      'and bonds as the edges, so the model can learn smell straight from that structure.' +
+      'on 400 new molecules. ' +
       '[click] What comes out of all this is a trade-off between taste, cost, land and forest risk, rather than one winner.' +
-      '[click] For example, oil palm gives more than twice the oil per hectare of soy or rapeseed, so swapping it out can actually use ' +
-      'more land. And deforestation-free palm cuts emissions by 92%. So the search has to be allowed to give an answer like keep the ' +
-      'palm, and just change where it comes from.'
+      '[click] Take palm: it yields more than twice the oil per hectare of soy or rapeseed, so swapping it out can use more land. And ' +
+      'deforestation-free palm cuts emissions by 92%. So the search has to be allowed to answer: keep the palm — just change where it ' +
+      'comes from.'
   };
 
   /* ------------------------------------------------------------ SUMMARY */
@@ -600,14 +598,14 @@
     },
     notes:
       'So let\'s bring it all together, because all four sections were doing the same thing.' +
-      '[click] With Cook, a kitchen became a graph.' +
-      '[click] With Find, a protein became a vector.' +
+      '[click] With Cook, a kitchen became a graph of IDs. That’s what lets it check a hard rules e.g. nut allergy instead of guessing.' +
+      '[click] With Find a protein becomes an embedding. “Find me something sweet” becomes a nearest-neighbour lookup.' +
       '[click] With Mix, a recipe became a point on a map.' +
-      '[click] And with Sell, the engine ended up outliving the milk. Each step made food more abstract, and that\'s what let a machine ' +
-      'search it. But none of this removes the cook. The camera can\'t see the salt, the protein search only finds things near a known ' +
-      'hit, and every swap still needs a human to taste it.' +
-      '[click] And both futures end the same way, with a model choosing what\'s in your food. So would you eat it? Thank you, and I\'m ' +
-      'happy to take any questions.'
+      '[click] And with Sell the engine outlived the milk. NotCo sold the food business and kept Giuseppe. Half its revenue is AI ' +
+      'now.\n\nBut none of it removes the cook. The camera can’t see the salt. Shiru only finds things near a protein that already ' +
+      'works. And NotCo still has 20 chefs cooking a hundred recipes a month' +
+      '[click] And both future markets point in the same direction, with a model choosing what\'s in your food. So would you eat it? ' +
+      '\n\nThank you, and I\'m happy to take any questions.'
   };
 
   Deck.section({
@@ -617,8 +615,7 @@
       id: 'opener', budgetSec: 10,
       notes:
         'Okay, so we\'ve now seen AI cook, find and mix, and we\'ve seen NotCo turn that into the thing it sells. For our last section, ' +
-        'let\'s look at where this could go next, with two possible futures: food fitted to one person, and recipes that survive a supply ' +
-        'shock.'
+        'let\'s look at where this could go next,  What else could we redesign a recipe for? '
     },
     slides: [QUESTION, PERSONAL, TAILOR, BACKUP, LIBRARY, SUMMARY]
   });

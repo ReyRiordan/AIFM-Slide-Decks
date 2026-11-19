@@ -77,8 +77,7 @@
       '[click] Nature has made millions of other proteins, and almost none of them have ever been tried in food. Plant proteins are ' +
       'cheap, but they\'re generally worse at these jobs.' +
       '[click] And testing just one protein is slow. You have to grow it in a microbe, purify it, and then actually bake it into a ' +
-      'recipe, which takes weeks according to Shiru\'s patent. Only about a quarter even survive purification, so there\'s no way you ' +
-      'can test millions of them. So this is really a search problem.'
+      'recipe, which takes weeks. Only about a quarter even survive purification, so there\'s no way you can test millions of them. '
   };
 
   /* --------------------------------------------------------------- APPROACH */
@@ -143,8 +142,7 @@
     },
     notes:
       'Shiru\'s approach has four steps.' +
-      '[click] First is learn. There\'s no lab data, so the model trains on raw protein sequences by filling in letters we hide. This ' +
-      'is the one expensive step, but you only pay for it once.' +
+      '[click] First is learn. There\'s no lab data, so the model trains on raw protein sequences by filling in letters we hide.  ' +
       '[click] Second is embed, where every protein becomes a list of numbers, so we can compare points instead of strings of letters.' +
       '[click] Third is search, where you give it a protein that already works and get the nearest points back.' +
       '[click] And fourth is filter, where a few smaller models cut down that shortlist, and then the lab makes the final call.'
@@ -241,16 +239,16 @@
     notes:
       'Let\'s start with the first step. We have no lab measurements, so we have to train on the sequences themselves. Here\'s a ' +
       'sentence with two words hidden. You can probably fill those in, and nobody had to label anything for you to do that.' +
-      '[click] A protein is also just a string of letters. There are 20 letters, the amino acids, and hundreds of them in a row. So we ' +
-      'do the same exercise: hide about 15% of the letters and ask the model to put them back. Shiru has never published its model, so ' +
-      'this setup is based on how the public protein models are trained.' +
-      '[click] For the sentence, you\'d say "sets" and "heat", based on the words around the gaps.' +
-      '[click] And the model does the same thing on the protein. The trick here is that the supervision is free, because the right ' +
-      'answer is just the letter we hid. The model is a transformer, and it\'s trained the same way as BERT, one of the first big text ' +
-      'models.' +
-      '[click] So why does this actually work? Two letters that are far apart in the string can end up touching once the protein chain ' +
-      'folds up, so they tend to change together over evolution. To guess a hidden letter well, the model has to pick up on those ' +
-      'pairs, so it ends up learning something about the protein\'s 3D structure from what\'s basically a spelling exercise.'
+      '[click] A protein is also just a string of letters. There are 20 of them — the amino acids — and a protein is a few hundred ' +
+      'long. So we play the same game: hide about 15% of the letters and ask the model to put them back.' +
+      '[click] For the sentence, the gaps would be "sets" and "heat".' +
+      '[click] And the model does the same thing on the protein but with the amino acid letters. This is completely unsupervised i.e. ' +
+      'no labels are needed because the right answer is just the letter we hid. Under the hood, it’s a transformer trained the same ' +
+      'way as BERT, with masked language modelling.' +
+      '[click] So why does guessing letters teach the model anything useful? Look at these arcs. Letters that are far apart in the ' +
+      'string can end up touching once the protein chain folds, so over evolution, they tend to change together. To guess a hidden ' +
+      'letter well, the model needs to notice these pairs. Which means, just from filling in the blanks, it needs to learn something ' +
+      'about the protein’s 3D shape.'
   };
 
   /* ------------------------------------------------------------------ EMBED */
@@ -357,15 +355,14 @@
       Kit.draw(tl, qa('.dd-pay .rp'), { at: 'c+=1.1', duration: .45 });
     },
     notes:
-      'Step two is embedding. Here are two proteins written out as letters, and they only share about 1 letter in 5. By the old ' +
-      'method, that means nothing: once fewer than a quarter of the letters match, letter matching can\'t tell a relative from a ' +
-      'stranger.' +
-      '[click] So instead we stop comparing letters. Each protein goes through the model once and comes out as about 1,000 numbers. ' +
-      'This list of numbers is called an embedding, and you can think of it as the coordinates of where that protein sits in a big ' +
-      'space.' +
-      '[click] If we plot these, A and B land right next to each other, even though their spelling barely overlaps.' +
-      '[click] Meanwhile C shares nearly three quarters of its letters with A, but it sits way over here. This disagreement between ' +
-      'letters and embeddings is the whole reason we change what similar means.'
+      'Step two is embedding.\n\nThe usual way to compare two proteins is to line them up and count how many letters match. That works ' +
+      'when they’re close. But look at these two — A and B. Only about one letters in five match.' +
+      '[click] So instead we stop comparing letters. Each protein goes through the model once and comes out an embedding, that ' +
+      'captures how it behaves, not just how it’s spelled.' +
+      '[click] and If we plot these, A and B land right next to each other, even though their spelling barely overlaps.' +
+      '[click] Meanwhile C shares nearly three quarters of its letters with A, but ends up somewhere else entirely. Matching letters ' +
+      'don’t guarantee matching behaviour and since we care about what a protein does, we let the embedding decide. So “similar” means ' +
+      '“close together in the embedding space”.'
   };
 
   /* ----------------------------------------------------------------- SEARCH */
@@ -456,11 +453,11 @@
       Kit.show(tl, q('.sr-cav'), { at: 'b+=.5', y: 12 });
     },
     notes:
-      'Step three is search, and now it\'s just geometry. Every protein in the database is a point, and Shiru says there are 77 million ' +
-      'of them.' +
-      '[click] You query with something that already does the job you want. Here it\'s brazzein, a protein that tastes sweet.' +
-      '[click] And you get back its nearest neighbours, a couple of dozen of them. That\'s about what a lab can test in a quarter, so ' +
-      'the lab ends up being the bottleneck here.' +
+      'Step three is search. Every protein in the database is a point and there are more than 77 million of them.' +
+      '[click] To search, you start with a protein that already does the job you want. Here, that’s brazzein, a protein that tastes ' +
+      'sweet.' +
+      '[click] Then you ask for its nearest neighbours, and maybe a couple dozen of them come back. Out of 77 million, that’s a list a ' +
+      'lab can actually work through.' +
       '[click] So does this actually help? On pairs of proteins that barely match letter for letter, embedding search got the top ' +
       'answer right 57.5% of the time, compared to 34.5% for letter-by-letter matching. But on long, multi-part proteins, letter ' +
       'matching still wins, so it\'s not strictly better.'
@@ -556,16 +553,15 @@
     },
     notes:
       'Step four is filtering. 77 million sequences go in, and three learned filters cut that stream down.' +
-      '[click] The first question is does it work. A small model predicts whether the protein gels or dissolves. These predictors are ' +
-      'tiny, trained on a few hundred measurements each, and they only work because they\'re built on top of the pre-trained model from ' +
-      'step one.' +
+      '[click] does it work? A small model predicts whether the protein gels or dissolves. Each of these filters was trained on just a ' +
+      'few hundred lab-measured proteins — nowhere near enough on its own. They only work because they sit on top of the pre-trained ' +
+      'model from step one.' +
       '[click] Next is can we make it. A model called Expressor predicts whether a microbe will actually produce the protein and push ' +
       'it out of the cell.' +
-      '[click] And then is it safe, which checks whether it looks like a known allergen. The ironic part is that the regulator\'s test ' +
-      'here is letter-by-letter matching, which is the exact method this whole pipeline was built to beat.' +
+      '[click] And then is it safe, which checks whether it looks like a known allergen using letter-by-letter matching. ' +
       '[click] Out come dozens of candidates, and the lab picks one. Every result goes back into the training data, including the ' +
       'failures, and since nearly everything fails, the failures are actually the more useful half of the data. This loop of testing ' +
-      'and feeding the results back is called active learning, and Shiru\'s patent calls it a discovery flywheel.'
+      'and feeding the results back is called active learning.'
   };
 
   /* ---------------------------------------------------------------- RESULTS */
@@ -632,12 +628,10 @@
     notes:
       'So what came out of all this? The searchable database went from 33 million sequences in 2024 to over 77 million this year, and ' +
       'that index is now a product in itself, since Shiru sells access to it.' +
-      '[click] And this is OleoPro, which is liquid oil held in a protein network so it behaves like a solid fat. It\'s firm at room ' +
-      'temperature and it browns when you cook it, with over 90% less saturated fat than the fats it replaces, though that\'s the ' +
-      'company\'s own number.' +
-      '[click] To be fair about this, the AI picked the proteins, but it didn\'t invent a new molecule. What\'s in the jar is potato ' +
-      'protein you can already buy, structured with ordinary oil. So the model narrowed the search, and then normal food science did ' +
-      'the rest.'
+      '[click] And this is OleoPro. It\'s a liquid oil held in a protein network made to behave like a solid fat. It\'s firm at room ' +
+      'temperature and it browns when you cook it, with over 90% less saturated fat than the fats it replaces.' +
+      '[click] So what did the model do? It picked the proteins — it didn’t invent a molecule. What’s in the jar is potato protein you ' +
+      'can already buy, structured with ordinary oil. The model helped narrow the search and humans in the laboratory did the rest.'
   };
 
   /* -------------------------------------------------------------- TAKEAWAYS */
@@ -715,9 +709,9 @@
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Okay, so we\'ve seen how AI helps us cook with the recipes and ingredients that already exist. Now let\'s go a level down and ' +
-        'look at how AI can find new ingredients, with Shiru. Shiru is a startup that searches millions of natural proteins for the few ' +
-        'that can do the job of an egg or milk in food.'
+        'Okay, so we\'ve seen how AI helps us cook with recipes and ingredients that already exist. Now let\'s go a level down and look at ' +
+        'how AI can find new ingredients, with Shiru. Shiru is a startup that searches millions of natural proteins for the few that can ' +
+        'do the job of an egg or milk in food.'
     },
     slides: [
       PROBLEM, APPROACH,

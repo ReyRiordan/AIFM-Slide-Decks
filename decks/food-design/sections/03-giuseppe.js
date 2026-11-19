@@ -512,7 +512,7 @@
       '[click] A solver calculate the proportions of each ingredient that should be mixed to create milk. The proportions must be ' +
       'positive and add up to one hundred percent. ' +
       '[click] Every ingredient is described by the same measured features e.g. protein, fat, sugar etc., so how close the new ' +
-      'combination is to milk is a distance in the embedding space, which the solver aims to shrinks. This is the score. A lower score ' +
+      'combination is to milk is a distance in the embedding space, which the solver aims to shrink. This is the score. A lower score ' +
       'means it is closer to milk.' +
       '[click] However this assumes a blend behaves like the average of its parts, which is true for protein content but not for ' +
       'taste. So they use a second model, trained on chefs’ ratings to score flavour.'
