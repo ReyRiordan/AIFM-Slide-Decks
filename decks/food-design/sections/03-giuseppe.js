@@ -89,11 +89,14 @@
       Kit.draw(tl, qa('.dd-test .rp'), { at: 'test+=.8', duration: .5 });
     },
     notes:
-      'Here is the problem Giuseppe was built for. Rebuild cow’s milk out of plants: a handful of them, and the right amount of each. ' +
-      '[click] One NotCo patent works through an example catalog of eight hundred and thirty ingredients. ' +
-      '[click] Pick ten of those, and there are about forty thousand billion billion possible sets. That count is my arithmetic, not a NotCo figure. ' +
-      '[click] And you cannot check them on a computer: the real test is a person cooking it and tasting it. ' +
-      'NotCo’s kitchen gets through about a hundred recipes a month, so the number of tries is the bottleneck.'
+      'Imagine a situation where you are trying to rebuild cow’s milk out of plants.' +
+      '[click] The NotCo system patent works through an example catalog of eight hundred and thirty plant based ingredients. ' +
+      '[click] The problem lies in the fact that if you pick ten of those to test, there are about forty thousand billion billion ' +
+      'possible sets. ' +
+      '[click] And real human verification is necessary, you can\'t check recipes on a computer, they need to be tested by cooking and ' +
+      'tasting the final product. Testing the products in NotCo’s kitchen takes time and they only get through around hundred recipes ' +
+      'a month, which is the bottleneck. Guiseppe is built to identify viable recipes, ensuring that testing is only carried out on ' +
+      'recipes that are more likely to succeed.'
   };
 
   /* ------------------------------------------------------------- APPROACH */
@@ -161,11 +164,12 @@
       });
     },
     notes:
-      'Giuseppe does four things. Everything here is from NotCo’s patents; they have never confirmed it is what runs today. ' +
-      'First, map: learn where recipes live. ' +
-      '[click] Second, decode: read any point back out as an ingredient list. ' +
-      '[click] Third, score: a solver picks how much of each, and how far it lands from milk. ' +
-      '[click] Fourth, steer: that score chooses where to try next. Those three repeat, hundreds of times, no cooking.'
+      'Giuseppe does four things. First, map: learn where each recipe lies in the embedding space. ' +
+      '[click] Second, decode: take the embedding and decode any point back out as an ingredient list. ' +
+      '[click] Third, score: a solver picks how much of each ingredient to add, and how far the combination lands in the embedding ' +
+      'space away from the target e.g. milk.' +
+      '[click] Fourth, steer: that score chooses where to try next. Those three repeat, hundreds of times, without the need to start ' +
+      'testing via cooking.'
   };
 
   /* ------------------------------------------------------------------ MAP */
@@ -378,14 +382,18 @@
       Kit.show(tl, q('.cap4'), { at: 'm+=.4', y: 12 });
     },
     notes:
-      'First step: the map. The model behind this is called an autoencoder: two networks joined at a narrow waist. ' +
-      '[click] The encoder takes one recipe — tomato, garlic, basil — and squeezes the whole list into one point. Call it P. ' +
-      '[click] The decoder does the reverse: it reads P back out as a list, one ingredient at a time, and training rewards getting the same list back. ' +
-      '[click] Train that on thousands of recipes people have cooked, and similar recipes end up near each other. Sauces together, dairy together. ' +
-      'I am drawing this flat; the real map has far more dimensions, and these clusters are made up. ' +
-      '[click] Points close together decode to nearly the same list. A is tomato and onion, B is tomato and cream. One swap apart. ' +
-      '[click] Training keeps the map evenly filled, so a point between A and B, like M, still decodes into a sensible recipe: tomato, onion and cream. No holes. ' +
-      'The map knows which ingredients go together. It does not know what tastes like milk.'
+      'Let\'s walk through each step. The first step is the mapping. To do this Guiseppe uses an autoencoder which is made up of an ' +
+      'encoder and a decoder.' +
+      '[click] The encoder takes one recipe e.g  tomato, garlic, basil - and maps the whole ingredient list into one point, a vector, ' +
+      'in the embedding space. Lets call it P. ' +
+      '[click] The decoder does the reverse: it learns to read P back out as a list, one ingredient at a time, and trains to correctly ' +
+      'reconstruct the same list back. ' +
+      '[click] Guiseppe has been trained on thousands of recipes people have cooked, and similar recipes end up near each other. ' +
+      'Sauces together, dairy together etc. ' +
+      '[click] Points close together decode to nearly the same list. e.g. we can see that A is tomato and onion, B is tomato and cream ' +
+      'and they are one swap apart so their embeddings are close together.' +
+      '[click] Training keeps the map evenly filled, so a point between A and B, like M, still decodes into a sensible recipe: tomato, ' +
+      'onion and cream. The map only knows which ingredients go together. It does not know what tastes like milk.'
   };
   Kit.withCrumbs(MAP, STEPS, 0);
 
@@ -499,11 +507,15 @@
       Kit.show(tl, q('.sc-cap'), { y: 16 });
     },
     notes:
-      'Steps two and three. Our point goes through the decoder and comes back as four ingredients. ' +
-      '[click] A solver picks how much of each. The proportions must be positive and add up to one hundred percent. ' +
-      'The percentages on screen are made up. ' +
-      '[click] Milk is described by the same measured features as every ingredient, so how close this is to milk is a distance. The solver shrinks it; what is left is the score. Lower is closer. ' +
-      '[click] One warning: this assumes a blend behaves like the average of its parts. True for protein, false for taste. So a second model, trained on chefs’ ratings, scores flavour.'
+      'Steps two and three. Our point goes through the decoder and comes back as a set of ingredients. \n\nEvery ingredient already has ' +
+      'it\'s own nutrient profile saved in a database.' +
+      '[click] A solver calculate the proportions of each ingredient that should be mixed to create milk. The proportions must be ' +
+      'positive and add up to one hundred percent. ' +
+      '[click] Every ingredient is described by the same measured features e.g. protein, fat, sugar etc., so how close the new ' +
+      'combination is to milk is a distance in the embedding space, which the solver aims to shrinks. This is the score. A lower score ' +
+      'means it is closer to milk.' +
+      '[click] However this assumes a blend behaves like the average of its parts, which is true for protein content but not for ' +
+      'taste. So they use a second model, trained on chefs’ ratings to score flavour.'
   };
   Kit.withCrumbs(SCORE, STEPS, [1, 2]);
 
@@ -627,11 +639,13 @@
       Kit.show(tl, q('.st-cap'), { at: 'f+=.6', y: 14 });
     },
     notes:
-      'Step four. The star is where milk sits. The search does not know that; it only gets a score back for each point it tries. ' +
-      'Flat drawing again, and these six tries are invented. ' +
-      '[click] Try three scores worse than try two, so the search backs away from that direction. That is what makes it a search and not a straight line. ' +
-      '[click] Underneath, it keeps a guess about where good scores live, and every result reshapes it. That is Bayesian optimization: predict, pick, update. ' +
-      '[click] It picks the next point by trading promising against unexplored, and closes in. No cooking yet: only when a formula scores well do chefs make it.'
+      'Step four. The star is where the milk sits in the embedding space. But the model doesn\'t know that, it only gets a distance ' +
+      'score back for each point it tries. As we can see it has tried 2 points already.' +
+      '[click] The third try is worse than try two, so the search backs away from that direction. ' +
+      '[click] What is happening is that it is keeping a guess about where good scores live, and every score result it tries reshapes ' +
+      'that guess. It iterates through predict, pick and update until it reaches a good score.' +
+      '[click] The next point is picked using Bayesian Optimisation which basically  gives weights to promising areas vs unexplored ' +
+      'areas, and closes in to the target. '
   };
   Kit.withCrumbs(STEER, STEPS, 3);
 
@@ -729,10 +743,11 @@
       Kit.draw(tl, qa('.dd-no .rp'), { at: 'b+=1.3', duration: .35, stagger: .05 });
     },
     notes:
-      'NotMilk has to be plant-only, and that rule is not applied at the end. Every ingredient is a row of numbers. ' +
-      '[click] For a vegan product, the animal rows are zeroed before the decoder chooses. It picks the row closest to its state, and zeros can never win, so chicken is unreachable. Language models use the same trick. ' +
-      '[click] The alternative is to propose anything and throw away whatever has chicken in it. Every thrown-away candidate costs one of your few tries. ' +
-      'Masking rather than filtering afterwards is my reading of the patents.'
+      'NotMilk has to be plant-only and that rule is applied at the beginning to prevent wasted computation.' +
+      '[click] For a vegan product, the animal rows are zeroed before the decoder chooses which points to use.\n\nWhen the decoder ' +
+      'decodes a point to an ingredient list, the masked ingredients are blocked. So the ingredient with the most similar fingerprint ' +
+      'which is allowed will be chosen.' +
+      '[click] The alternative is to propose any recipe and throw away whatever has a disallowed ingredient in it. '
   };
   Kit.withCrumbs(RULES, STEPS, 1);   // the mask acts at the decoder
 
@@ -817,11 +832,13 @@
       Kit.show(tl, q('.rs-c2l'), { at: 'g+=.35', y: 10 });
     },
     notes:
-      'They gave Giuseppe the measured profile of cow’s milk, and this is what came back. Pineapple juice, cabbage juice, chicory root and coconut. Nobody would have written that down. ' +
-      '[click] NotCo says the first two were picked to make lactones, the aroma compounds that make dairy smell like dairy. Chefs refined it into the product you can buy. ' +
-      '[click] NotCo also says the second time they made a milk, it took two months instead of ten. That is their own figure, with no control group. ' +
-      'The carton is my drawing, not their packaging. ' +
-      '[click] And the honest part: the first batch came out green. Colour is not in the score. The search optimised what it could measure, and a person had to catch the rest.'
+      'NotCo ran Giuseppe on cow’s milk, and the closest plant-based alternative came back to be: Pineapple juice, cabbage juice, ' +
+      'chicory root and coconut. which is a combination nobody would have guessed. ' +
+      '[click] NotCo says the first two were picked to make lactones, the aroma compounds that make dairy smell like dairy. A group of ' +
+      'Chefs then refined it into the product you can buy. ' +
+      '[click] NotCo also says the second time they made a milk, it took two months instead of ten, which is a lot faster.' +
+      '[click] They report that they still had to make improvements since the first batch came out green since colour is not scored. ' +
+      'But the search sped up the process by optimising what it could measure.'
   };
 
   /* ------------------------------------------------------------ TAKEAWAYS */
@@ -892,9 +909,10 @@
     },
     notes:
       'Two things to take away from this section. ' +
-      '[click] One: when the thing you are choosing is a list, learn a space you can move through, then search it with a score. The same shape shows up in drug design, where molecules go in and a predictor scores them. The score is what aims a generative model at a target. ' +
-      '[click] Two: put the hard rules inside the search, not after it. Blocking a choice before it is made costs nothing; filtering afterwards costs you tries you cannot afford. ' +
-      'That is Mix. Next: what happened to the company that built this.'
+      '[click] One: learn a space you can move through, and traverse large search spaces using a score. The score is what aims a ' +
+      'generative model at a target. ' +
+      '[click] Two: Add your constraints before computation becomes expensive, not after. \n\nNext: what happened to the company that ' +
+      'built this.'
   };
 
   Deck.section({
@@ -903,7 +921,8 @@
     opener: {
       id: 'opener', budgetSec: 10,
       notes:
-        'Section three: Mix. NotCo\'s AI, Giuseppe, works one level up: it designs whole recipes, which plants go in and how much of each.'
+        'Section three: Mix. Our next application is NotCo\'s AI, Giuseppe, which works one level up: it designs whole recipes, ' +
+        'specifically working to create plant-based alternatives of normal food.'
     },
     slides: [PROBLEM, APPROACH, MAP, SCORE, STEER, RULES, RESULTS, TAKEAWAYS]
   });
